@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Cream background -->
+  <rect width="200" height="200" fill="#F2EDE6"/>
+  <!-- Logo mark — heavier strokes for small-size legibility -->
+  <defs>
+    <clipPath id="c">
+      <circle cx="100" cy="100" r="80"/>
+    </clipPath>
+  </defs>
+  <circle cx="100" cy="100" r="80" stroke="#7B3A35" stroke-width="8" fill="none"/>
+  <g clip-path="url(#c)" stroke="#7B3A35" stroke-width="8" fill="none" stroke-linecap="round">
+    <path d="M20,79  C50,66  70,92  100,79  C130,66  150,92  180,79"/>
+    <path d="M20,100 C50,87  70,113 100,100 C130,87  150,113 180,100"/>
+    <path d="M20,121 C50,108 70,134 100,121 C130,108 150,134 180,121"/>
+  </g>
+</svg>

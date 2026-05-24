@@ -1,0 +1,29 @@
+{
+  "name": "tempohouse",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "export": "next build",
+    "deploy": "next build && node scripts/deploy.js",
+    "deploy:dry": "DRY_RUN=true node scripts/deploy.js"
+  },
+  "dependencies": {
+    "framer-motion": "^12.40.0",
+    "gsap": "^3.15.0",
+    "next": "16.2.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv": "^17.4.2",
+    "node-ftp": "^0.0.1-security",
+    "ssh2": "^1.17.0",
+    "typescript": "^5"
+  }
+}

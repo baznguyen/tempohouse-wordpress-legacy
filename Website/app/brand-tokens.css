@@ -1,0 +1,305 @@
+/* ═══════════════════════════════════════════════════════════════
+   TEMPO House — Brand Token System
+   Source of truth for all brand colours, typography & spacing.
+   Import this file in globals.css and reference only via tokens.
+
+   Colour system derived from: TEMPO House Brand Deck 1.0
+   ═══════════════════════════════════════════════════════════════
+
+   PALETTE MAP
+   ─────────────────────────────────────────────────────────────
+   Primary
+     --tempo-cream        #F7F3EE   Backgrounds, menu foundation
+     --tempo-terracotta   #C76E4B   Accent text, highlights, signage
+     --tempo-charcoal     #2C2C2C   Typography, contrast, night mode
+
+   Secondary
+     --tempo-amber        #DDAA62   Night warmth, lighting, wine
+     --tempo-sage         #8A9277   Nature, grounding, subtle detail
+     --tempo-sand         #E7D8C9   Soft blocks, UI panels, texture
+
+   Derived / UI
+     --tempo-cream-dark   #EDE8E1   Slightly deeper cream for cards
+     --tempo-terracotta-dim #9E5539 Hover/pressed state for terracotta
+     --tempo-charcoal-soft #4A4A44  Secondary text on dark surfaces
+     --tempo-amber-dim    #B8893E   Subdued amber for borders/dividers
+     --tempo-ink          #1A1816   Near-black for richest typography
+   ─────────────────────────────────────────────────────────────
+
+   TYPOGRAPHY MAP
+   ─────────────────────────────────────────────────────────────
+   Headlines    Monument Grotesk (Pangram Pangram — requires license)
+                Fallback: 'Inter', 'Helvetica Neue', Arial, sans-serif
+   Body         Space Grotesk (Google Fonts — open)
+                Fallback: 'Inter', system-ui, sans-serif
+   Accent       Editorial New (Pangram Pangram — requires license)
+                Fallback: 'Cormorant Garamond', Georgia, serif
+   ─────────────────────────────────────────────────────────────
+   Font files go in /public/fonts/ — see @font-face blocks below
+   ═══════════════════════════════════════════════════════════════ */
+
+
+/* ── Raw Brand Palette ─────────────────────────────────────────
+   Never use these directly in components. Always use semantic
+   tokens below so theme switching works cleanly.
+   ──────────────────────────────────────────────────────────── */
+:root {
+  /* Primary */
+  --tempo-cream:           #F7F3EE;
+  --tempo-terracotta:      #C76E4B;
+  --tempo-charcoal:        #2C2C2C;
+
+  /* Secondary */
+  --tempo-amber:           #DDAA62;
+  --tempo-sage:            #8A9277;
+  --tempo-sand:            #E7D8C9;
+
+  /* Derived */
+  --tempo-cream-dark:      #EDE8E1;
+  --tempo-cream-deeper:    #DDD6CC;
+  --tempo-terracotta-dim:  #9E5539;
+  --tempo-terracotta-pale: #EDD4C7;
+  --tempo-charcoal-soft:   #4A4A44;
+  --tempo-charcoal-muted:  #7A7870;
+  --tempo-amber-dim:       #B8893E;
+  --tempo-amber-pale:      #F2E4C4;
+  --tempo-sage-dim:        #6B7360;
+  --tempo-sage-pale:       #D4DAD0;
+  --tempo-ink:             #1A1816;
+  --tempo-white:           #FFFFFF;
+
+  /* Alpha variants — for overlays, glows, subtle borders */
+  --tempo-terracotta-a10:  rgba(199,  110, 75, 0.10);
+  --tempo-terracotta-a20:  rgba(199,  110, 75, 0.20);
+  --tempo-amber-a10:       rgba(221,  170, 98, 0.10);
+  --tempo-amber-a20:       rgba(221,  170, 98, 0.20);
+  --tempo-charcoal-a08:    rgba( 44,   44, 44, 0.08);
+  --tempo-charcoal-a16:    rgba( 44,   44, 44, 0.16);
+}
+
+
+/* ── Day Mode — Semantic Tokens (default) ──────────────────────
+   Cream backgrounds, terracotta accents, charcoal text.
+   Morning Tempo & Afternoon Tempo palette.
+   ──────────────────────────────────────────────────────────── */
+:root,
+[data-tempo="day"] {
+
+  /* Backgrounds */
+  --color-bg:              var(--tempo-cream);
+  --color-bg-alt:          var(--tempo-cream-dark);
+  --color-surface:         var(--tempo-white);
+  --color-surface-raised:  var(--tempo-sand);
+
+  /* Borders */
+  --color-border:          var(--tempo-charcoal-a08);
+  --color-border-strong:   var(--tempo-charcoal-a16);
+  --color-border-accent:   var(--tempo-terracotta);
+
+  /* Text */
+  --color-text-primary:    var(--tempo-charcoal);
+  --color-text-secondary:  var(--tempo-charcoal-soft);
+  --color-text-muted:      var(--tempo-charcoal-muted);
+  --color-text-inverse:    var(--tempo-cream);
+
+  /* Accent — Terracotta (day signature) */
+  --color-accent:          var(--tempo-terracotta);
+  --color-accent-hover:    var(--tempo-terracotta-dim);
+  --color-accent-dim:      var(--tempo-terracotta-pale);
+  --color-accent-glow:     var(--tempo-terracotta-a10);
+
+  /* Secondary accent — Sage */
+  --color-accent-2:        var(--tempo-sage);
+  --color-accent-2-dim:    var(--tempo-sage-pale);
+
+  /* Brand signature bar — warm amber line used as decorative element */
+  --color-signature:       var(--tempo-amber);
+
+  /* Navigation */
+  --color-nav-bg:          var(--tempo-cream);
+  --color-nav-text:        var(--tempo-charcoal);
+  --color-nav-active:      var(--tempo-terracotta);
+
+  /* Cards / panels */
+  --color-card-bg:         var(--tempo-white);
+  --color-card-border:     var(--tempo-charcoal-a08);
+  --color-card-hover:      var(--tempo-cream-dark);
+
+  /* Inputs */
+  --color-input-bg:        var(--tempo-white);
+  --color-input-border:    var(--tempo-charcoal-a16);
+  --color-input-focus:     var(--tempo-terracotta);
+  --color-input-placeholder: var(--tempo-charcoal-muted);
+
+  /* Status */
+  --color-success:         #5C7A5A;
+  --color-warning:         var(--tempo-amber);
+  --color-error:           #B84040;
+
+  /* Shadow */
+  --shadow-sm:  0 1px 3px rgba(44,44,44,0.08), 0 1px 2px rgba(44,44,44,0.04);
+  --shadow-md:  0 4px 12px rgba(44,44,44,0.10), 0 2px 4px rgba(44,44,44,0.06);
+  --shadow-lg:  0 12px 40px rgba(44,44,44,0.12), 0 4px 8px rgba(44,44,44,0.08);
+  --shadow-xl:  0 24px 60px rgba(44,44,44,0.16);
+}
+
+
+/* ── Night Mode — Semantic Tokens ──────────────────────────────
+   Charcoal backgrounds, amber accents, cream text.
+   Night Tempo palette. Apply via [data-tempo="night"] on <html>.
+   ──────────────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tempo="day"]) {
+
+    /* Backgrounds */
+    --color-bg:              var(--tempo-ink);
+    --color-bg-alt:          #211F1C;
+    --color-surface:         #2A2722;
+    --color-surface-raised:  #332F29;
+
+    /* Borders */
+    --color-border:          rgba(247, 243, 238, 0.08);
+    --color-border-strong:   rgba(247, 243, 238, 0.16);
+    --color-border-accent:   var(--tempo-amber);
+
+    /* Text */
+    --color-text-primary:    var(--tempo-cream);
+    --color-text-secondary:  var(--tempo-sand);
+    --color-text-muted:      var(--tempo-charcoal-muted);
+    --color-text-inverse:    var(--tempo-charcoal);
+
+    /* Accent — Amber (night signature) */
+    --color-accent:          var(--tempo-amber);
+    --color-accent-hover:    var(--tempo-amber-dim);
+    --color-accent-dim:      var(--tempo-amber-pale);
+    --color-accent-glow:     var(--tempo-amber-a20);
+
+    /* Secondary accent — Terracotta on dark */
+    --color-accent-2:        var(--tempo-terracotta);
+    --color-accent-2-dim:    var(--tempo-terracotta-a20);
+
+    /* Brand signature */
+    --color-signature:       var(--tempo-terracotta);
+
+    /* Navigation */
+    --color-nav-bg:          var(--tempo-ink);
+    --color-nav-text:        var(--tempo-cream);
+    --color-nav-active:      var(--tempo-amber);
+
+    /* Cards */
+    --color-card-bg:         #2A2722;
+    --color-card-border:     rgba(247, 243, 238, 0.08);
+    --color-card-hover:      #332F29;
+
+    /* Inputs */
+    --color-input-bg:        #2A2722;
+    --color-input-border:    rgba(247, 243, 238, 0.16);
+    --color-input-focus:     var(--tempo-amber);
+    --color-input-placeholder: var(--tempo-charcoal-muted);
+
+    /* Shadow */
+    --shadow-sm:  0 1px 3px rgba(0,0,0,0.24), 0 1px 2px rgba(0,0,0,0.16);
+    --shadow-md:  0 4px 12px rgba(0,0,0,0.32), 0 2px 4px rgba(0,0,0,0.20);
+    --shadow-lg:  0 12px 40px rgba(0,0,0,0.40), 0 4px 8px rgba(0,0,0,0.24);
+    --shadow-xl:  0 24px 60px rgba(0,0,0,0.56);
+  }
+}
+
+/* Explicit night selector (js-controlled, no media query needed) */
+[data-tempo="night"] {
+  --color-bg:              var(--tempo-ink);
+  --color-bg-alt:          #211F1C;
+  --color-surface:         #2A2722;
+  --color-surface-raised:  #332F29;
+  --color-border:          rgba(247, 243, 238, 0.08);
+  --color-border-strong:   rgba(247, 243, 238, 0.16);
+  --color-border-accent:   var(--tempo-amber);
+  --color-text-primary:    var(--tempo-cream);
+  --color-text-secondary:  var(--tempo-sand);
+  --color-text-muted:      var(--tempo-charcoal-muted);
+  --color-text-inverse:    var(--tempo-charcoal);
+  --color-accent:          var(--tempo-amber);
+  --color-accent-hover:    var(--tempo-amber-dim);
+  --color-accent-dim:      var(--tempo-amber-pale);
+  --color-accent-glow:     var(--tempo-amber-a20);
+  --color-accent-2:        var(--tempo-terracotta);
+  --color-accent-2-dim:    var(--tempo-terracotta-a20);
+  --color-signature:       var(--tempo-terracotta);
+  --color-nav-bg:          var(--tempo-ink);
+  --color-nav-text:        var(--tempo-cream);
+  --color-nav-active:      var(--tempo-amber);
+  --color-card-bg:         #2A2722;
+  --color-card-border:     rgba(247, 243, 238, 0.08);
+  --color-card-hover:      #332F29;
+  --color-input-bg:        #2A2722;
+  --color-input-border:    rgba(247, 243, 238, 0.16);
+  --color-input-focus:     var(--tempo-amber);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.24), 0 1px 2px rgba(0,0,0,0.16);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.32), 0 2px 4px rgba(0,0,0,0.20);
+  --shadow-lg:  0 12px 40px rgba(0,0,0,0.40), 0 4px 8px rgba(0,0,0,0.24);
+  --shadow-xl:  0 24px 60px rgba(0,0,0,0.56);
+}
+
+
+/* ── Typography Tokens ─────────────────────────────────────────
+   All fonts loaded via Google Fonts in globals.css (open-source).
+
+   Display : Bricolage Grotesque  — editorial grotesque, variable
+             Closest open-source match to Monument Grotesk
+   Accent  : Cormorant Garamond  — ultrathin italic serif
+             Closest open-source match to Editorial New
+   Body    : Space Grotesk       — clean humanist sans-serif
+
+   If licensed versions of Monument Grotesk or Editorial New are
+   obtained later, drop woff2 files into /public/fonts/ and
+   re-add the @font-face blocks below, removing the Google Fonts
+   import for those families in globals.css.
+   ──────────────────────────────────────────────────────────── */
+
+:root {
+  /* Font families */
+  --font-display: 'Bricolage Grotesque', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-body:    'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --font-accent:  'Cormorant Garamond', Georgia, serif;
+}
+
+
+/* ── Utility Swatch Classes ────────────────────────────────────
+   Use in design previews, style guides, Storybook, or
+   anywhere a visual colour reference is needed.
+   ──────────────────────────────────────────────────────────── */
+
+/* Background utilities */
+.bg-cream        { background-color: var(--tempo-cream); }
+.bg-terracotta   { background-color: var(--tempo-terracotta); }
+.bg-charcoal     { background-color: var(--tempo-charcoal); }
+.bg-amber        { background-color: var(--tempo-amber); }
+.bg-sage         { background-color: var(--tempo-sage); }
+.bg-sand         { background-color: var(--tempo-sand); }
+.bg-ink          { background-color: var(--tempo-ink); }
+
+/* Text utilities */
+.text-cream      { color: var(--tempo-cream); }
+.text-terracotta { color: var(--tempo-terracotta); }
+.text-charcoal   { color: var(--tempo-charcoal); }
+.text-amber      { color: var(--tempo-amber); }
+.text-sage       { color: var(--tempo-sage); }
+.text-sand       { color: var(--tempo-sand); }
+.text-ink        { color: var(--tempo-ink); }
+
+/* Border utilities */
+.border-cream        { border-color: var(--tempo-cream); }
+.border-terracotta   { border-color: var(--tempo-terracotta); }
+.border-charcoal     { border-color: var(--tempo-charcoal); }
+.border-amber        { border-color: var(--tempo-amber); }
+.border-sage         { border-color: var(--tempo-sage); }
+
+/* Font utilities */
+.font-display  { font-family: var(--font-display); }
+.font-body     { font-family: var(--font-body); }
+.font-accent   { font-family: var(--font-accent); }
+
+/* Tempo mode utilities — apply to sections for localised theming */
+.tempo-morning   { --color-accent: var(--tempo-terracotta); background: var(--tempo-cream); color: var(--tempo-charcoal); }
+.tempo-afternoon { --color-accent: var(--tempo-terracotta); background: var(--tempo-sand);  color: var(--tempo-charcoal); }
+.tempo-night     { --color-accent: var(--tempo-amber);      background: var(--tempo-ink);   color: var(--tempo-cream); }

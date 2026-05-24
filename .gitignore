@@ -1,0 +1,35 @@
+# Dependencies
+Website/node_modules/
+Website/.pnp.*
+Website/.yarn/*
+!Website/.yarn/patches
+!Website/.yarn/plugins
+!Website/.yarn/releases
+!Website/.yarn/versions
+
+# Build outputs
+Website/.next/
+Website/out/
+Website/build/
+Website/coverage/
+
+# Environment — never commit secrets
+Website/.env*
+.env*
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# TypeScript
+Website/*.tsbuildinfo
+Website/next-env.d.ts
+
+# Vercel
+Website/.vercel
