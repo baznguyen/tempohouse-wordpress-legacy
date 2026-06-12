@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import styles from "./EventCarousel.module.css";
+import { useDragScroll } from "./useDragScroll";
 
 export interface EventMedia {
   type: "image" | "video";
@@ -46,7 +48,48 @@ const EVENTS = [
 // Duplicate once — seamless infinite loop via translateX(-50%)
 const TRACK_ITEMS = [...EVENTS, ...EVENTS];
 
+const CARD_GAP = 16; // matches mobile gap in CSS
+
 export default function EventCarousel() {
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // Attach mouse drag-to-scroll on the viewport (mobile scroll container)
+  useDragScroll(viewportRef);
+
+  // ── Mobile carousel navigation ───────────────────
+
+  const getCardWidth = useCallback(() => {
+    const viewport = viewportRef.current;
+    const firstCard = viewport?.querySelector<HTMLElement>(`.${styles.card}`);
+    return firstCard?.offsetWidth ?? 0;
+  }, []);
+
+  const scrollToCard = useCallback((index: number) => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const cw = getCardWidth();
+    viewport.scrollTo({ left: index * (cw + CARD_GAP), behavior: "smooth" });
+  }, [getCardWidth]);
+
+  const handleViewportScroll = useCallback(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const cw = getCardWidth();
+    if (!cw) return;
+    const idx = Math.round(viewport.scrollLeft / (cw + CARD_GAP));
+    setActiveIndex(Math.max(0, Math.min(idx, EVENTS.length - 1)));
+  }, [getCardWidth]);
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    viewport.addEventListener("scroll", handleViewportScroll, { passive: true });
+    return () => viewport.removeEventListener("scroll", handleViewportScroll);
+  }, [handleViewportScroll]);
+
+  // ── Video hover handlers ─────────────────────────
+
   const handleCardEnter = (e: React.MouseEvent<HTMLElement>) => {
     const video = e.currentTarget.querySelector("video");
     if (video) video.play().catch(() => {});
@@ -70,7 +113,7 @@ export default function EventCarousel() {
       </div>
 
       {/* Infinite gallery wall ── frames scroll left */}
-      <div className={styles.viewport}>
+      <div ref={viewportRef} className={styles.viewport}>
         <div className={styles.track}>
           {TRACK_ITEMS.map((event, i) => (
             <article
@@ -80,7 +123,6 @@ export default function EventCarousel() {
               onMouseEnter={handleCardEnter}
               onMouseLeave={handleCardLeave}
             >
-              {/* Full-card click target */}
               <Link
                 href={event.href}
                 className={styles.cardLink}
@@ -91,7 +133,6 @@ export default function EventCarousel() {
                 <div className={styles.mat}>
                   <div className={styles.artwork}>
 
-                    {/* Image or video thumbnail */}
                     {event.media && (
                       <div className={styles.mediaLayer}>
                         {event.media.type === "video" ? (
@@ -114,17 +155,14 @@ export default function EventCarousel() {
                       </div>
                     )}
 
-                    {/* Ghost category text when no media */}
                     {!event.media && (
                       <span className={styles.categoryGhost}>{event.category}</span>
                     )}
 
-                    {/* Event title — always visible at bottom */}
                     <div className={styles.titleBar}>
                       <p className={styles.eventTitle}>{event.title}</p>
                     </div>
 
-                    {/* Date / time — slides in on hover at top */}
                     <div className={styles.dateReveal}>
                       <span className={styles.dateMonth}>{event.month}</span>
                       <span className={styles.dateTime}>{event.time}</span>
@@ -137,6 +175,42 @@ export default function EventCarousel() {
           ))}
         </div>
       </div>
+
+      {/* Mobile carousel nav — hidden on desktop via CSS */}
+      <nav className={styles.carouselNav} aria-label="Events navigation">
+        <button
+          className={styles.navBtn}
+          onClick={() => scrollToCard(Math.max(0, activeIndex - 1))}
+          aria-label="Previous event"
+          disabled={activeIndex === 0}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+
+        <div className={styles.dots}>
+          {EVENTS.map((event, i) => (
+            <button
+              key={event.key}
+              className={`${styles.dot}${i === activeIndex ? ` ${styles.dotActive}` : ""}`}
+              onClick={() => scrollToCard(i)}
+              aria-label={`View ${event.title}`}
+            />
+          ))}
+        </div>
+
+        <button
+          className={styles.navBtn}
+          onClick={() => scrollToCard(Math.min(EVENTS.length - 1, activeIndex + 1))}
+          aria-label="Next event"
+          disabled={activeIndex === EVENTS.length - 1}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M6 12l4-4-4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      </nav>
 
       <div className="container">
         <div className={styles.footer}>

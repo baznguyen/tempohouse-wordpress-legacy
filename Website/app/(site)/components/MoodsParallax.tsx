@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import styles from "./MoodsParallax.module.css";
+import { useDragScroll } from "./useDragScroll";
 
 const FRAMES = [
   {
@@ -38,12 +39,15 @@ const FRAMES = [
   },
 ];
 
-const SCROLL_PADDING = 20; // matches scroll-padding-inline-start in CSS
+const CARD_GAP = 16; // matches gap in mobile CSS
 
 export default function MoodsParallax() {
   const sectionRef    = useRef<HTMLElement>(null);
   const framesWrapRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  // Attach mouse drag-to-scroll on the carousel container
+  useDragScroll(framesWrapRef);
 
   // ── Parallax (desktop only) ──────────────────────
   useEffect(() => {
@@ -74,32 +78,30 @@ export default function MoodsParallax() {
 
   // ── Carousel navigation (mobile) ─────────────────
 
-  // Scroll framesWrap so that frame[index] snaps into view.
+  // Uses card offsetWidth + fixed gap to compute scroll positions.
+  // Avoids relying on offsetLeft, which is unreliable for statically
+  // positioned elements inside a static-positioned scroll container.
+  const getCardWidth = useCallback(() => {
+    const wrap = framesWrapRef.current;
+    const first = wrap?.querySelector<HTMLElement>("article");
+    return first?.offsetWidth ?? 0;
+  }, []);
+
   const scrollToFrame = useCallback((index: number) => {
     const wrap = framesWrapRef.current;
     if (!wrap) return;
-    const cards = wrap.querySelectorAll<HTMLElement>("article");
-    const card  = cards[index];
-    if (!card) return;
-    // snap point = offsetLeft minus the scroll-padding
-    wrap.scrollTo({ left: card.offsetLeft - SCROLL_PADDING, behavior: "smooth" });
-  }, []);
+    const cw = getCardWidth();
+    wrap.scrollTo({ left: index * (cw + CARD_GAP), behavior: "smooth" });
+  }, [getCardWidth]);
 
-  // Track which frame is snapped by finding the card whose
-  // snap point is closest to the current scrollLeft.
   const handleWrapScroll = useCallback(() => {
     const wrap = framesWrapRef.current;
     if (!wrap) return;
-    const cards    = Array.from(wrap.querySelectorAll<HTMLElement>("article"));
-    const scrollLeft = wrap.scrollLeft;
-    let nearest = 0;
-    let minDist = Infinity;
-    cards.forEach((card, i) => {
-      const dist = Math.abs((card.offsetLeft - SCROLL_PADDING) - scrollLeft);
-      if (dist < minDist) { minDist = dist; nearest = i; }
-    });
-    setActiveIndex(nearest);
-  }, []);
+    const cw = getCardWidth();
+    if (!cw) return;
+    const idx = Math.round(wrap.scrollLeft / (cw + CARD_GAP));
+    setActiveIndex(Math.max(0, Math.min(idx, FRAMES.length - 1)));
+  }, [getCardWidth]);
 
   useEffect(() => {
     const wrap = framesWrapRef.current;
@@ -153,7 +155,7 @@ export default function MoodsParallax() {
       </div>
 
       {/* Carousel navigation — hidden on desktop via CSS */}
-      <nav className={styles.carouselNav} aria-label="Carousel navigation">
+      <nav className={styles.carouselNav} aria-label="Space carousel navigation">
         <button
           className={styles.navBtn}
           onClick={() => scrollToFrame(Math.max(0, activeIndex - 1))}

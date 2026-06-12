@@ -336,6 +336,63 @@
   color: var(--color-accent);
 }
 
+/* ── Mobile carousel nav — hidden on desktop ──── */
+
+.carouselNav {
+  display: none;
+}
+
+.navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border-strong);
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  flex-shrink: 0;
+  transition:
+    border-color var(--duration-fast) ease,
+    color var(--duration-fast) ease,
+    opacity var(--duration-fast) ease;
+}
+
+.navBtn:hover:not(:disabled) {
+  border-color: var(--tempo-terracotta);
+  color: var(--tempo-terracotta);
+}
+
+.navBtn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: var(--color-border-strong);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) ease,
+    transform var(--duration-fast) ease;
+}
+
+.dotActive {
+  background: var(--tempo-terracotta);
+  transform: scale(1.5);
+}
+
 /* ── Mobile: 1-card manual scroll-snap ───────── */
 
 @media (max-width: 900px) {
@@ -363,13 +420,11 @@
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    /*
-     * scroll-padding matches the track's inline padding so
-     * the first card's start edge aligns with the left indent.
-     */
     scroll-padding-inline-start: 20px;
+    cursor: grab;
   }
 
+  .viewport:active  { cursor: grabbing; }
   .viewport::-webkit-scrollbar { display: none; }
 
   /* Track: plain flex row, animation off */
@@ -384,12 +439,6 @@
   /* Hide the 3 duplicated cards — only real 3 shown */
   .card:nth-child(n + 4) { display: none; }
 
-  /*
-   * Card fills ~88vw so one card dominates the view
-   * with a sliver of the next peeking on the right.
-   * scroll-snap-align:start means each card's left edge
-   * snaps to the scroll-padding-inline-start position.
-   */
   .card {
     width: 88vw;
     max-width: 420px;
@@ -397,41 +446,42 @@
     scroll-snap-align: start;
   }
 
-  /*
-   * Portrait aspect ratio — more "gallery artwork" feel.
-   * Replaces the fixed 360px height so it scales with
-   * the card width at any phone size.
-   */
+  /* Portrait aspect ratio */
   .artwork {
     height: auto;
     min-height: 0;
     aspect-ratio: 3 / 4;
   }
 
-  /*
-   * On touch devices there is no persistent hover state.
-   * Show dateReveal always so month + time are visible.
-   */
+  /* dateReveal always visible on touch (no hover state) */
   .dateReveal {
     opacity: 1;
     transform: translateY(0);
     transition: none;
   }
 
-  /* Scalable section heading */
   .title {
     font-size: clamp(1.8rem, 6vw, 3rem);
   }
 
-  /* Scalable card title */
   .eventTitle {
     font-size: clamp(1rem, 4vw, 1.4rem);
   }
 
-  /* Keep ghost text subtle at all times on mobile */
   .card:hover .categoryGhost,
   .categoryGhost {
     opacity: 0.22;
+  }
+
+  /* Show nav + clear any spacing the footer container normally owns */
+  .carouselNav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-5);
+    padding: var(--space-4) var(--gutter) 0;
+    position: relative;
+    z-index: 10;
   }
 }
 

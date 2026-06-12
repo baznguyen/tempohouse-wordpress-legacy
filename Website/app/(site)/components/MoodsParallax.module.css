@@ -360,8 +360,10 @@
     padding: var(--space-4) 20px 0;
     scrollbar-width: none;
     scroll-padding-inline-start: 20px;
+    cursor: grab;
   }
 
+  .framesWrap:active { cursor: grabbing; }
   .framesWrap::-webkit-scrollbar { display: none; }
 
   /*
@@ -369,6 +371,10 @@
    * per-frame rules (.frame[data-frame="cafe"] { width:34vw }).
    * Without it those attribute selectors win and all 3 frames
    * fit side-by-side instead of filling the viewport.
+   *
+   * z-index reset: desktop frames have z-index:2. If that
+   * persists on mobile it creates a stacking context that
+   * sits on top of .carouselNav, blocking the buttons.
    */
   .frame {
     position: static !important;
@@ -378,6 +384,7 @@
     width: 84vw !important;
     max-width: 400px !important;
     min-width: 0 !important;
+    z-index: auto !important;
     scroll-snap-align: start;
   }
 
@@ -405,13 +412,15 @@
     transition: none;
   }
 
-  /* Show nav below the carousel */
+  /* Show nav below the carousel, above all stacking contexts */
   .carouselNav {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-5);
     padding: var(--space-6) var(--gutter) var(--space-section);
+    position: relative;
+    z-index: 10;
   }
 }
 
