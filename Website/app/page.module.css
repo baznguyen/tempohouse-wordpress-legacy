@@ -1,16 +1,18 @@
 /* ─────────────────────────────────────────────
    TEMPO House — Coming Soon
-   Artistic editorial. Ivory ground. Tile circle hero.
+   Two type voices only:
+     Voice A — italic serif  (tagline)
+     Voice B — small caps    (all supporting copy)
    ───────────────────────────────────────────── */
 
 .page {
-  --brown:       #7B3A35;
-  --brown-mid:   rgba(123, 58, 53, 0.5);
-  --brown-dim:   rgba(123, 58, 53, 0.18);
-  --ink:         #2C1A18;
-  --ink-mid:     rgba(44, 26, 24, 0.62);
-  --ink-muted:   rgba(44, 26, 24, 0.38);
-  --ink-ghost:   rgba(44, 26, 24, 0.16);
+  --brown:     #7B3A35;
+  --brown-dim: rgba(123, 58, 53, 0.2);
+  --brown-mid: rgba(123, 58, 53, 0.5);
+  --ink:       #2C1A18;
+  --ink-mid:   rgba(44, 26, 24, 0.68);
+  --ink-sub:   rgba(44, 26, 24, 0.52);
+  --ink-ghost: rgba(44, 26, 24, 0.32);
 
   min-height: 100dvh;
   background: #F2EDE6;
@@ -20,70 +22,52 @@
 }
 
 
-/* ── Main content ─────────────────────── */
+/* ── Layout shell ─────────────────────── */
 .inner {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: clamp(2.5rem, 7vh, 5rem) clamp(1.5rem, 6vw, 4rem) clamp(3rem, 7vh, 5rem);
+  padding: clamp(2.5rem, 6vh, 4.5rem) clamp(1.5rem, 6vw, 4rem) clamp(3rem, 7vh, 5rem);
   width: 100%;
   max-width: 680px;
   margin-inline: auto;
 }
 
 
+/* ── Voice B — shared small caps style ──
+   Apply to: .announce, .taglineSub, .descriptor, footer copy.
+   One size, one weight, one colour, one tracking. */
+.announce,
+.taglineSub,
+.descriptor {
+  font-family: var(--font-body);
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(0.54rem, 1.4vw, 0.62rem);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ink-sub);
+  line-height: 2;
+}
+
+
 /* ── Opening label ───────────────────── */
 .announce {
-  font-family: var(--font-body);
-  font-size: 0.54rem;
-  font-weight: 400;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: var(--ink-ghost);
-  margin-bottom: clamp(1.75rem, 4.5vh, 3rem);
+  margin-bottom: clamp(1.5rem, 4vh, 2.75rem);
   animation: fadeIn 1.2s ease 0s both;
 }
 
 
-/* ── Hero circle ─────────────────────── */
-/* The brand mark shape becomes the centrepiece —
-   floor tile visible inside the circle, white logo on top */
-.heroCircle {
-  width: clamp(260px, 62vw, 480px);
-  height: clamp(260px, 62vw, 480px);
-  border-radius: 50%;
-  background-image: url('/content/brand-assets/tempo_house_signature_floor.png');
-  background-size: clamp(140px, 24vw, 260px);
-  background-repeat: repeat;
-  background-position: center;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  margin-bottom: clamp(2.5rem, 6vh, 4.5rem);
-  animation: scaleIn 1s var(--ease-out-expo) 0.1s both;
-  box-shadow:
-    0 2px 40px rgba(123, 58, 53, 0.12),
-    0 0 0 1px rgba(123, 58, 53, 0.08);
-}
-
-/* Subtle darkening veil so white logo pops cleanly */
-.heroCircle::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(44, 18, 14, 0.12);
-  pointer-events: none;
-}
-
-.logoOnCircle {
-  width: 60%;
+/* ── Logo ────────────────────────────── */
+/* PNG has ~15% internal whitespace; reduce margin to compensate */
+.logo {
+  width: clamp(200px, 48vw, 340px);
   height: auto;
-  position: relative;
-  z-index: 1;
+  /* negative margin pulls the divider up into the logo's built-in padding */
+  margin-bottom: clamp(-0.5rem, -1vh, 0rem);
+  animation: scaleIn 0.95s var(--ease-out-expo) 0.1s both;
 }
 
 
@@ -93,17 +77,15 @@
   align-items: center;
   gap: 0.55rem;
   width: clamp(2.5rem, 7vw, 5rem);
-  margin: 0 auto clamp(1.75rem, 4.5vh, 3rem);
-  animation: fadeIn 0.8s ease 0.55s both;
+  margin: 0 auto clamp(1.75rem, 4vh, 2.75rem);
+  animation: fadeIn 0.8s ease 0.5s both;
 }
-
 .dividerLine {
   flex: 1;
   height: 1px;
   background: var(--brown-dim);
   display: block;
 }
-
 .dividerDot {
   width: 3px;
   height: 3px;
@@ -114,7 +96,7 @@
 }
 
 
-/* ── Tagline ─────────────────────────── */
+/* ── Voice A — Tagline ───────────────── */
 .tagline {
   font-family: var(--font-accent);
   font-style: italic;
@@ -124,51 +106,18 @@
   line-height: 1.55;
   max-width: 28ch;
   margin: 0 auto 0;
-  animation: fadeUp 0.9s var(--ease-out-expo) 0.6s both;
+  animation: fadeUp 0.9s var(--ease-out-expo) 0.55s both;
 }
 .tagline p { color: inherit; line-height: inherit; }
 .tagline p + p { margin-top: 0.06em; }
 
-/* Third tagline line — small caps callout in body font */
-.taglineSub {
-  display: block;
-  font-family: var(--font-body) !important;
-  font-style: normal !important;
-  font-weight: 400 !important;
-  font-size: clamp(0.5rem, 1.3vw, 0.58rem) !important;
-  letter-spacing: 0.26em !important;
-  text-transform: uppercase !important;
-  color: var(--ink-muted) !important;
-  margin-top: 0.9em !important;
-  line-height: 1.7 !important;
-}
 
 
 /* ── Descriptor ─────────────────────── */
 .descriptor {
-  font-family: var(--font-body);
-  font-size: 0.56rem;
-  font-weight: 400;
-  letter-spacing: 0.26em;
-  color: var(--ink-ghost);
-  text-transform: uppercase;
-  line-height: 2.3;
-  margin-top: clamp(1.5rem, 3.5vh, 2.5rem);
-  margin-bottom: clamp(2rem, 5vh, 3.5rem);
-  animation: fadeUp 0.9s var(--ease-out-expo) 0.7s both;
-}
-
-
-/* ── Pre-form label ──────────────────── */
-.formLabel {
-  font-family: var(--font-accent);
-  font-style: italic;
-  font-weight: 300;
-  font-size: clamp(0.8rem, 2.2vw, 1rem);
-  color: var(--ink-muted);
-  letter-spacing: 0.02em;
-  margin-bottom: 0.85rem;
-  animation: fadeUp 0.9s var(--ease-out-expo) 0.75s both;
+  margin-top: clamp(1.25rem, 3vh, 2rem);
+  margin-bottom: clamp(2.5rem, 6vh, 4rem);
+  animation: fadeUp 0.9s var(--ease-out-expo) 0.68s both;
 }
 
 
@@ -176,7 +125,50 @@
 .formWrap {
   width: 100%;
   max-width: 380px;
-  animation: fadeUp 0.9s var(--ease-out-expo) 0.82s both;
+  animation: fadeUp 0.9s var(--ease-out-expo) 0.78s both;
+}
+
+
+/* ── Events CTA ──────────────────────── */
+.ctaBlock {
+  margin-top: clamp(2rem, 5vh, 3.5rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: clamp(1.75rem, 4vh, 2.75rem);
+  border-top: 1px solid var(--brown-dim);
+  width: 100%;
+  max-width: 380px;
+  animation: fadeUp 0.9s var(--ease-out-expo) 0.88s both;
+}
+
+.ctaLabel {
+  font-family: var(--font-body);
+  font-size: clamp(0.54rem, 1.4vw, 0.62rem);
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-sub);
+  line-height: 1.8;
+}
+
+.ctaLink {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: clamp(0.54rem, 1.4vw, 0.62rem);
+  font-weight: 400;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--brown);
+  text-decoration: none;
+  border-bottom: 1px solid var(--brown-dim);
+  padding-bottom: 0.2em;
+  transition: border-color 200ms ease, color 200ms ease;
+}
+.ctaLink:hover {
+  color: var(--ink);
+  border-color: var(--brown-mid);
 }
 
 
@@ -192,13 +184,10 @@
   animation: fadeIn 0.8s ease 1s both;
 }
 
-/* Tile-pattern stripe crowning the footer */
 .footer::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
   height: 5px;
   background-image: url('/content/brand-assets/tempo_house_signature_floor.png');
   background-size: 52px;
@@ -206,15 +195,17 @@
   opacity: 0.28;
 }
 
+/* Footer items — all Voice B */
 .location {
   display: flex;
   align-items: center;
   gap: 0.35rem;
   font-family: var(--font-body);
-  font-size: 0.6rem;
-  letter-spacing: 0.22em;
+  font-size: clamp(0.54rem, 1.4vw, 0.62rem);
+  font-weight: 400;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: var(--ink-muted);
+  color: var(--ink-sub);
   text-decoration: none;
   white-space: nowrap;
   transition: color 200ms ease;
@@ -226,9 +217,8 @@
   align-items: center;
   gap: 1.1rem;
 }
-
 .socialIcon {
-  color: var(--ink-ghost);
+  color: var(--ink-sub);
   display: flex;
   align-items: center;
   transition: color 200ms ease;
@@ -237,8 +227,9 @@
 
 .copy {
   font-family: var(--font-body);
-  font-size: 0.58rem;
-  letter-spacing: 0.18em;
+  font-size: clamp(0.54rem, 1.4vw, 0.62rem);
+  font-weight: 400;
+  letter-spacing: 0.26em;
   color: var(--ink-ghost);
   text-transform: uppercase;
   white-space: nowrap;
@@ -247,10 +238,6 @@
 
 /* ── Mobile ──────────────────────────── */
 @media (max-width: 540px) {
-  .footer {
-    justify-content: center;
-    text-align: center;
-    gap: 0.9rem;
-  }
-  .copy { order: 3; width: 100%; text-align: center; }
+  .footer { justify-content: center; text-align: center; gap: 0.9rem; }
+  .copy   { order: 3; width: 100%; text-align: center; }
 }

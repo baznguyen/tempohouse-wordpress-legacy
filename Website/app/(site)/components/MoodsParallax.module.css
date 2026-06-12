@@ -1,0 +1,437 @@
+/* ═══════════════════════════════════════════════
+   MoodsParallax — TEMPO House
+   Three large art frames scattered at different
+   vertical heights, parallaxing at different speeds
+   around the "CURATING EXPERIENCES" bleed type.
+
+   Desktop (≥ 1001px): absolute positioned frames
+   inside a min-height: 120vh overflow-hidden canvas.
+   --parallax (px) is set on the section by JS;
+   each frame applies: transform: translateY(--parallax × --speed).
+
+   .framesWrap is a transparent passthrough on desktop
+   (absolute frames escape it to .moods as their
+   containing block). On mobile it becomes the
+   horizontal scroll-snap carousel container.
+
+   Mobile (≤ 1000px): scroll-snap horizontal carousel,
+   78vw frames, peek at edge.
+   ═══════════════════════════════════════════════ */
+
+/* ── Section shell ───────────────────────────── */
+
+.moods {
+  position: relative;
+  min-height: 120vh;
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+/* ── Eyebrow ─────────────────────────────────── */
+
+.eyebrow {
+  position: absolute;
+  top: var(--space-10);
+  left: var(--gutter);
+  z-index: 4;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* ── Bleed editorial title ───────────────────── */
+
+.bleedText {
+  position: absolute;
+  top: 55%;
+  left: 0;
+  width: 100%;
+  transform: translateY(calc(-50% + calc(var(--parallax, 0px) * 0.03)));
+  text-align: center;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+  will-change: transform;
+}
+
+.bleedLine {
+  display: block;
+  font-family: var(--font-accent);
+  font-size: clamp(4rem, 14vw, 22rem);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  line-height: 0.88;
+  color: rgba(26, 24, 22, 0.13);
+}
+
+/* ── framesWrap — transparent on desktop ─────── */
+/* On desktop, frames are position:absolute and
+   escape this wrapper to use .moods as their
+   containing block. The wrapper itself has no
+   visual effect — it's only activated on mobile. */
+
+.framesWrap {
+  /* No rules here — transparent passthrough on desktop */
+}
+
+/* ── Frame base — desktop ────────────────────── */
+
+.frame {
+  position: absolute;
+  z-index: 2;
+  transform: translateY(calc(var(--parallax, 0px) * var(--speed, -0.06)));
+  will-change: transform;
+}
+
+/* Per-frame positioning and colour tokens */
+.frame[data-frame="cafe"] {
+  --frame-clr:  var(--tempo-terracotta);
+  --artwork-bg: var(--tempo-cream-dark);
+  top: 5%;
+  left: 4%;
+  width: 34vw;
+  max-width: 460px;
+  min-width: 240px;
+}
+
+.frame[data-frame="bar"] {
+  --frame-clr:  #2D2420;
+  --artwork-bg: var(--tempo-ink);
+  bottom: 5%;
+  right: 4%;
+  width: 41vw;
+  max-width: 560px;
+  min-width: 260px;
+}
+
+.frame[data-frame="gallery"] {
+  --frame-clr:  var(--tempo-sage);
+  --artwork-bg: var(--tempo-sand);
+  top: 7%;
+  right: 14%;
+  width: 30vw;
+  max-width: 420px;
+  min-width: 220px;
+}
+
+/* ── Full-card link ───────────────────────────── */
+
+.frameLink {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}
+
+/* ── Picture frame anatomy ───────────────────── */
+
+.frameArt {
+  border: 14px solid var(--frame-clr);
+  box-shadow:
+    0 12px 48px rgba(0, 0, 0, 0.14),
+    0 4px 12px rgba(0, 0, 0, 0.07);
+  transition:
+    box-shadow var(--duration-base) var(--ease-out-expo),
+    transform var(--duration-base) var(--ease-out-expo);
+}
+
+.frame:hover .frameArt {
+  transform: translateY(-7px);
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, 0.18),
+    0 8px 24px rgba(0, 0, 0, 0.09);
+}
+
+.mat {
+  background: var(--tempo-cream);
+  padding: 18px;
+}
+
+/* Painting canvas — position:relative to anchor overlays */
+.artwork {
+  position: relative;
+  background: var(--artwork-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Artwork heights */
+.frame[data-frame="cafe"]    .artwork { min-height: 320px; }
+.frame[data-frame="bar"]     .artwork { min-height: 280px; }
+.frame[data-frame="gallery"] .artwork { min-height: 330px; }
+
+/* Catalogue number — decorative backdrop */
+.num {
+  font-family: var(--font-accent);
+  font-size: clamp(5rem, 8vw, 12rem);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  color: var(--frame-clr);
+  opacity: 0.15;
+  line-height: 1;
+  user-select: none;
+  transition: opacity var(--duration-base) ease;
+}
+
+.frame:hover .num { opacity: 0.28; }
+
+/* ── Title bar — always visible inside artwork ── */
+
+/*
+ * titleBar is a flex column at the bottom of .artwork.
+ * It contains: labelMode → labelTitle → labelCta (stacked).
+ * No separate absolute-positioned CTA — avoids z-index overlap.
+ */
+.titleBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  padding: var(--space-10) var(--space-4) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Gradient behind the text block */
+.frame[data-frame="cafe"] .titleBar,
+.frame[data-frame="gallery"] .titleBar {
+  background: linear-gradient(to top, rgba(26, 24, 22, 0.72) 0%, transparent 100%);
+}
+
+.frame[data-frame="bar"] .titleBar {
+  background: linear-gradient(to top, rgba(26, 24, 22, 0.85) 0%, transparent 100%);
+}
+
+/* Mode label: "Day · 07:00 – 17:00" */
+.labelMode {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: rgba(247, 243, 238, 0.65);
+  white-space: nowrap;
+}
+
+.labelSep {
+  opacity: 0.5;
+}
+
+/* Section name */
+.labelTitle {
+  font-family: var(--font-accent);
+  font-size: clamp(1.2rem, 1.6vw, 1.9rem);
+  font-weight: 400;
+  color: var(--tempo-cream);
+  line-height: var(--leading-snug);
+  letter-spacing: 0;
+  margin: 0;
+}
+
+/* CTA — hidden by default, slides up on hover */
+.labelCta {
+  display: inline-flex;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(247, 243, 238, 0.80);
+  opacity: 0;
+  transform: translateY(5px);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.frame:hover .labelCta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Carousel nav — hidden on desktop ───────── */
+
+.carouselNav {
+  display: none; /* shown only inside the mobile media query */
+}
+
+.navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border-strong);
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  transition:
+    border-color var(--duration-fast) ease,
+    color var(--duration-fast) ease,
+    opacity var(--duration-fast) ease;
+  flex-shrink: 0;
+}
+
+.navBtn:hover:not(:disabled) {
+  border-color: var(--tempo-terracotta);
+  color: var(--tempo-terracotta);
+}
+
+.navBtn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: var(--color-border-strong);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) ease,
+    transform var(--duration-fast) ease;
+}
+
+.dotActive {
+  background: var(--tempo-terracotta);
+  transform: scale(1.5);
+}
+
+/* ── Mobile: horizontal scroll-snap carousel ──── */
+
+@media (max-width: 1000px) {
+
+  /*
+   * overflow-x: clip prevents the absolutely-positioned desktop
+   * frames from bleeding outside the section's bounds without
+   * creating a second scrollable axis.
+   * overflow-y: visible allows the section to grow for content.
+   */
+  .moods {
+    min-height: auto;
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+
+  .eyebrow {
+    position: static;
+    display: block;
+    padding: var(--space-section) var(--gutter) 0;
+    margin-bottom: var(--space-4);
+  }
+
+  .bleedText {
+    position: static;
+    transform: none !important;
+    will-change: auto;
+    text-align: left;
+    padding: 0 var(--gutter);
+    margin-bottom: var(--space-8);
+  }
+
+  .bleedLine {
+    font-size: clamp(3rem, 11vw, 8rem);
+    color: rgba(26, 24, 22, 0.20);
+  }
+
+  /* framesWrap is the scroll container */
+  .framesWrap {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 16px;
+    padding: var(--space-4) 20px 0;
+    scrollbar-width: none;
+    scroll-padding-inline-start: 20px;
+  }
+
+  .framesWrap::-webkit-scrollbar { display: none; }
+
+  /*
+   * !important overrides the higher-specificity desktop
+   * per-frame rules (.frame[data-frame="cafe"] { width:34vw }).
+   * Without it those attribute selectors win and all 3 frames
+   * fit side-by-side instead of filling the viewport.
+   */
+  .frame {
+    position: static !important;
+    transform: none !important;
+    will-change: auto;
+    flex-shrink: 0;
+    width: 84vw !important;
+    max-width: 400px !important;
+    min-width: 0 !important;
+    scroll-snap-align: start;
+  }
+
+  /* Portrait artwork — scales with card width */
+  .frame[data-frame="cafe"]    .artwork,
+  .frame[data-frame="bar"]     .artwork,
+  .frame[data-frame="gallery"] .artwork {
+    min-height: 0;
+    height: auto;
+    aspect-ratio: 3 / 4;
+  }
+
+  .num {
+    font-size: clamp(4rem, 18vw, 8rem);
+  }
+
+  .labelTitle {
+    font-size: clamp(1.1rem, 4.5vw, 1.6rem);
+  }
+
+  /* CTA always visible on touch (no persistent hover) */
+  .labelCta {
+    opacity: 1;
+    transform: translateY(0);
+    transition: none;
+  }
+
+  /* Show nav below the carousel */
+  .carouselNav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-5);
+    padding: var(--space-6) var(--gutter) var(--space-section);
+  }
+}
+
+/* ── Reduced motion ─────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .frame {
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .dot,
+  .navBtn {
+    transition: none;
+  }
+}
+
+@media (min-width: 1001px) and (prefers-reduced-motion: reduce) {
+  .bleedText {
+    transform: translateY(-50%) !important;
+    will-change: auto;
+  }
+}

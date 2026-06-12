@@ -1,0 +1,187 @@
+.page {
+  background: var(--color-bg);
+  padding-bottom: var(--space-section);
+}
+
+.header {
+  padding: var(--space-24) var(--gutter) var(--space-10);
+}
+
+.backLink {
+  display: inline-flex;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-8);
+  transition: color var(--duration-fast) ease;
+}
+
+.backLink:hover { color: var(--color-accent); }
+
+.eventType {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  font-family: var(--font-accent);
+  font-size: var(--text-4xl);
+  font-weight: 300;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-3);
+}
+
+.subtitle {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-size: var(--text-lg);
+  font-weight: 300;
+  color: var(--color-text-muted);
+}
+
+/* ── Artwork frame ───────────────────────────── */
+
+.artworkWrap {
+  background: var(--color-bg-alt);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding-block: var(--space-8);
+  margin-bottom: var(--space-12);
+}
+
+.artworkFrame {
+  max-width: 800px;
+  margin-inline: auto;
+  border: 10px solid var(--color-accent);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+}
+
+.artworkFrame[data-type="music"]      { border-color: var(--tempo-terracotta); }
+.artworkFrame[data-type="exhibition"] { border-color: var(--tempo-sage); }
+.artworkFrame[data-type="dining"]     { border-color: var(--tempo-amber); }
+
+.artworkMat {
+  background: var(--tempo-cream);
+  padding: 14px;
+}
+
+.artworkField {
+  height: 240px;
+  background: var(--tempo-sand);
+}
+
+.artworkFrame[data-type="music"]      .artworkField { background: var(--tempo-ink); }
+.artworkFrame[data-type="exhibition"] .artworkField { background: var(--tempo-sand); }
+.artworkFrame[data-type="dining"]     .artworkField { background: var(--tempo-cream-dark); }
+
+/* ── Content layout ──────────────────────────── */
+
+.content { padding-inline: var(--gutter); }
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: var(--space-12);
+  align-items: start;
+}
+
+/* Body prose */
+.body {
+  font-size: var(--text-base);
+  line-height: var(--leading-loose);
+  color: var(--color-text-secondary);
+}
+
+.body p { margin-bottom: var(--space-6); }
+
+.body strong {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.body em { font-style: italic; }
+
+/* Sidebar */
+.detailCard {
+  border: 1px solid var(--color-border-strong);
+  padding: var(--space-7);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.detailRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.detailRow:last-of-type { border-bottom: none; padding-bottom: 0; }
+
+.detailLabel {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.detailValue {
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--color-text-primary);
+  line-height: var(--leading-normal);
+}
+
+.reserveBtn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  padding: 14px var(--space-6);
+  border-radius: 0;
+  margin-top: var(--space-2);
+  transition: background var(--duration-fast) ease, color var(--duration-fast) ease;
+}
+
+.reserveBtn:hover {
+  background: var(--color-accent);
+  color: var(--color-text-inverse);
+}
+
+/* ── Responsive ─────────────────────────────── */
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-10);
+  }
+
+  .sidebar { order: -1; }
+}
+
+@media (max-width: 600px) {
+  .title { font-size: var(--text-3xl); }
+  .artworkField { height: 160px; }
+}

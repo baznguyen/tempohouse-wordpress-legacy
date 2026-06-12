@@ -2,8 +2,10 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "./globals.css";
 
-const KLAVIYO_ID = process.env.NEXT_PUBLIC_KLAVIYO_COMPANY_ID ?? "VCR2Ei";
-const SITE_URL   = "https://tempohouse.com.vn";
+const KLAVIYO_ID   = process.env.NEXT_PUBLIC_KLAVIYO_COMPANY_ID ?? "VCR2Ei";
+const META_PIXEL   = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "";
+const GA_ID        = process.env.NEXT_PUBLIC_GA_ID ?? "";
+const SITE_URL     = "https://tempohouse.com.vn";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -13,7 +15,7 @@ const jsonLd = {
       "@id": `${SITE_URL}/#business`,
       "name": "TEMPO House",
       "alternateName": ["Tempo House Saigon", "TEMPO House HCMC", "Tempo House Ho Chi Minh City"],
-      "description": "Specialty café by day, intimate cocktail bar by night, with a curated art gallery and events space. Coming soon to Ho Chi Minh City (Saigon), Vietnam.",
+      "description": "Specialty café by day, intimate cocktail bar by night, with a curated art gallery and events space. Now open in Ho Chi Minh City (Saigon), Vietnam.",
       "url": SITE_URL,
       "address": {
         "@type": "PostalAddress",
@@ -57,7 +59,7 @@ export const metadata: Metadata = {
     template: "%s | TEMPO House",
   },
   description:
-    "TEMPO House — specialty café by day, intimate cocktail bar by night. Curated art gallery and events space. Coming soon to Ho Chi Minh City (Saigon), Vietnam.",
+    "TEMPO House — specialty café by day, intimate cocktail bar by night. Curated art gallery and events space. Now open in Ho Chi Minh City (Saigon), Vietnam.",
   keywords: [
     "TEMPO House",
     "specialty coffee Ho Chi Minh City",
@@ -103,7 +105,7 @@ export const metadata: Metadata = {
     siteName: "TEMPO House",
     title: "TEMPO House | Specialty Café & Cocktail Bar — Ho Chi Minh City",
     description:
-      "Coffee in the morning. Connection at night. Specialty café, cocktail bar, art gallery & events. Coming soon to Ho Chi Minh City.",
+      "Coffee in the morning. Connection at night. Specialty café, cocktail bar, art gallery & events. Now open in Ho Chi Minh City.",
     images: [
       {
         url: "/content/brand-assets/og-image.jpg",
@@ -115,23 +117,23 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "TEMPO House | Coming Soon — Ho Chi Minh City",
-    description: "Coffee in the morning. Connection at night. Coming soon to Saigon.",
+    title: "TEMPO House | Specialty Café & Cocktail Bar — Ho Chi Minh City",
+    description: "Coffee in the morning. Connection at night. Now open in Saigon.",
     images: ["/content/brand-assets/og-image.jpg"],
   },
   icons: {
     icon: [
-      { url: "/favicon.ico" },
-      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/content/brand-assets/tempo_house_logo_burnt_transparent.png", type: "image/png", sizes: "512x512" },
     ],
-    apple: "/apple-touch-icon.png",
+    apple: { url: "/content/brand-assets/tempo_house_logo_burnt_transparent.png", sizes: "512x512" },
     other: [{ rel: "manifest", url: "/site.webmanifest" }],
   },
   other: {
-    "geo.region":    "VN-SG",
-    "geo.placename": "Ho Chi Minh City",
-    "geo.position":  "10.7769;106.7009",
-    "ICBM":          "10.7769, 106.7009",
+    "geo.region":                  "VN-SG",
+    "geo.placename":               "Ho Chi Minh City",
+    "geo.position":                "10.7769;106.7009",
+    "ICBM":                        "10.7769, 106.7009",
+    "facebook-domain-verification": "a4vlkh9zwie0sk18b0rgs3dz932omr",
   },
 };
 
@@ -154,6 +156,41 @@ export default function RootLayout({
       </head>
       <body>
         {children}
+        {/* Meta Pixel */}
+        {META_PIXEL && (
+          <>
+            <Script id="meta-pixel" strategy="afterInteractive">{`
+              !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+              n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+              n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+              t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+              document,'script','https://connect.facebook.net/en_US/fbevents.js');
+              fbq('init','${META_PIXEL}');fbq('track','PageView');
+            `}</Script>
+            <noscript>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img height="1" width="1" style={{ display: "none" }}
+                src={`https://www.facebook.com/tr?id=${META_PIXEL}&ev=PageView&noscript=1`}
+                alt=""
+              />
+            </noscript>
+          </>
+        )}
+        {/* Google Analytics */}
+        {GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">{`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_ID}');
+            `}</Script>
+          </>
+        )}
         {/* Klaviyo — site tracking & onsite JS */}
         <Script
           src={`https://static.klaviyo.com/onsite/js/${KLAVIYO_ID}/klaviyo.js?company_id=${KLAVIYO_ID}`}

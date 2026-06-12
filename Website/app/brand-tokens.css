@@ -46,8 +46,8 @@
 :root {
   /* Primary */
   --tempo-cream:           #F7F3EE;
-  --tempo-terracotta:      #C76E4B;
-  --tempo-charcoal:        #2C2C2C;
+  --tempo-terracotta:      #7c3b3b;
+  --tempo-charcoal:        #7c3b3b;
 
   /* Secondary */
   --tempo-amber:           #DDAA62;
@@ -57,10 +57,10 @@
   /* Derived */
   --tempo-cream-dark:      #EDE8E1;
   --tempo-cream-deeper:    #DDD6CC;
-  --tempo-terracotta-dim:  #9E5539;
-  --tempo-terracotta-pale: #EDD4C7;
-  --tempo-charcoal-soft:   #4A4A44;
-  --tempo-charcoal-muted:  #7A7870;
+  --tempo-terracotta-dim:  #5d2c2c;
+  --tempo-terracotta-pale: #f2e0e0;
+  --tempo-charcoal-soft:   #9d6c6c;
+  --tempo-charcoal-muted:  #b87e7e;
   --tempo-amber-dim:       #B8893E;
   --tempo-amber-pale:      #F2E4C4;
   --tempo-sage-dim:        #6B7360;
@@ -69,12 +69,12 @@
   --tempo-white:           #FFFFFF;
 
   /* Alpha variants — for overlays, glows, subtle borders */
-  --tempo-terracotta-a10:  rgba(199,  110, 75, 0.10);
-  --tempo-terracotta-a20:  rgba(199,  110, 75, 0.20);
-  --tempo-amber-a10:       rgba(221,  170, 98, 0.10);
-  --tempo-amber-a20:       rgba(221,  170, 98, 0.20);
-  --tempo-charcoal-a08:    rgba( 44,   44, 44, 0.08);
-  --tempo-charcoal-a16:    rgba( 44,   44, 44, 0.16);
+  --tempo-terracotta-a10:  rgba(124, 59, 59, 0.10);
+  --tempo-terracotta-a20:  rgba(124, 59, 59, 0.20);
+  --tempo-amber-a10:       rgba(221, 170, 98, 0.10);
+  --tempo-amber-a20:       rgba(221, 170, 98, 0.20);
+  --tempo-charcoal-a08:    rgba(124, 59, 59, 0.08);
+  --tempo-charcoal-a16:    rgba(124, 59, 59, 0.16);
 }
 
 

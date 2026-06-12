@@ -1,0 +1,301 @@
+/* ═══════════════════════════════════════════════
+   ParallaxHero — TEMPO House
+   Original flow: eyebrow → TEMPO/HOUSE bleed → tagline → CTAs
+   Parallax applies only to the bleed wrap.
+   Letters are individual spans (--i index kept for
+   future animation use — see beat system doc).
+   ═══════════════════════════════════════════════ */
+
+.hero {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background: var(--color-bg);
+  transition: background 1.4s ease-in-out;
+}
+
+.hero[data-tempo-act="evening"] {
+  background: #1A1816;
+}
+
+/* ── Noise texture ───────────────────────────── */
+
+.noise {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  z-index: 0;
+  transition: opacity 1.4s ease-in-out, mix-blend-mode 1.4s ease-in-out;
+}
+
+.hero[data-tempo-act="evening"] .noise {
+  opacity: 0.055;
+  mix-blend-mode: screen;
+}
+
+/* ── Layout ──────────────────────────────────── */
+
+.heroInner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-6);
+  padding: var(--space-24) var(--gutter) var(--space-16);
+  width: 100%;
+}
+
+/* ── Eyebrow ─────────────────────────────────── */
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  transition: color 1.4s ease-in-out;
+}
+
+.hero[data-tempo-act="evening"] .eyebrow {
+  color: rgba(247, 243, 238, 0.4);
+}
+
+/* ── Bleed wrap — parallax container ─────────── */
+
+.bleedWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 100vw;
+  overflow: hidden;
+  margin-block: calc(var(--space-4) * -1);
+  pointer-events: none;
+  transform: translateY(calc(var(--scroll-y, 0px) * 0.18));
+  will-change: transform;
+}
+
+/* Word row — sets font and colour, animation on .bleedChar */
+.bleedLine {
+  display: block;
+  font-family: var(--font-accent);
+  font-size: 36vw;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--color-accent);
+  transition: color 1.4s ease-in-out;
+}
+
+.hero[data-tempo-act="evening"] .bleedLine {
+  color: #DDAA62;
+}
+
+/* ── Per-letter span ─────────────────────────── */
+/* Letters are individual spans so future animation
+   (e.g. beat system) can target each independently.
+   --i (0–9) is available as a stagger index. */
+
+.bleedChar {
+  display: inline-block;
+}
+
+/* ── Tagline ─────────────────────────────────── */
+
+.heroTagline {
+  font-family: var(--font-accent);
+  font-size: var(--text-xl);
+  font-weight: 300;
+  color: var(--color-text-secondary);
+  line-height: var(--leading-snug);
+  transition: color 1.4s ease-in-out;
+}
+
+.heroTagline em {
+  font-style: italic;
+  color: var(--color-text-primary);
+  transition: color 1.4s ease-in-out;
+}
+
+.hero[data-tempo-act="evening"] .heroTagline {
+  color: rgba(247, 243, 238, 0.6);
+}
+
+.hero[data-tempo-act="evening"] .heroTagline em {
+  color: #DDAA62;
+}
+
+.heroDescriptor {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  transition: color 1.4s ease-in-out;
+}
+
+.hero[data-tempo-act="evening"] .heroDescriptor {
+  color: rgba(247, 243, 238, 0.32);
+}
+
+/* ── CTAs ────────────────────────────────────── */
+
+.heroCtas {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ctaPrimary {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text-inverse);
+  background: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  border-radius: 0;
+  padding: 14px 32px;
+  transition:
+    background var(--duration-fast) var(--ease-out-expo),
+    border-color var(--duration-fast) var(--ease-out-expo);
+}
+
+.ctaPrimary:hover {
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+}
+
+.hero[data-tempo-act="evening"] .ctaPrimary {
+  background: #DDAA62;
+  border-color: #DDAA62;
+  color: #1A1816;
+}
+
+.hero[data-tempo-act="evening"] .ctaPrimary:hover {
+  background: #c9953a;
+  border-color: #c9953a;
+}
+
+.ctaSecondary {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text-primary);
+  background: transparent;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 0;
+  padding: 14px 32px;
+  transition:
+    border-color var(--duration-fast) var(--ease-out-expo),
+    color var(--duration-fast) var(--ease-out-expo);
+}
+
+.ctaSecondary:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.hero[data-tempo-act="evening"] .ctaSecondary {
+  color: rgba(247, 243, 238, 0.72);
+  border-color: rgba(247, 243, 238, 0.2);
+}
+
+.hero[data-tempo-act="evening"] .ctaSecondary:hover {
+  border-color: #DDAA62;
+  color: #DDAA62;
+}
+
+/* ── Scroll hint ─────────────────────────────── */
+
+.scrollHint {
+  position: absolute;
+  bottom: var(--space-8);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+
+.scrollHint span {
+  display: block;
+  width: 1px;
+  height: 48px;
+  background: var(--color-border-strong);
+  animation: shimmer 2s ease infinite;
+  transition: background 1.4s ease-in-out;
+}
+
+.hero[data-tempo-act="evening"] .scrollHint span {
+  background: rgba(247, 243, 238, 0.22);
+}
+
+/* ── Keyframes ───────────────────────────────── */
+
+@keyframes shimmer {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+
+/* ── Reduced motion ──────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .bleedWrap {
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .scrollHint span {
+    animation: none;
+  }
+}
+
+/* ── Responsive ─────────────────────────────── */
+
+@media (max-width: 600px) {
+  .bleedLine {
+    font-size: 38vw;
+  }
+
+  .heroTagline {
+    font-size: var(--text-lg);
+  }
+
+  .heroCtas {
+    flex-direction: column;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .ctaPrimary,
+  .ctaSecondary {
+    width: 100%;
+    justify-content: center;
+  }
+}

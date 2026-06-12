@@ -1,5 +1,8 @@
 import styles from "./page.module.css";
 import EmailForm from "./components/EmailForm";
+import HomeContent from "./(site)/components/HomeContent";
+import SiteNav from "./(site)/components/SiteNav";
+import Footer from "./(site)/components/Footer";
 
 function IconInstagram() {
   return (
@@ -36,23 +39,36 @@ function IconMapPin() {
   );
 }
 
+// In development: show the full site. In production: show the holding page.
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
+
 export default function HomePage() {
+  if (!IS_PRODUCTION) {
+    return (
+      <>
+        <SiteNav />
+        <main>
+          <HomeContent />
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
   return (
     <main className={styles.page}>
 
       <div className={styles.inner}>
 
         {/* Opening label */}
-        <p className={styles.announce}>Opening Soon · Ho Chi Minh City</p>
+        <p className={styles.announce}>Now Open · Ho Chi Minh City</p>
 
-        {/* Hero — tile circle with white logo centred inside */}
-        <div className={styles.heroCircle} aria-label="TEMPO House logo">
-          <img
-            src="/content/brand-assets/tempo_house_logo_white_transparent.png"
-            alt="TEMPO House"
-            className={styles.logoOnCircle}
-          />
-        </div>
+        {/* Logo */}
+        <img
+          src="/content/brand-assets/tempo_house_logo_burnt_transparent.png"
+          alt="TEMPO House"
+          className={styles.logo}
+        />
 
         {/* Divider */}
         <div className={styles.divider} role="presentation">
@@ -65,7 +81,7 @@ export default function HomePage() {
         <blockquote className={styles.tagline}>
           <p>Coffee in the morning.</p>
           <p>Connection at night.</p>
-          <p className={styles.taglineSub}>Come together for the experience.</p>
+          <p>Come together for the experience.</p>
         </blockquote>
 
         {/* Venue descriptor */}
@@ -76,9 +92,19 @@ export default function HomePage() {
         </p>
 
         {/* Email signup */}
-        <p className={styles.formLabel}>Be the first to know</p>
         <div className={styles.formWrap}>
           <EmailForm />
+        </div>
+
+        {/* Events / creative space CTA */}
+        <div className={styles.ctaBlock}>
+          <p className={styles.ctaLabel}>Hosting an event or seeking a creative space?</p>
+          <a
+            href="mailto:info@tempohouse.com.vn"
+            className={styles.ctaLink}
+          >
+            Get in Touch
+          </a>
         </div>
 
       </div>

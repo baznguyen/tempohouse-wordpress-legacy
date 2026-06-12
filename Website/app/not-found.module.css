@@ -1,0 +1,240 @@
+/* ─────────────────────────────────────────────
+   TEMPO House — 404 Not Found
+   Two type voices — same system as coming-soon.
+     Voice A: italic serif  (heading)
+     Voice B: small caps    (code label, labels, footer)
+   ───────────────────────────────────────────── */
+
+.page {
+  --brown:     #7B3A35;
+  --brown-dim: rgba(123, 58, 53, 0.20);
+  --brown-mid: rgba(123, 58, 53, 0.50);
+  --ink:       #2C1A18;
+  --ink-mid:   rgba(44, 26, 24, 0.68);
+  --ink-sub:   rgba(44, 26, 24, 0.52);
+  --ink-ghost: rgba(44, 26, 24, 0.32);
+
+  min-height: 100dvh;
+  background: #F2EDE6;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* ── Mural artwork wrapper ─────────── */
+.artwork {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto clamp(1.75rem, 4vh, 3rem);
+  animation: fadeIn 1s ease 0.05s both;
+}
+
+.mural {
+  width: 100%;
+  height: auto;
+  color: var(--brown);
+  display: block;
+}
+
+
+/* ── Layout shell ─────────────────── */
+.inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: clamp(2.5rem, 6vh, 4.5rem) clamp(1.5rem, 6vw, 4rem) clamp(3rem, 7vh, 5rem);
+  width: 100%;
+  max-width: 680px;
+  margin-inline: auto;
+}
+
+
+/* ── Voice B — shared small caps style ──
+   Applies to: .code, .enquiryLabel, .descriptor */
+.code,
+.enquiryLabel,
+.descriptor {
+  font-family: var(--font-body);
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(0.54rem, 1.4vw, 0.62rem);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ink-sub);
+  line-height: 2;
+}
+
+
+/* ── 404 label ───────────────────── */
+.code {
+  margin-bottom: 0.5rem;
+  animation: fadeIn 0.9s ease 0.2s both;
+}
+
+
+/* ── Divider ─────────────────────── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: clamp(2.5rem, 7vw, 5rem);
+  margin: 0 auto clamp(1.75rem, 4vh, 2.75rem);
+  animation: fadeIn 0.8s ease 0.45s both;
+}
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: var(--brown-dim);
+  display: block;
+}
+.dividerDot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--brown-mid);
+  flex-shrink: 0;
+  display: block;
+}
+
+
+/* ── Voice A — italic serif heading ── */
+.heading {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(1.1rem, 3.4vw, 1.85rem);
+  color: var(--ink-mid);
+  line-height: 1.55;
+  max-width: 26ch;
+  margin: 0 auto clamp(1.25rem, 3vh, 2rem);
+  animation: fadeUp 0.9s var(--ease-out-expo) 0.55s both;
+}
+
+
+/* ── Body copy ───────────────────── */
+.body {
+  font-family: var(--font-body);
+  font-size: clamp(0.78rem, 1.8vw, 0.88rem);
+  font-weight: 300;
+  color: var(--ink-sub);
+  line-height: 1.95;
+  max-width: 42ch;
+  margin: 0 auto clamp(2rem, 5vh, 3.5rem);
+  animation: fadeUp 0.9s var(--ease-out-expo) 0.65s both;
+}
+
+
+/* ── Primary + secondary actions ─── */
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  margin-bottom: clamp(2rem, 5vh, 3.5rem);
+  animation: fadeUp 0.9s var(--ease-out-expo) 0.75s both;
+}
+
+/* Filled button */
+.btnHome {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: clamp(0.54rem, 1.4vw, 0.62rem);
+  font-weight: 400;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #F2EDE6;
+  background: var(--brown);
+  text-decoration: none;
+  padding: 0.9em 2.6em;
+  border-radius: 1px;
+  transition: background 200ms ease;
+}
+.btnHome:hover { background: var(--ink); }
+
+/* Underlined email link */
+.btnEmail {
+  font-family: var(--font-body);
+  font-size: clamp(0.54rem, 1.4vw, 0.62rem);
+  font-weight: 400;
+  letter-spacing: 0.20em;
+  text-transform: lowercase;
+  color: var(--brown);
+  text-decoration: none;
+  border-bottom: 1px solid var(--brown-dim);
+  padding-bottom: 0.2em;
+  transition: border-color 200ms ease, color 200ms ease;
+}
+.btnEmail:hover {
+  color: var(--ink);
+  border-color: var(--brown-mid);
+}
+
+
+/* ── Enquiry CTA block ───────────── */
+.enquiry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: clamp(1.75rem, 4vh, 2.75rem);
+  border-top: 1px solid var(--brown-dim);
+  width: 100%;
+  max-width: 380px;
+  animation: fadeUp 0.9s var(--ease-out-expo) 0.85s both;
+}
+
+.enquiryLabel { line-height: 1.8; }
+
+.enquiryLink {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: clamp(0.54rem, 1.4vw, 0.62rem);
+  font-weight: 400;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--brown);
+  text-decoration: none;
+  border-bottom: 1px solid var(--brown-dim);
+  padding-bottom: 0.2em;
+  transition: border-color 200ms ease, color 200ms ease;
+}
+.enquiryLink:hover {
+  color: var(--ink);
+  border-color: var(--brown-mid);
+}
+
+
+/* ── Footer ──────────────────────── */
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  padding: 1.4rem clamp(1.5rem, 6vw, 4rem);
+  border-top: 1px solid var(--brown-dim);
+  animation: fadeIn 0.8s ease 1s both;
+}
+
+.copy {
+  font-family: var(--font-body);
+  font-size: clamp(0.54rem, 1.4vw, 0.62rem);
+  font-weight: 400;
+  letter-spacing: 0.26em;
+  color: var(--ink-ghost);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+
+/* ── Mobile ──────────────────────── */
+@media (max-width: 540px) {
+  .footer   { justify-content: center; text-align: center; }
+  .copy     { order: 3; width: 100%; text-align: center; }
+  .artwork  { max-width: 100%; }
+  .actions  { width: 100%; max-width: 320px; }
+  .btnHome  { width: 100%; text-align: center; }
+}

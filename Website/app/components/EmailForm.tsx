@@ -5,7 +5,7 @@ import { useState } from "react";
 const COMPANY_ID = process.env.NEXT_PUBLIC_KLAVIYO_COMPANY_ID ?? "VCR2Ei";
 const LIST_ID    = process.env.NEXT_PUBLIC_KLAVIYO_LIST_ID    ?? "";
 
-export default function EmailForm() {
+export default function EmailForm({ dark = false }: { dark?: boolean }) {
   const [email,  setEmail]  = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
@@ -22,7 +22,7 @@ export default function EmailForm() {
             data: {
               type: "subscription",
               attributes: {
-                custom_source: "Coming Soon Landing Page",
+                custom_source: "Website",
                 profile: { data: { type: "profile", attributes: { email } } },
               },
               ...(LIST_ID && {
@@ -40,6 +40,10 @@ export default function EmailForm() {
     }
   }
 
+  const c = dark
+    ? { success: "#DDAA62", borderIdle: "rgba(247,243,238,0.22)", borderFocus: "rgba(247,243,238,0.7)", inputText: "#F7F3EE", inputPlaceholder: "rgba(247,243,238,0.35)", btnBg: "#DDAA62", btnBgHover: "#B8893E", btnText: "#1A1816" }
+    : { success: "#7B3A35", borderIdle: "rgba(123,58,53,0.18)",   borderFocus: "rgba(123,58,53,0.6)",   inputText: "#2C1A18", inputPlaceholder: undefined,                  btnBg: "#7B3A35", btnBgHover: "#5C2B27", btnText: "#F2EDE6" };
+
   /* ── Success ── */
   if (status === "success") {
     return (
@@ -48,7 +52,7 @@ export default function EmailForm() {
         fontStyle: "italic",
         fontWeight: 300,
         fontSize: "clamp(0.95rem, 2.5vw, 1.2rem)",
-        color: "#7B3A35",
+        color: c.success,
         letterSpacing: "0.02em",
       }}>
         ✦&ensp;You&apos;re on the list.
@@ -57,8 +61,8 @@ export default function EmailForm() {
   }
 
   /* ── Form ── */
-  const borderIdle  = "1px solid rgba(123, 58, 53, 0.18)";
-  const borderFocus = "1px solid rgba(123, 58, 53, 0.6)";
+  const borderIdle  = `1px solid ${c.borderIdle}`;
+  const borderFocus = `1px solid ${c.borderFocus}`;
 
   return (
     <form
@@ -83,7 +87,8 @@ export default function EmailForm() {
           fontWeight: 300,
           fontSize: "clamp(0.85rem, 2.5vw, 0.95rem)",
           letterSpacing: "0.02em",
-          color: "#2C1A18",
+          color: c.inputText,
+          ...(c.inputPlaceholder && { ["--placeholder-color" as string]: c.inputPlaceholder }),
           outline: "none",
           transition: "border-color 200ms ease",
           textAlign: "center",
@@ -97,8 +102,8 @@ export default function EmailForm() {
         disabled={status === "loading"}
         style={{
           width: "100%",
-          background: "#7B3A35",
-          color: "#F2EDE6",
+          background: c.btnBg,
+          color: c.btnText,
           border: "none",
           padding: "0.85rem 1.5rem",
           fontFamily: "var(--font-body)",
@@ -110,8 +115,8 @@ export default function EmailForm() {
           opacity: status === "loading" ? 0.6 : 1,
           transition: "background 200ms ease, opacity 200ms ease",
         }}
-        onMouseEnter={(e) => { if (status !== "loading") e.currentTarget.style.background = "#5C2B27"; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = "#7B3A35"; }}
+        onMouseEnter={(e) => { if (status !== "loading") e.currentTarget.style.background = c.btnBgHover; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = c.btnBg; }}
       >
         {status === "loading" ? "···" : "Join the List"}
       </button>

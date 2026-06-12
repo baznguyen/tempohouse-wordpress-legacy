@@ -1,0 +1,26 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# TEMPO House — Apache / SiteGround cache control
+# Deployed to: public_html/.htaccess
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Custom error pages ───────────────────────────────────────────────────────
+ErrorDocument 404 /404.html
+
+# ── Disable server-side caching for all HTML pages ───────────────────────────
+# Tells SiteGround Dynamic Cache (SuperCacher) and any upstream proxy
+# not to store or serve a cached copy of HTML responses.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|htm)$">
+    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    Header set Pragma "no-cache"
+    Header set Expires "Thu, 01 Jan 1970 00:00:00 GMT"
+  </FilesMatch>
+</IfModule>
+
+# ── Allow long-lived caching for versioned static assets ─────────────────────
+# Next.js content-hashes JS/CSS filenames — safe to cache indefinitely.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css|woff2|woff|ttf|otf|ico|svg|png|jpg|jpeg|webp|gif|avif)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>

@@ -1,0 +1,458 @@
+/* ═══════════════════════════════════════════════
+   EventCarousel — TEMPO House
+   Infinite horizontal marquee — "walking through
+   the gallery wall." Pauses on hover. Hovered
+   frame glows terracotta; siblings dim.
+
+   Frame anatomy (from outside in):
+     .card (332px) → .frameArt (14px border)
+     → .mat (12px padding) → .artwork (280px × 360px)
+
+   Seamless loop: items duplicated ×2 in JSX;
+   track animates translateX(-50%), looping exactly
+   one set. padding-right = gap on .track ensures
+   the -50% point aligns with the first duplicate.
+   ═══════════════════════════════════════════════ */
+
+/* ── Section ──────────────────────────────────── */
+
+.section {
+  padding-top: var(--space-section);
+  background: var(--color-bg-alt);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+/* ── Section header ──────────────────────────── */
+
+.header {
+  margin-bottom: var(--space-12);
+}
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.title {
+  font-family: var(--font-accent);
+  font-size: var(--text-4xl);
+  font-weight: 300;
+  color: var(--color-text-primary);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+}
+
+/* ── Carousel viewport ───────────────────────── */
+
+.viewport {
+  overflow: hidden;
+  /* padding must exceed the glow spread (48px blur + 14px spread + 5px lift = 67px) */
+  padding-block: 72px;
+  /* Fade at the edges — suggests the gallery continues */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 4%,
+    black 96%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 4%,
+    black 96%,
+    transparent 100%
+  );
+}
+
+/* ── Scrolling track ─────────────────────────── */
+
+.track {
+  display: flex;
+  gap: 32px;
+  /*
+   * padding-right = gap: makes total width = N × (card + gap),
+   * so translateX(-50%) lands exactly on the 1st duplicate.
+   */
+  padding-right: 32px;
+  width: max-content;
+  animation: galleryWalk 24s linear infinite;
+}
+
+/* Pause the entire walk when cursor enters any frame */
+.track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes galleryWalk {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── Event card ──────────────────────────────── */
+
+.card {
+  position: relative;
+  flex-shrink: 0;
+  /*
+   * 332px = 14×2 (border) + 12×2 (mat pad) + 280 (artwork) + 0 extra
+   * Result: artwork interior is 280px wide.
+   */
+  width: 332px;
+  cursor: pointer;
+  transition: opacity 0.35s ease, filter 0.35s ease;
+}
+
+/*
+ * Dim inactive cards when any card is hovered.
+ * :has() gives native CSS context for the spotlight effect.
+ */
+.track:has(.card:hover) .card:not(:hover) {
+  opacity: 0.5;
+  filter: saturate(0.4) brightness(0.92);
+}
+
+/* Per-card colour palette */
+.card[data-interior="dark"]  { --artwork-bg: var(--tempo-ink); }
+.card[data-interior="sand"]  { --artwork-bg: var(--tempo-sand); }
+.card[data-interior="cream"] { --artwork-bg: var(--tempo-cream-dark); }
+
+/* Full-card invisible link — click target */
+.cardLink {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}
+
+/* ── Picture frame anatomy ───────────────────── */
+
+.frameArt {
+  border: 14px solid var(--tempo-terracotta);
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.10),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+  transition:
+    box-shadow 0.4s var(--ease-out-expo),
+    transform 0.4s var(--ease-out-expo);
+}
+
+/* Terracotta glow on active frame */
+.card:hover .frameArt {
+  box-shadow:
+    0 0 0 3px var(--tempo-terracotta),
+    0 0 48px 14px rgba(124, 59, 59, 0.32),
+    0 20px 64px rgba(0, 0, 0, 0.20);
+  transform: translateY(-5px);
+}
+
+.mat {
+  background: var(--tempo-cream);
+  padding: 12px;
+}
+
+/* Painting canvas */
+.artwork {
+  position: relative;
+  height: 360px;
+  background: var(--artwork-bg);
+  overflow: hidden;
+}
+
+/* ── Media layer (image or video thumbnail) ──── */
+
+.mediaLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Faded at rest — vivid/playing on hover */
+  opacity: 0.28;
+  transition: opacity 0.4s ease;
+}
+
+.card:hover .media {
+  opacity: 1;
+}
+
+/* ── Category ghost text (no media) ─────────── */
+
+.categoryGhost {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--tempo-terracotta);
+  opacity: 0.28;
+  transition: opacity 0.3s ease;
+}
+
+/* Keep ghost subtle even on hover — it competes with titleBar + dateReveal */
+.card:hover .categoryGhost { opacity: 0.38; }
+
+/* ── Title bar — always visible at bottom ────── */
+
+.titleBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  padding: var(--space-8) var(--space-4) var(--space-3);
+}
+
+.card[data-interior="dark"] .titleBar {
+  background: linear-gradient(to top, rgba(26, 24, 22, 0.75) 0%, transparent 100%);
+}
+
+.card[data-interior="sand"] .titleBar,
+.card[data-interior="cream"] .titleBar {
+  background: linear-gradient(to top, rgba(247, 243, 238, 0.88) 0%, transparent 100%);
+}
+
+.eventTitle {
+  font-family: var(--font-accent);
+  font-size: var(--text-xl);
+  font-weight: 400;
+  line-height: var(--leading-snug);
+  letter-spacing: 0;
+}
+
+.card[data-interior="dark"] .eventTitle { color: var(--tempo-cream); }
+.card[data-interior="sand"] .eventTitle,
+.card[data-interior="cream"] .eventTitle { color: var(--tempo-ink); }
+
+/* ── Date / time reveal — slides in at top on hover */
+
+.dateReveal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.card[data-interior="dark"] .dateReveal {
+  background: linear-gradient(to bottom, rgba(26, 24, 22, 0.6) 0%, transparent 100%);
+}
+.card[data-interior="sand"] .dateReveal,
+.card[data-interior="cream"] .dateReveal {
+  background: linear-gradient(to bottom, rgba(247, 243, 238, 0.8) 0%, transparent 100%);
+}
+
+.card:hover .dateReveal {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dateMonth {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+}
+
+.dateTime {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 300;
+}
+
+.card[data-interior="dark"] .dateMonth { color: rgba(247, 243, 238, 0.9); }
+.card[data-interior="dark"] .dateTime  { color: rgba(247, 243, 238, 0.6); }
+
+.card[data-interior="sand"] .dateMonth,
+.card[data-interior="cream"] .dateMonth { color: var(--tempo-terracotta); }
+
+.card[data-interior="sand"] .dateTime,
+.card[data-interior="cream"] .dateTime  { color: var(--color-text-muted); }
+
+/* ── Section footer ──────────────────────────── */
+
+.footer {
+  padding-block: var(--space-10) var(--space-section);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  text-align: center;
+}
+
+.footerNote {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-size: var(--text-lg);
+  font-weight: 300;
+  color: var(--color-text-muted);
+  max-width: 52ch;
+}
+
+.footerCta {
+  display: inline-flex;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-strong);
+  padding: 14px 32px;
+  transition:
+    border-color var(--duration-fast) var(--ease-out-expo),
+    color var(--duration-fast) var(--ease-out-expo);
+}
+
+.footerCta:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* ── Mobile: 1-card manual scroll-snap ───────── */
+
+@media (max-width: 900px) {
+
+  /*
+   * Section's overflow:hidden clips the marquee on desktop.
+   * On mobile the marquee is off — allow horizontal overflow
+   * so the viewport scroll container is not blocked.
+   */
+  .section {
+    overflow-x: visible;
+  }
+
+  /*
+   * Viewport becomes the scroll + snap container.
+   * overflow-y: clip prevents vertical bleed without
+   * creating a second scroll axis.
+   */
+  .viewport {
+    overflow-x: auto;
+    overflow-y: clip;
+    padding-block: 28px;
+    -webkit-mask-image: none;
+    mask-image: none;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /*
+     * scroll-padding matches the track's inline padding so
+     * the first card's start edge aligns with the left indent.
+     */
+    scroll-padding-inline-start: 20px;
+  }
+
+  .viewport::-webkit-scrollbar { display: none; }
+
+  /* Track: plain flex row, animation off */
+  .track {
+    animation: none;
+    width: max-content;
+    padding-inline: 20px;
+    padding-right: 20px;
+    gap: 16px;
+  }
+
+  /* Hide the 3 duplicated cards — only real 3 shown */
+  .card:nth-child(n + 4) { display: none; }
+
+  /*
+   * Card fills ~88vw so one card dominates the view
+   * with a sliver of the next peeking on the right.
+   * scroll-snap-align:start means each card's left edge
+   * snaps to the scroll-padding-inline-start position.
+   */
+  .card {
+    width: 88vw;
+    max-width: 420px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+
+  /*
+   * Portrait aspect ratio — more "gallery artwork" feel.
+   * Replaces the fixed 360px height so it scales with
+   * the card width at any phone size.
+   */
+  .artwork {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 3 / 4;
+  }
+
+  /*
+   * On touch devices there is no persistent hover state.
+   * Show dateReveal always so month + time are visible.
+   */
+  .dateReveal {
+    opacity: 1;
+    transform: translateY(0);
+    transition: none;
+  }
+
+  /* Scalable section heading */
+  .title {
+    font-size: clamp(1.8rem, 6vw, 3rem);
+  }
+
+  /* Scalable card title */
+  .eventTitle {
+    font-size: clamp(1rem, 4vw, 1.4rem);
+  }
+
+  /* Keep ghost text subtle at all times on mobile */
+  .card:hover .categoryGhost,
+  .categoryGhost {
+    opacity: 0.22;
+  }
+}
+
+/* ── Reduced motion — static grid ────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+    flex-wrap: wrap;
+    width: auto;
+    padding-right: 0;
+    gap: var(--space-6);
+  }
+
+  /* Hide duplicates — show only first 3 items */
+  .card:nth-child(n + 4) {
+    display: none;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 332px;
+  }
+}

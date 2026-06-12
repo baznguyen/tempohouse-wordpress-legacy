@@ -1,0 +1,78 @@
+.stub {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  overflow: hidden;
+  transition: background var(--duration-slow) var(--ease-in-out);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-6);
+  padding: var(--space-24) var(--gutter);
+  width: 100%;
+}
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.bleedWrap {
+  width: 100vw;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bleedTitle {
+  display: block;
+  font-family: var(--font-accent);
+  font-size: 22vw;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--color-accent);
+  transition: color var(--duration-slow) var(--ease-in-out);
+}
+
+.subtitle {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-size: var(--text-xl);
+  font-weight: 300;
+  color: var(--color-text-secondary);
+}
+
+.notice {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 300;
+  color: var(--color-text-muted);
+  letter-spacing: var(--tracking-normal);
+}
+
+.back {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-accent);
+  padding-bottom: 2px;
+  transition: opacity var(--duration-fast) ease;
+}
+
+.back:hover { opacity: 0.7; }
