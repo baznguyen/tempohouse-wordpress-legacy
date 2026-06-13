@@ -3,9 +3,10 @@ require_once get_template_directory() . '/inc/setup.php';
 require_once get_template_directory() . '/inc/cpt-events.php';
 require_once get_template_directory() . '/inc/acf-fields.php';
 require_once get_template_directory() . '/inc/seo.php';
+require_once get_template_directory() . '/inc/enquiry.php';
 
 function tempohouse_enqueue_assets() {
-    $ver = '3.15.1';
+    $ver = '3.17.0';
     $uri = get_template_directory_uri();
 
     wp_enqueue_style( 'tempohouse-tokens',     $uri . '/assets/css/tokens.css',                [],                        $ver );
@@ -17,8 +18,14 @@ function tempohouse_enqueue_assets() {
     wp_enqueue_style( 'tempohouse-reserve',    $uri . '/assets/css/components/reserve.css',    [ 'tempohouse-base' ],     $ver );
     wp_enqueue_style( 'tempohouse-newsletter', $uri . '/assets/css/components/newsletter.css', [ 'tempohouse-base' ],     $ver );
     wp_enqueue_style( 'tempohouse-footer',     $uri . '/assets/css/components/footer.css',     [ 'tempohouse-base' ],     $ver );
-    wp_enqueue_style( 'tempohouse-spotlight',  $uri . '/assets/css/components/spotlight.css',  [ 'tempohouse-base' ],     $ver );
-    wp_enqueue_style( 'tempohouse-time-theme', $uri . '/assets/css/components/time-theme.css', [ 'tempohouse-spotlight' ], $ver );
+    wp_enqueue_style( 'tempohouse-events-venue',   $uri . '/assets/css/components/events-venue.css',   [ 'tempohouse-base' ], $ver );
+    wp_enqueue_style( 'tempohouse-spotlight',      $uri . '/assets/css/components/spotlight.css',      [ 'tempohouse-base' ], $ver );
+    wp_enqueue_style( 'tempohouse-time-theme',     $uri . '/assets/css/components/time-theme.css',     [ 'tempohouse-spotlight' ], $ver );
+
+    // Events enquiry page — load only on that template
+    if ( is_page_template( 'page-templates/events-enquiry.php' ) ) {
+        wp_enqueue_style( 'tempohouse-events-enquiry', $uri . '/assets/css/components/events-enquiry.css', [ 'tempohouse-base' ], $ver );
+    }
 
     wp_enqueue_script( 'tempohouse-drag',         $uri . '/assets/js/drag-scroll.js',   [],                    $ver, true );
     wp_enqueue_script( 'tempohouse-hero-js',      $uri . '/assets/js/hero.js',          [],                    $ver, true );

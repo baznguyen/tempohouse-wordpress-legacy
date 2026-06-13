@@ -6,7 +6,7 @@ $letters_house = [ 'H', 'O', 'U', 'S', 'E' ];
   <div class="hero__noise" aria-hidden="true"></div>
 
   <div class="hero__inner">
-    <p class="hero__eyebrow">Specialty Caf&eacute; &middot; Cocktail Bar &middot; Gallery</p>
+    <p class="hero__eyebrow">Specialty Caf&eacute; &middot; Cocktail Bar &middot; Gallery &middot; Private Event Venue</p>
 
     <div class="hero__bleed-wrap" aria-hidden="true">
       <span class="hero__bleed-line">
@@ -26,7 +26,7 @@ $letters_house = [ 'H', 'O', 'U', 'S', 'E' ];
 
     <div class="hero__ctas">
       <a href="<?php echo esc_url( home_url( '/reservations' ) ); ?>" class="hero__cta-primary">Reserve a table</a>
-      <a href="<?php echo esc_url( home_url( '/#newsletter' ) ); ?>" class="hero__cta-secondary">Join the list</a>
+      <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="hero__cta-secondary">Host an event</a>
     </div>
   </div>
 

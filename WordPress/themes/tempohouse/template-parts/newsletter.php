@@ -1,8 +1,8 @@
 <section class="newsletter" id="newsletter" aria-label="Stay connected">
   <div class="container container--narrow">
-    <p class="newsletter__eyebrow">Stay connected</p>
+    <p class="newsletter__eyebrow">First to know</p>
     <h2 class="newsletter__title">The TEMPO letter.</h2>
-    <p class="newsletter__body">Events, openings, menu changes, and the occasional recommendation. No noise &mdash; just the things worth knowing.</p>
+    <p class="newsletter__body">New events, private hire dates, and the occasional table that opens up. First access for those on the list.</p>
     <div class="newsletter__form-wrap">
       <form class="newsletter__form" id="newsletter-form" novalidate>
         <input
