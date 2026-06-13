@@ -63,6 +63,7 @@
   isolation: isolate;
   transform: translateY(calc(var(--parallax, 0px) * var(--speed, -0.06)));
   will-change: transform;
+  transition: opacity 0.35s ease, filter 0.35s ease;
 }
 
 .moods__frame[data-frame="cafe"] {
