@@ -1,0 +1,266 @@
+/* ═══════════════════════════════════════════════════════════════
+   Time-of-Day Theme System — additive overlay
+   Applied via  html[data-tempo-time="day | afternoon | night"]
+   Does NOT modify any existing CSS file.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Smooth colour cross-fade on theme switch ──────────────────── */
+
+body,
+.site-nav,
+.moods,
+.events,
+.reserve,
+.newsletter,
+.site-footer {
+  transition: background-color 600ms ease, border-color 600ms ease;
+}
+
+/* ── DAY  (05:00 – 13:00) ─────────────────────────────────────── */
+/*   Base palette is the day palette — no overrides needed.        */
+
+/* ── AFTERNOON  (13:00 – 18:00) ───────────────────────────────── */
+
+html[data-tempo-time="afternoon"] {
+  /* Backgrounds — warm amber-cream wash */
+  --color-bg:              #F2E8D5;
+  --color-bg-alt:          #E8D9C0;
+
+  /* Text — deep mahogany */
+  --color-text-primary:    #2C1810;
+  --color-text-secondary:  rgba(44, 24, 16, 0.65);
+  --color-text-muted:      rgba(44, 24, 16, 0.42);
+
+  /* Borders */
+  --color-border:          rgba(44, 24, 16, 0.08);
+  --color-border-strong:   rgba(44, 24, 16, 0.20);
+
+  /* Accent — warm amber-gold replaces terracotta */
+  --color-accent:          #B87830;
+  --tempo-terracotta:      #A04828;
+  --tempo-amber:           #C8881A;
+  --tempo-sand:            #CAAD78;
+
+  /* Nav */
+  --color-nav-bg:          rgba(242, 232, 213, 0.92);
+}
+
+/* Afternoon — moods ghost bleed text */
+html[data-tempo-time="afternoon"] .moods__bleed-line {
+  color: rgba(44, 24, 16, 0.16);
+}
+
+/* Afternoon — newsletter */
+html[data-tempo-time="afternoon"] .newsletter__input {
+  border-bottom-color: rgba(160, 72, 40, 0.18);
+}
+html[data-tempo-time="afternoon"] .newsletter__input:focus {
+  border-bottom-color: rgba(160, 72, 40, 0.55);
+}
+html[data-tempo-time="afternoon"] .newsletter__btn {
+  background: #A04828;
+}
+html[data-tempo-time="afternoon"] .newsletter__btn:hover:not(:disabled) {
+  background: #7C3020;
+}
+html[data-tempo-time="afternoon"] .newsletter__success {
+  color: #A04828;
+}
+
+/* ── NIGHT  (18:00 – 05:00) ───────────────────────────────────── */
+
+html[data-tempo-time="night"] {
+  /* Backgrounds — intimate near-black */
+  --color-bg:              #0E0C0A;
+  --color-bg-alt:          #161210;
+
+  /* Text — warm off-white */
+  --color-text-primary:    #F0EBE3;
+  --color-text-secondary:  rgba(240, 235, 227, 0.65);
+  --color-text-muted:      rgba(240, 235, 227, 0.38);
+
+  /* Borders */
+  --color-border:          rgba(240, 235, 227, 0.07);
+  --color-border-strong:   rgba(240, 235, 227, 0.16);
+
+  /* Accent — warm gallery gold */
+  --color-accent:          #C49A3A;
+  --tempo-amber:           #C49A3A;
+  --tempo-sand:            #2E2820;
+
+  /* Nav */
+  --color-nav-bg:          rgba(14, 12, 10, 0.92);
+}
+
+/* Night — body (safety net if base.css doesn't use var) */
+html[data-tempo-time="night"] body {
+  background-color: #0E0C0A;
+  color: #F0EBE3;
+}
+
+/* Night — moods ghost text */
+html[data-tempo-time="night"] .moods__bleed-line {
+  color: rgba(240, 235, 227, 0.06);
+}
+
+/* Night — frame number ghost (overrides hardcoded rgba(26,24,22,0.12)) */
+html[data-tempo-time="night"] .moods__num {
+  color: rgba(240, 235, 227, 0.07);
+}
+html[data-tempo-time="night"] .moods__frame[data-frame="bar"] .moods__num {
+  color: rgba(240, 235, 227, 0.09);
+}
+
+/* Night — events section borders */
+html[data-tempo-time="night"] .events {
+  border-top-color:    rgba(240, 235, 227, 0.07);
+  border-bottom-color: rgba(240, 235, 227, 0.07);
+}
+
+/* Night — event cards with light interiors (sand / cream)
+   Flip title gradient and text to read on dark page background */
+html[data-tempo-time="night"] .event-card[data-interior="sand"] .event-card__title-bar,
+html[data-tempo-time="night"] .event-card[data-interior="cream"] .event-card__title-bar {
+  background: linear-gradient(to top, rgba(14, 12, 10, 0.88) 0%, transparent 100%);
+}
+html[data-tempo-time="night"] .event-card[data-interior="sand"] .event-card__title,
+html[data-tempo-time="night"] .event-card[data-interior="cream"] .event-card__title {
+  color: #F0EBE3;
+}
+html[data-tempo-time="night"] .event-card[data-interior="sand"] .event-card__date-reveal,
+html[data-tempo-time="night"] .event-card[data-interior="cream"] .event-card__date-reveal {
+  background: linear-gradient(to bottom, rgba(14, 12, 10, 0.78) 0%, transparent 100%);
+}
+html[data-tempo-time="night"] .event-card[data-interior="sand"] .event-card__month,
+html[data-tempo-time="night"] .event-card[data-interior="cream"] .event-card__month {
+  color: #C49A3A;
+}
+html[data-tempo-time="night"] .event-card[data-interior="sand"] .event-card__time,
+html[data-tempo-time="night"] .event-card[data-interior="cream"] .event-card__time {
+  color: rgba(240, 235, 227, 0.55);
+}
+
+/* Night — newsletter form */
+html[data-tempo-time="night"] .newsletter__input {
+  border-bottom-color: rgba(196, 154, 58, 0.22);
+}
+html[data-tempo-time="night"] .newsletter__input:focus {
+  border-bottom-color: rgba(196, 154, 58, 0.65);
+}
+html[data-tempo-time="night"] .newsletter__btn {
+  background: #C49A3A;
+  color: #0E0C0A;
+}
+html[data-tempo-time="night"] .newsletter__btn:hover:not(:disabled) {
+  background: #A88030;
+}
+html[data-tempo-time="night"] .newsletter__error {
+  color: #E88080;
+}
+html[data-tempo-time="night"] .newsletter__success {
+  color: #C49A3A;
+}
+
+/* ── HERO overrides ─────────────────────────────────────────────
+   hero.js sets data-tempo-act on .hero independently via real clock.
+   The switcher now overrides data-tempo-act via JS syncHero(), but
+   CSS guards here prevent flash if there's any timing gap.
+   ──────────────────────────────────────────────────────────────── */
+
+/* Day + hero-morning (base) → already correct: cream bg, terracotta bleed via --color-accent */
+
+/* Afternoon — hero evening-act conflict: bg should be amber-cream, not dark ink */
+html[data-tempo-time="afternoon"] .hero[data-tempo-act="evening"] {
+  background: var(--color-bg);
+}
+html[data-tempo-time="afternoon"] .hero[data-tempo-act="evening"] .hero__bleed-line {
+  color: var(--color-accent);
+}
+html[data-tempo-time="afternoon"] .hero[data-tempo-act="evening"] .hero__eyebrow,
+html[data-tempo-time="afternoon"] .hero[data-tempo-act="evening"] .hero__descriptor {
+  color: var(--color-text-muted);
+}
+html[data-tempo-time="afternoon"] .hero[data-tempo-act="evening"] .hero__tagline {
+  color: var(--color-text-secondary);
+}
+html[data-tempo-time="afternoon"] .hero[data-tempo-act="evening"] .hero__tagline em {
+  color: var(--color-text-primary);
+}
+html[data-tempo-time="afternoon"] .hero[data-tempo-act="evening"] .hero__cta-secondary {
+  color: var(--color-text-primary);
+  border-color: var(--color-border-strong);
+}
+html[data-tempo-time="afternoon"] .hero[data-tempo-act="evening"] .hero__scroll-hint span {
+  background: var(--color-border-strong);
+}
+
+/* Night — hero evening-act: swap hardcoded ink bg for theme dark bg */
+html[data-tempo-time="night"] .hero[data-tempo-act="evening"] {
+  background: var(--color-bg);
+}
+
+/* Night — hero bleed: replace dim terracotta with warm gold accent
+   Covers both evening-act and afternoon-act (if JS sync hasn't fired yet) */
+html[data-tempo-time="night"] .hero[data-tempo-act="evening"] .hero__bleed-line,
+html[data-tempo-time="night"] .hero[data-tempo-act="afternoon"] .hero__bleed-line,
+html[data-tempo-time="night"] .hero[data-tempo-act="morning"] .hero__bleed-line {
+  color: var(--color-accent);
+}
+
+/* Night — hero scroll hint */
+html[data-tempo-time="night"] .hero__scroll-hint span {
+  background: rgba(240, 235, 227, 0.16);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Time Switcher Widget
+   ═══════════════════════════════════════════════════════════════ */
+
+.tempo-time-switcher {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  display: flex;
+  align-items: stretch;
+  background: var(--color-bg, #F7F3EE);
+  border: 1px solid var(--color-border-strong, rgba(26, 24, 22, 0.18));
+  border-radius: 100px;
+  overflow: hidden;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.14),
+    0 1px 4px rgba(0, 0, 0, 0.06);
+  transition:
+    background 500ms ease,
+    border-color 500ms ease;
+}
+
+.tempo-time-switcher__btn {
+  padding: 9px 15px;
+  font-family: var(--font-display, 'Bricolage Grotesque', sans-serif);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--color-text-muted, rgba(26, 24, 22, 0.40));
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;
+  transition: color 300ms ease, background-color 300ms ease;
+}
+
+.tempo-time-switcher__btn + .tempo-time-switcher__btn {
+  border-left: 1px solid var(--color-border, rgba(26, 24, 22, 0.08));
+}
+
+/* Active state — accent background, page-bg-coloured text (adapts across all themes) */
+.tempo-time-switcher__btn.is-active {
+  background-color: var(--color-accent, #7C3B3B);
+  color: var(--color-bg, #F7F3EE);
+}
+
+.tempo-time-switcher__btn:hover:not(.is-active) {
+  color: var(--color-text-primary, #1A1816);
+}

@@ -1,0 +1,39 @@
+/* ═══════════════════════════════════════════════
+   Gallery Spotlight — cinematic dark-room effect
+   Triggered on hover (desktop) + active (mobile tap)
+   Uses body::before — no JavaScript required
+   ═══════════════════════════════════════════════ */
+
+/* ── Dark room overlay ──────────────────────────── */
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 8, 6, 0);
+  pointer-events: none;   /* always click-through */
+  z-index: 250;           /* above nav (200) and drawer (201) */
+  transition: background 550ms var(--ease-in-out);
+}
+
+body:has(.moods__frame:hover)::before,
+body:has(.moods__frame:active)::before,
+body:has(.event-card:hover)::before,
+body:has(.event-card:active)::before {
+  background: rgba(10, 8, 6, 0.50);
+}
+
+/* ── The Space — whole carousel rises above dark plane ── */
+
+body:has(.moods__frame:hover) .moods__frames-wrap,
+body:has(.moods__frame:active) .moods__frames-wrap {
+  z-index: 260;
+}
+
+/* ── What's On — viewport rises above dark plane ──────── */
+
+body:has(.event-card:hover) .events__viewport,
+body:has(.event-card:active) .events__viewport {
+  z-index: 260;
+}
+

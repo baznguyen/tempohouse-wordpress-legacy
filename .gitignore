@@ -1,5 +1,6 @@
 # Dependencies
 Website/node_modules/
+WordPress/node_modules/
 Website/.pnp.*
 Website/.yarn/*
 !Website/.yarn/patches

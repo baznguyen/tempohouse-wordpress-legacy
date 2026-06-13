@@ -1,0 +1,15 @@
+{
+  "name": "tempohouse-wp",
+  "description": "TEMPO House WordPress development environment",
+  "private": true,
+  "scripts": {
+    "start":   "wp-env start",
+    "stop":    "wp-env stop",
+    "destroy": "wp-env destroy",
+    "logs":    "wp-env logs",
+    "cli":     "wp-env run cli wp"
+  },
+  "devDependencies": {
+    "@wordpress/env": "^11.0.0"
+  }
+}

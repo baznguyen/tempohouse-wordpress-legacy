@@ -1,0 +1,490 @@
+/* ═══════════════════════════════════════════════
+   Moods — Three Spaces parallax section
+   Desktop: absolutely positioned overlapping frames
+   Mobile:  horizontal scroll-snap carousel
+   ═══════════════════════════════════════════════ */
+
+/* ── Section ────────────────────────────────────── */
+
+.moods {
+  position: relative;
+  min-height: 120vh;
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+.moods__eyebrow {
+  position: absolute;
+  top: var(--space-10);
+  left: var(--gutter);
+  z-index: 4;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* ── Bleed text ─────────────────────────────────── */
+
+.moods__bleed-text {
+  position: absolute;
+  top: 55%;
+  left: 0;
+  width: 100%;
+  transform: translateY(calc(-50% + calc(var(--parallax, 0px) * 0.03)));
+  text-align: center;
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.moods__bleed-line {
+  display: block;
+  font-family: var(--font-accent);
+  font-size: clamp(4rem, 14vw, 22rem);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  line-height: 0.88;
+  color: rgba(26, 24, 22, 0.13);
+  white-space: nowrap;
+}
+
+/* ── Frames ─────────────────────────────────────── */
+
+.moods__frames-wrap {
+  /* transparent pass-through on desktop */
+}
+
+.moods__frame {
+  position: absolute;
+  z-index: 2;
+  isolation: isolate;
+  transform: translateY(calc(var(--parallax, 0px) * var(--speed, -0.06)));
+  will-change: transform;
+}
+
+.moods__frame[data-frame="cafe"] {
+  --frame-clr: var(--tempo-terracotta);
+  --artwork-bg: var(--tempo-cream-dark);
+  top: 5%;
+  left: 4%;
+  width: 34vw;
+  max-width: 460px;
+  min-width: 240px;
+}
+
+.moods__frame[data-frame="bar"] {
+  --frame-clr: #2D2420;
+  --artwork-bg: var(--tempo-ink);
+  bottom: 5%;
+  right: 4%;
+  width: 41vw;
+  max-width: 560px;
+  min-width: 260px;
+}
+
+.moods__frame[data-frame="gallery"] {
+  --frame-clr: var(--tempo-sage);
+  --artwork-bg: var(--tempo-sand);
+  top: 7%;
+  right: 14%;
+  width: 30vw;
+  max-width: 420px;
+  min-width: 220px;
+}
+
+/* ── Frame anatomy ──────────────────────────────── */
+
+.moods__frame-link {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}
+
+.moods__frame-art {
+  border: 14px solid var(--frame-clr, var(--tempo-terracotta));
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+  transition:
+    box-shadow 0.4s var(--ease-out-expo),
+    transform 0.4s var(--ease-out-expo);
+}
+
+.moods__frame:hover .moods__frame-art {
+  box-shadow:
+    0 0 0 2px var(--frame-clr, var(--tempo-terracotta)),
+    0 0 28px 10px rgba(255, 218, 110, 0.24),
+    0 0 64px 28px rgba(255, 200, 60, 0.10),
+    0 20px 60px rgba(0, 0, 0, 0.18);
+  transform: translateY(-6px);
+}
+
+/* ── Desktop frontal flood: ambient warm halo around frame */
+.moods__frame::before {
+  content: '';
+  position: absolute;
+  inset: -64px;
+  background: radial-gradient(
+    ellipse 72% 76% at 50% 50%,
+    rgba(255, 228, 130, 0.30) 0%,
+    rgba(255, 215, 88, 0.13) 42%,
+    rgba(255, 202, 55, 0.04) 65%,
+    transparent 80%
+  );
+  opacity: 0;
+  transition: opacity 0.55s var(--ease-out-expo);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.moods__frame:hover::before {
+  opacity: 1;
+}
+
+/* ── Desktop frontal flood: warm wash on artwork interior */
+.moods__artwork::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 70% 70% at 50% 50%,
+    rgba(255, 235, 155, 0.36) 0%,
+    rgba(255, 222, 110, 0.14) 46%,
+    transparent 72%
+  );
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out-expo);
+  pointer-events: none;
+}
+
+.moods__frame:hover .moods__artwork::after {
+  opacity: 1;
+}
+
+.moods__mat {
+  background: var(--tempo-cream);
+  padding: 18px;
+}
+
+.moods__artwork {
+  position: relative;
+  background: var(--artwork-bg, var(--tempo-cream-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-height: 300px;
+}
+
+.moods__frame[data-frame="cafe"]    .moods__artwork { min-height: 320px; }
+.moods__frame[data-frame="bar"]     .moods__artwork { min-height: 280px; }
+.moods__frame[data-frame="gallery"] .moods__artwork { min-height: 330px; }
+
+/* ── Frame content ──────────────────────────────── */
+
+.moods__num {
+  font-family: var(--font-accent);
+  font-size: clamp(5rem, 8vw, 12rem);
+  font-weight: 300;
+  color: rgba(26, 24, 22, 0.12);
+  line-height: 1;
+  user-select: none;
+}
+
+.moods__frame[data-frame="bar"] .moods__num {
+  color: rgba(247, 243, 238, 0.10);
+}
+
+.moods__title-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  padding: var(--space-10) var(--space-4) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.moods__frame[data-frame="cafe"] .moods__title-bar,
+.moods__frame[data-frame="gallery"] .moods__title-bar {
+  background: linear-gradient(to top, rgba(26, 24, 22, 0.72) 0%, transparent 100%);
+}
+
+.moods__frame[data-frame="bar"] .moods__title-bar {
+  background: linear-gradient(to top, rgba(26, 24, 22, 0.85) 0%, transparent 100%);
+}
+
+.moods__label-mode {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: rgba(247, 243, 238, 0.65);
+}
+
+.moods__label-sep {
+  opacity: 0.5;
+}
+
+.moods__label-title {
+  font-family: var(--font-accent);
+  font-size: clamp(1.2rem, 1.6vw, 1.9rem);
+  font-weight: 400;
+  line-height: var(--leading-snug);
+  color: var(--tempo-cream);
+}
+
+.moods__label-cta {
+  display: inline-flex;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: rgba(247, 243, 238, 0.80);
+  opacity: 0;
+  transform: translateY(5px);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.moods__frame:hover .moods__label-cta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Carousel nav — hidden on desktop ──────────── */
+
+.moods__carousel-nav { display: none; }
+
+.moods__nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border-strong);
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  flex-shrink: 0;
+  transition:
+    border-color var(--duration-fast) ease,
+    color var(--duration-fast) ease,
+    opacity var(--duration-fast) ease;
+}
+
+.moods__nav-btn:hover:not(:disabled) {
+  border-color: var(--tempo-terracotta);
+  color: var(--tempo-terracotta);
+}
+
+.moods__nav-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.moods__dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.moods__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: var(--color-border-strong);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) ease,
+    transform var(--duration-fast) ease;
+}
+
+.moods__dot--active {
+  background: var(--tempo-terracotta);
+  transform: scale(1.5);
+}
+
+/* ── Mobile: 1-frame scroll-snap carousel ──────── */
+
+@media (max-width: 1100px) {
+  .moods {
+    min-height: auto;
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+
+  .moods__eyebrow {
+    position: static;
+    display: block;
+    padding: var(--space-section) var(--gutter) 0;
+    margin-bottom: var(--space-3);
+  }
+
+  .moods__bleed-text {
+    position: static;
+    transform: none !important;
+    text-align: left;
+    padding: 0 var(--gutter);
+    margin-bottom: var(--space-4);
+  }
+
+  .moods__bleed-line {
+    font-size: clamp(3rem, 11vw, 8rem);
+    color: rgba(26, 24, 22, 0.20);
+  }
+
+  .moods__frames-wrap {
+    position: relative; /* required for z-index elevation in spotlight */
+    display: flex;
+    overflow-x: auto;
+    overflow-y: clip; /* overflow-x:auto creates implicit overflow-y:auto without this */
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 56px;
+    padding: 94px 48px 0;
+    scrollbar-width: none;
+    scroll-padding-inline-start: 48px;
+    cursor: grab;
+  }
+
+  .moods__frames-wrap:active {
+    cursor: grabbing;
+  }
+
+  .moods__frames-wrap::-webkit-scrollbar {
+    display: none;
+  }
+
+  .moods__frame {
+    position: relative !important;
+    /* Reset desktop top/left/right/bottom — without these, position:relative
+       inherits offset values (left:4%, right:14%, etc.) that compress frame gaps */
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    isolation: isolate;
+    transform: none !important;
+    flex-shrink: 0;
+    /* 48px scroll-pad + 56px gap + 24px peek = 128px total margin */
+    width: calc(100vw - 128px) !important;
+    max-width: 420px !important;
+    min-width: 0 !important;
+    z-index: auto !important;
+    scroll-snap-align: start;
+    transition: opacity 0.35s ease, filter 0.35s ease;
+  }
+
+  /* Non-hovered frames dim — mirrors the What's On behaviour */
+  .moods__frames-wrap:has(.moods__frame:hover) .moods__frame:not(:hover),
+  .moods__frames-wrap:has(.moods__frame:active) .moods__frame:not(:active) {
+    opacity: 0.5;
+    filter: saturate(0.4) brightness(0.92);
+  }
+
+  /* Mobile: override desktop frontal flood → downlight wall flood (hover-only) */
+  .moods__frame::before {
+    inset: auto;
+    top: -88px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 210%;
+    height: 125%;
+    background: radial-gradient(
+      ellipse 180px 90px at 50% 10%,
+      rgba(255, 232, 130, 0.40) 0%,
+      rgba(255, 218, 88, 0.28) 50%,
+      rgba(255, 205, 58, 0.07) 80%,
+      transparent 95%
+    );
+    opacity: 0;
+  }
+
+  /* Mobile: black cylinder fixture above each frame (hover-only) */
+  .moods__frame::after {
+    content: '';
+    position: absolute;
+    top: -74px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 44px;
+    height: 36px;
+    background: linear-gradient(172deg, #3d3838 0%, #221e1e 42%, #111010 100%);
+    border-radius: 6px 6px 14px 14px;
+    box-shadow:
+      0 0 0 1.5px rgba(90, 78, 75, 0.5),
+      inset 0 -9px 14px rgba(255, 205, 50, 0.62),
+      0 6px 18px 5px rgba(255, 215, 85, 0.78),
+      0 12px 52px 18px rgba(255, 200, 55, 0.42),
+      0 0 12px 4px rgba(255, 228, 110, 0.26);
+    opacity: 0;
+    transition: opacity 0.42s var(--ease-out-expo);
+    pointer-events: none;
+    z-index: 25;
+  }
+
+  .moods__frame:hover::after { opacity: 1; }
+
+  /* Mobile: top-down cone wash inside artwork (hover-only) */
+  .moods__artwork::after {
+    background: radial-gradient(
+      ellipse 80% 90% at 50% -12%,
+      rgba(255, 238, 160, 0.44) 0%,
+      rgba(255, 228, 130, 0.16) 38%,
+      transparent 66%
+    );
+  }
+
+  .moods__artwork {
+    min-height: 0 !important;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 4;
+  }
+
+  .moods__label-cta {
+    opacity: 1;
+    transform: translateY(0);
+    transition: none;
+  }
+
+  .moods__carousel-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-5);
+    padding: var(--space-6) var(--gutter) var(--space-section);
+    position: relative;
+    z-index: 10;
+  }
+}
+
+@media (min-width: 1101px) and (prefers-reduced-motion: reduce) {
+  .moods__frame {
+    transform: none !important;
+  }
+
+  .moods__bleed-text {
+    transform: none !important;
+  }
+
+  .moods__frame:hover .moods__frame-art {
+    transform: none;
+  }
+
+  .moods__label-cta {
+    opacity: 1;
+    transform: none;
+  }
+}
