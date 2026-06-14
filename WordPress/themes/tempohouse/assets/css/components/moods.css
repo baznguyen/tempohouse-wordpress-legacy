@@ -61,6 +61,7 @@
   position: absolute;
   z-index: 2;
   isolation: isolate;
+  cursor: pointer;
   transform: translateY(calc(var(--parallax, 0px) * var(--speed, -0.06)));
   will-change: transform;
   transition: opacity 0.35s ease, filter 0.35s ease;
