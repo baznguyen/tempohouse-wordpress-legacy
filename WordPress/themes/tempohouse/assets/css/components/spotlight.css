@@ -30,12 +30,17 @@ body:has(.moods__frame:active) .moods__frames-wrap {
   z-index: 260;
 }
 
-/* ── The Space — dim non-hovered frames so the active one reads as brighter ── */
+/* ── The Space — dim non-hovered frames, brighten the hovered one ── */
 
 body:has(.moods__frame:hover) .moods__frame:not(:hover),
 body:has(.moods__frame:active) .moods__frame:not(:active) {
   opacity: 0.5;
   filter: saturate(0.4) brightness(0.92);
+}
+
+body:has(.moods__frame:hover) .moods__frame:hover,
+body:has(.moods__frame:active) .moods__frame:active {
+  filter: brightness(1.12) saturate(1.1);
 }
 
 /* ── What's On — viewport rises above dark plane ──────── */
