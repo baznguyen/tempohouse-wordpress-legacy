@@ -1,5 +1,5 @@
 .page-whats-on__gallery {
-    background: var(--color-bg-alt);
+    background: #F0EBE3;
     border-top: 1px solid var(--color-border);
 }
 
@@ -10,7 +10,7 @@
 
 .events__viewport--grid .events__track {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: var(--space-6);
     padding: var(--space-section) var(--gutter);
     width: auto;
@@ -22,16 +22,55 @@
     width: auto;
     flex-shrink: unset;
     scroll-snap-align: unset;
+    grid-column: span 2;
+}
+
+.events__viewport--grid .event-card:nth-child(6n+1) {
+    grid-column: span 4;
+}
+
+.events__viewport--grid .event-card:nth-child(6n+2) {
+    grid-column: span 2;
+}
+
+.events__viewport--grid .event-card:nth-child(6n+3) {
+    grid-column: span 2;
+}
+
+.events__viewport--grid .event-card:nth-child(6n+4) {
+    grid-column: span 4;
+}
+
+.events__viewport--grid .event-card:nth-child(6n+5) {
+    grid-column: span 3;
+}
+
+.events__viewport--grid .event-card:nth-child(6n+6) {
+    grid-column: span 3;
 }
 
 .events__viewport--grid .event-card__artwork {
-    height: 420px;
     aspect-ratio: unset;
+}
+
+.events__viewport--grid .event-card:nth-child(6n+1) .event-card__artwork,
+.events__viewport--grid .event-card:nth-child(6n+4) .event-card__artwork {
+    height: 380px;
+}
+
+.events__viewport--grid .event-card:nth-child(6n+2) .event-card__artwork,
+.events__viewport--grid .event-card:nth-child(6n+3) .event-card__artwork {
+    height: 480px;
+}
+
+.events__viewport--grid .event-card:nth-child(6n+5) .event-card__artwork,
+.events__viewport--grid .event-card:nth-child(6n+6) .event-card__artwork {
+    height: 420px;
 }
 
 .page-whats-on__subscribe-strip {
     text-align: center;
-    padding: var(--space-16) var(--gutter);
+    padding: var(--space-24) var(--gutter);
     border-top: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
@@ -68,7 +107,8 @@
         animation: none;
     }
 
-    .events__viewport--grid .event-card {
+    .events__viewport--grid .event-card:nth-child(n) {
+        grid-column: span 1;
         width: auto;
         max-width: unset;
         scroll-snap-align: unset;
