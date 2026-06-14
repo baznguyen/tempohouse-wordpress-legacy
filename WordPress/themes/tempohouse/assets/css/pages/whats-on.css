@@ -1,0 +1,98 @@
+.page-whats-on__gallery {
+    background: var(--color-bg-alt);
+    border-top: 1px solid var(--color-border);
+}
+
+.events__viewport--grid {
+    overflow: visible;
+    padding-block: 0;
+}
+
+.events__viewport--grid .events__track {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+    padding: var(--space-section) var(--gutter);
+    width: auto;
+    animation: none;
+    overflow: visible;
+}
+
+.events__viewport--grid .event-card {
+    width: auto;
+    flex-shrink: unset;
+    scroll-snap-align: unset;
+}
+
+.events__viewport--grid .event-card__artwork {
+    height: 420px;
+    aspect-ratio: unset;
+}
+
+.page-whats-on__subscribe-strip {
+    text-align: center;
+    padding: var(--space-16) var(--gutter);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+.page-whats-on__subscribe-body {
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-weight: 300;
+    line-height: var(--leading-loose);
+    color: var(--color-text-secondary);
+    max-width: 52ch;
+}
+
+@media (max-width: 900px) {
+    .events__viewport--grid {
+        overflow-x: visible;
+        overflow-y: visible;
+        scroll-snap-type: unset;
+        cursor: default;
+    }
+
+    .events__viewport--grid:active {
+        cursor: default;
+    }
+
+    .events__viewport--grid .events__track {
+        grid-template-columns: repeat(2, 1fr);
+        width: auto;
+        padding-inline: var(--gutter);
+        animation: none;
+    }
+
+    .events__viewport--grid .event-card {
+        width: auto;
+        max-width: unset;
+        scroll-snap-align: unset;
+    }
+
+    .events__viewport--grid .event-card__artwork {
+        height: auto;
+        aspect-ratio: 3 / 4;
+    }
+
+    .events__viewport--grid .event-card__date-reveal {
+        opacity: 1;
+        transform: translateY(0);
+        transition: none;
+    }
+
+    .events__viewport--grid .events__track:not(.is-infinite) .event-card:nth-child(n + 4) {
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    .events__viewport--grid .events__track {
+        grid-template-columns: 1fr;
+        gap: var(--space-8);
+    }
+}

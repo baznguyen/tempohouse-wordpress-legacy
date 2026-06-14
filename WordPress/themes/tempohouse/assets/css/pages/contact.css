@@ -1,0 +1,334 @@
+.page-contact {
+  display: block;
+}
+
+.page-contact__location {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-contact__map-wrap {
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  margin-bottom: var(--space-6);
+}
+
+.page-contact__map {
+  display: block;
+  width: 100%;
+  height: 360px;
+}
+
+.page-contact__address-block {
+  margin-bottom: var(--space-6);
+}
+
+.page-contact__address-line {
+  font-size: var(--text-base);
+  font-weight: 400;
+  line-height: var(--leading-snug);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.page-contact__address-note {
+  font-size: var(--text-sm);
+  font-weight: 300;
+  line-height: var(--leading-loose);
+  color: var(--color-text-muted);
+}
+
+.page-contact__hours {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-6);
+}
+
+.page-contact__hours-row {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: var(--space-4);
+  align-items: baseline;
+}
+
+.page-contact__hours-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.page-contact__hours-value {
+  font-size: var(--text-sm);
+  font-weight: 300;
+  color: var(--color-text-secondary);
+}
+
+.page-contact__right {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-contact__directory {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border: 1px solid var(--color-border);
+  padding: var(--space-6);
+  background: var(--color-bg-alt);
+  margin-bottom: var(--space-8);
+}
+
+.page-contact__dir-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: var(--space-4);
+  align-items: baseline;
+}
+
+.page-contact__dir-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.page-contact__dir-value {
+  font-size: var(--text-sm);
+  font-weight: 300;
+  color: var(--color-text-secondary);
+}
+
+.page-contact__dir-value a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.page-contact__dir-value a:hover {
+  text-decoration: underline;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.contact-form__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.contact-form__label {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.contact-form__label abbr {
+  text-decoration: none;
+  color: var(--color-accent);
+  margin-left: 2px;
+}
+
+.contact-form__input,
+.contact-form__select,
+.contact-form__textarea {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 300;
+  color: var(--color-text-primary);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-strong);
+  padding: 12px var(--space-4);
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 0;
+  outline: none;
+  transition: border-color var(--duration-fast) ease;
+}
+
+.contact-form__input::placeholder,
+.contact-form__textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+.contact-form__input:focus,
+.contact-form__select:focus,
+.contact-form__textarea:focus {
+  border-color: var(--color-accent);
+}
+
+.contact-form__select-wrap {
+  position: relative;
+}
+
+.contact-form__select-wrap::after {
+  content: '';
+  position: absolute;
+  right: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--color-text-muted);
+  pointer-events: none;
+}
+
+.contact-form__select {
+  cursor: pointer;
+  padding-right: var(--space-10);
+}
+
+.contact-form__select option[disabled] {
+  color: var(--color-text-muted);
+}
+
+.contact-form__textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: var(--leading-loose);
+}
+
+.contact-form__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.contact-form__submit {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--tempo-cream);
+  background: var(--color-accent);
+  border: none;
+  padding: 14px 28px;
+  cursor: pointer;
+  transition: background var(--duration-fast) ease;
+  border-radius: 0;
+}
+
+.contact-form__submit:hover {
+  background: var(--color-accent-hover);
+}
+
+.contact-form__submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.contact-form__privacy {
+  font-size: var(--text-xs);
+  font-weight: 300;
+  color: var(--color-text-muted);
+  line-height: var(--leading-loose);
+}
+
+.contact-form__error {
+  font-size: var(--text-sm);
+  font-weight: 300;
+  color: #a33;
+  line-height: var(--leading-loose);
+  border-left: 2px solid #a33;
+  padding-left: var(--space-4);
+}
+
+.contact-form__success {
+  border: 1px solid var(--color-border);
+  padding: var(--space-6);
+  background: var(--color-bg-alt);
+}
+
+.contact-form__success-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: var(--space-3);
+}
+
+.contact-form__success-body {
+  font-size: var(--text-sm);
+  font-weight: 300;
+  color: var(--color-text-secondary);
+  line-height: var(--leading-loose);
+}
+
+.page-contact__reservations-strip {
+  padding-block: var(--space-16);
+  padding-inline: var(--gutter);
+  text-align: center;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+}
+
+.page-contact__strip-title {
+  font-family: var(--font-accent);
+  font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+  font-weight: 300;
+  font-style: italic;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-accent);
+  margin-bottom: 0;
+  max-width: 26ch;
+  margin-inline: auto;
+}
+
+.page-contact__strip-cta-row {
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .page-contact__reservations-strip {
+    text-align: left;
+  }
+
+  .page-contact__strip-title {
+    margin-inline: 0;
+  }
+
+  .page-contact__strip-cta-row {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-contact__map {
+    height: 260px;
+  }
+
+  .page-contact__dir-row {
+    grid-template-columns: 90px 1fr;
+  }
+
+  .contact-form__footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .contact-form__submit {
+    width: 100%;
+    text-align: center;
+  }
+}

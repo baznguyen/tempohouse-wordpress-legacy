@@ -1,0 +1,74 @@
+.page-bar__programme-img {
+  aspect-ratio: 3 / 4;
+}
+
+.page-bar__programme-list .page-inner__feature-item {
+  color: rgba(247, 243, 238, 0.65);
+}
+
+.page-bar__programme-list .page-inner__feature-item::before {
+  color: var(--tempo-amber);
+}
+
+.page-bar__atmosphere-img {
+  aspect-ratio: 3 / 4;
+}
+
+.page-bar__private-img {
+  aspect-ratio: 4 / 3;
+}
+
+.page-bar__footer-cta {
+  padding-block: var(--space-20);
+  text-align: center;
+  border-top: 1px solid var(--color-border);
+}
+
+.page-bar__footer-cta-text {
+  font-family: var(--font-accent);
+  font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-snug);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-8);
+}
+
+.page-bar__footer-cta .page-inner__cta-primary {
+  display: inline-flex;
+}
+
+.page-bar__info-block {
+  display: contents;
+}
+
+.page-bar__programme {
+  position: relative;
+}
+
+.page-bar__programme::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 40%, rgba(221, 170, 98, 0.06) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .page-bar__programme-img,
+  .page-bar__atmosphere-img,
+  .page-bar__private-img {
+    aspect-ratio: 16 / 9;
+  }
+
+  .page-bar__footer-cta {
+    padding-block: var(--space-16);
+  }
+}
+
+@media (max-width: 480px) {
+  .page-bar__footer-cta-text {
+    font-size: 1.5rem;
+  }
+}

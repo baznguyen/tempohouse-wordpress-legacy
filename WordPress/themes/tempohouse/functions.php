@@ -6,7 +6,7 @@ require_once get_template_directory() . '/inc/seo.php';
 require_once get_template_directory() . '/inc/enquiry.php';
 
 function tempohouse_enqueue_assets() {
-    $ver = '3.17.8';
+    $ver = '3.18.0';
     $uri = get_template_directory_uri();
 
     wp_enqueue_style( 'tempohouse-tokens',     $uri . '/assets/css/tokens.css',                [],                        $ver );
@@ -25,6 +25,60 @@ function tempohouse_enqueue_assets() {
     // Events enquiry page — load only on that template
     if ( is_page_template( 'page-templates/events-enquiry.php' ) ) {
         wp_enqueue_style( 'tempohouse-events-enquiry', $uri . '/assets/css/components/events-enquiry.css', [ 'tempohouse-base' ], $ver );
+    }
+
+    // Café page — load only on that template
+    if ( is_page_template( 'page-templates/page-cafe.php' ) ) {
+        wp_enqueue_style( 'tempohouse-inner-page', $uri . '/assets/css/pages/inner-page.css', [ 'tempohouse-base' ], $ver );
+        wp_enqueue_style( 'tempohouse-cafe',       $uri . '/assets/css/pages/cafe.css',       [ 'tempohouse-inner-page' ], $ver );
+    }
+
+    // Bar page — load only on that template
+    if ( is_page_template( 'page-templates/page-bar.php' ) ) {
+        wp_enqueue_style( 'tempohouse-inner-page', $uri . '/assets/css/pages/inner-page.css', [ 'tempohouse-base' ], $ver );
+        wp_enqueue_style( 'tempohouse-bar',        $uri . '/assets/css/pages/bar.css',        [ 'tempohouse-inner-page' ], $ver );
+    }
+
+    // Gallery page — load only on that template
+    if ( is_page_template( 'page-templates/page-gallery.php' ) ) {
+        wp_enqueue_style( 'tempohouse-inner-page', $uri . '/assets/css/pages/inner-page.css',    [ 'tempohouse-base' ],       $ver );
+        wp_enqueue_style( 'tempohouse-gallery',    $uri . '/assets/css/pages/gallery.css',        [ 'tempohouse-inner-page' ], $ver );
+    }
+
+    // What's On page — load only on that template
+    if ( is_page_template( 'page-templates/page-whats-on.php' ) ) {
+        wp_enqueue_style( 'tempohouse-inner-page', $uri . '/assets/css/pages/inner-page.css', [ 'tempohouse-base' ],       $ver );
+        wp_enqueue_style( 'tempohouse-whats-on',   $uri . '/assets/css/pages/whats-on.css',   [ 'tempohouse-inner-page' ], $ver );
+    }
+
+    // Reservations page — load only on that template
+    if ( is_page_template( 'page-templates/page-reservations.php' ) ) {
+        wp_enqueue_style( 'tempohouse-inner-page',    $uri . '/assets/css/pages/inner-page.css',    [ 'tempohouse-base' ],          $ver );
+        wp_enqueue_style( 'tempohouse-reservations',  $uri . '/assets/css/pages/reservations.css',  [ 'tempohouse-inner-page' ],    $ver );
+    }
+
+    // Events overview page — load only on that template
+    if ( is_page_template( 'page-templates/page-events.php' ) ) {
+        wp_enqueue_style( 'tempohouse-inner-page',    $uri . '/assets/css/pages/inner-page.css',    [ 'tempohouse-base' ],          $ver );
+        wp_enqueue_style( 'tempohouse-events-pages',  $uri . '/assets/css/pages/events-pages.css',  [ 'tempohouse-inner-page' ],    $ver );
+    }
+
+    // Event type sub-pages — load only on that template
+    if ( is_page_template( 'page-templates/page-event-type.php' ) ) {
+        wp_enqueue_style( 'tempohouse-inner-page',    $uri . '/assets/css/pages/inner-page.css',    [ 'tempohouse-base' ],          $ver );
+        wp_enqueue_style( 'tempohouse-events-pages',  $uri . '/assets/css/pages/events-pages.css',  [ 'tempohouse-inner-page' ],    $ver );
+    }
+
+    // Venue page — load only on that template
+    if ( is_page_template( 'page-templates/page-venue.php' ) ) {
+        wp_enqueue_style( 'tempohouse-inner-page', $uri . '/assets/css/pages/inner-page.css', [ 'tempohouse-base' ],       $ver );
+        wp_enqueue_style( 'tempohouse-venue',      $uri . '/assets/css/pages/venue.css',      [ 'tempohouse-inner-page' ], $ver );
+    }
+
+    // Contact page — load only on that template
+    if ( is_page_template( 'page-templates/page-contact.php' ) ) {
+        wp_enqueue_style( 'tempohouse-inner-page', $uri . '/assets/css/pages/inner-page.css', [ 'tempohouse-base' ],       $ver );
+        wp_enqueue_style( 'tempohouse-contact',    $uri . '/assets/css/pages/contact.css',    [ 'tempohouse-inner-page' ], $ver );
     }
 
     wp_enqueue_script( 'tempohouse-drag',         $uri . '/assets/js/drag-scroll.js',   [],                    $ver, true );
