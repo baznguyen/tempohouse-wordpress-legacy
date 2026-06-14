@@ -27,42 +27,13 @@
         <li><a href="<?php echo esc_url( home_url( '/cafe' ) ); ?>" class="site-footer__col-link">Specialty Caf&eacute;</a></li>
         <li><a href="<?php echo esc_url( home_url( '/bar' ) ); ?>" class="site-footer__col-link">Cocktail Bar</a></li>
         <li><a href="<?php echo esc_url( home_url( '/gallery' ) ); ?>" class="site-footer__col-link">Gallery</a></li>
-        <li><a href="<?php echo esc_url( home_url( '/events' ) ); ?>" class="site-footer__col-link">Private Events</a></li>
+        <li><a href="<?php echo esc_url( home_url( '/whats-on' ) ); ?>" class="site-footer__col-link">What&rsquo;s On</a></li>
+        <li><a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="site-footer__col-link">Private Events</a></li>
         <li><a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="site-footer__col-link">Contact</a></li>
       </ul>
     </nav>
 
-    <!-- Col 2: Programme -->
-    <nav class="site-footer__col" aria-label="Programme">
-      <p class="site-footer__col-head">Programme</p>
-      <ul class="site-footer__col-links" role="list">
-        <li><a href="<?php echo esc_url( home_url( '/whats-on' ) ); ?>" class="site-footer__col-link">What&rsquo;s On</a></li>
-        <li><a href="<?php echo esc_url( home_url( '/whats-on/works-on-paper-opening-night' ) ); ?>" class="site-footer__col-link">Works on Paper Opening</a></li>
-        <li><a href="<?php echo esc_url( home_url( '/whats-on/tempo-sessions-july' ) ); ?>" class="site-footer__col-link">TEMPO Sessions</a></li>
-        <li><a href="<?php echo esc_url( home_url( '/whats-on/tasting-menu-august' ) ); ?>" class="site-footer__col-link">The Tasting Menu</a></li>
-        <li><a href="<?php echo esc_url( home_url( '/events/enquiry' ) ); ?>" class="site-footer__col-link">Private Hire</a></li>
-      </ul>
-    </nav>
-
-    <!-- Col 3: Gallery + Journal -->
-    <nav class="site-footer__col" aria-label="Gallery and Journal">
-      <p class="site-footer__col-head">Gallery</p>
-      <ul class="site-footer__col-links" role="list">
-        <li><a href="<?php echo esc_url( home_url( '/gallery' ) ); ?>" class="site-footer__col-link">The Gallery</a></li>
-        <li><a href="<?php echo esc_url( home_url( '/gallery/works-on-paper' ) ); ?>" class="site-footer__col-link">Works on Paper</a></li>
-        <li><a href="<?php echo esc_url( home_url( '/gallery' ) ); ?>" class="site-footer__col-link">Artist Programme</a></li>
-      </ul>
-      <p class="site-footer__col-head site-footer__col-head--spaced">Journal</p>
-      <ul class="site-footer__col-links" role="list">
-        <li><a href="<?php echo esc_url( home_url( '/journal' ) ); ?>" class="site-footer__col-link">The Journal</a></li>
-        <li><a href="<?php echo esc_url( home_url( '/journal/specialty-coffee-guide-ho-chi-minh-city' ) ); ?>" class="site-footer__col-link">Coffee Guide HCMC</a></li>
-        <li><a href="<?php echo esc_url( home_url( '/journal/why-district-3' ) ); ?>" class="site-footer__col-link">Why District 3</a></li>
-        <li><a href="<?php echo esc_url( home_url( '/journal/building-the-bar' ) ); ?>" class="site-footer__col-link">Building the Bar</a></li>
-        <li><a href="<?php echo esc_url( home_url( '/journal/tempo-letter-vol-1' ) ); ?>" class="site-footer__col-link">The TEMPO Letter</a></li>
-      </ul>
-    </nav>
-
-    <!-- Col 4: Visit -->
+    <!-- Col 2: Visit -->
     <div class="site-footer__col">
       <p class="site-footer__col-head">Visit</p>
       <address class="site-footer__address">
@@ -94,7 +65,7 @@
       </div>
     </div>
 
-    <!-- Col 5: Stay in the loop -->
+    <!-- Col 3: Stay in the loop -->
     <div class="site-footer__col">
       <p class="site-footer__col-head">Stay in the loop</p>
       <p class="site-footer__newsletter-sub">Events, openings, and what&rsquo;s happening at TEMPO. The letter goes out when there&rsquo;s something worth saying.</p>

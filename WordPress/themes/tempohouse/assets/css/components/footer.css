@@ -66,7 +66,7 @@
 
 .site-footer__nav-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-10) var(--space-8);
   max-width: var(--content-width);
   margin-inline: auto;
@@ -270,16 +270,15 @@
 
 /* ── Responsive ──────────────────────────────────── */
 
-@media (max-width: 1100px) {
-  .site-footer__nav-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
 @media (max-width: 700px) {
   .site-footer__nav-grid {
     grid-template-columns: 1fr 1fr;
     gap: var(--space-10) var(--space-6);
+  }
+
+  /* Newsletter col spans full width at tablet — gives the CTA room to breathe */
+  .site-footer__nav-grid > .site-footer__col:last-child {
+    grid-column: 1 / -1;
   }
 
   .site-footer__statement-text {
@@ -287,10 +286,14 @@
   }
 }
 
-@media (max-width: 460px) {
+@media (max-width: 480px) {
   .site-footer__nav-grid {
     grid-template-columns: 1fr;
     gap: var(--space-10);
+  }
+
+  .site-footer__nav-grid > .site-footer__col:last-child {
+    grid-column: auto;
   }
 
   .site-footer__colophon-inner {
