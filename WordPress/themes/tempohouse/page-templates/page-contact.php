@@ -12,8 +12,8 @@ get_header();
   <header class="page-inner__banner">
     <div class="page-inner__container">
       <p class="page-inner__eyebrow">Contact</p>
-      <h1 class="page-inner__title">Find us. Reach us. Visit us.</h1>
-      <p class="page-inner__lead">For reservations, events, press, or anything else &mdash; here&rsquo;s how to get in touch.</p>
+      <h1 class="page-inner__title">218c Pasteur, District&nbsp;3.</h1>
+      <p class="page-inner__lead">Right address, right team. Use the directory below or drop in.</p>
     </div>
   </header>
 
@@ -40,8 +40,8 @@ get_header();
           </div>
 
           <div class="page-contact__address-block">
-            <p class="page-contact__address-line">218c Pasteur, Xu&acirc;n Ho&agrave;, Qu&#7853;n 3, HCMC</p>
-            <p class="page-contact__address-note">10 min by ride-share from B&#7871;n Th&agrave;nh. Street parking available.</p>
+            <p class="page-contact__address-line">218c Pasteur, Xu&acirc;n Ho&agrave;, Qu&#7853;n 3, Ho Chi Minh City</p>
+            <p class="page-contact__address-note">10 minutes by Grab from B&#7871;n Th&agrave;nh. Motorbike parking directly outside.</p>
           </div>
 
           <div class="page-contact__hours">
@@ -123,7 +123,7 @@ get_header();
             <p class="contact-form__error" id="cf-error" hidden></p>
             <div class="contact-form__success" id="cf-success" hidden>
               <p class="contact-form__success-title">&#10022;&ensp;Message received.</p>
-              <p class="contact-form__success-body">Thanks &mdash; we&rsquo;ll be in touch shortly.</p>
+              <p class="contact-form__success-body">Got it &mdash; we&rsquo;ll be back to you shortly.</p>
             </div>
 
           </form><!-- /.contact-form -->
@@ -139,23 +139,23 @@ get_header();
     <div class="page-inner__container">
 
       <p class="page-inner__section-head">Getting Here</p>
-      <h2 class="page-inner__section-title">District 3, Ho Chi Minh City.</h2>
+      <h2 class="page-inner__section-title">218c Pasteur, District 3, Ho Chi Minh City.</h2>
 
       <div class="page-inner__info-grid">
 
         <div>
           <p class="page-inner__info-label">By Grab / Ride-share</p>
-          <p class="page-inner__info-value">218c Pasteur, Qu&#7841;n 3. Drop-off directly outside. ~10 minutes from B&#7871;n Th&agrave;nh.</p>
+          <p class="page-inner__info-value">Search &ldquo;218c Pasteur, Qu&#7841;n 3&rdquo; and drop off directly outside. Around 10 minutes from B&#7871;n Th&agrave;nh market.</p>
         </div>
 
         <div>
           <p class="page-inner__info-label">On Foot</p>
-          <p class="page-inner__info-value">Near Tao Dan Park. A 15-minute walk from the centre. Tree-lined streets the whole way.</p>
+          <p class="page-inner__info-value">A 12-minute walk from the eastern edge of T&acirc;o &ETH;&agrave;n Park. Head south on Pasteur &mdash; tree-lined the whole way.</p>
         </div>
 
         <div>
           <p class="page-inner__info-label">Parking</p>
-          <p class="page-inner__info-value">Street parking on Pasteur and surrounding streets. Motorbike parking directly outside.</p>
+          <p class="page-inner__info-value">Motorbike parking directly outside the entrance. Cars: street parking on Pasteur and the surrounding side streets.</p>
         </div>
 
       </div><!-- /.page-inner__info-grid -->
@@ -166,7 +166,7 @@ get_header();
   <!-- ── Reservations strip ─────────────────────── -->
   <section class="page-contact__reservations-strip">
     <div class="page-inner__container">
-      <p class="page-contact__strip-title">Ready to book a table?</p>
+      <p class="page-contact__strip-title">Table reservations are open. Recommended for evenings and groups.</p>
       <div class="page-inner__cta-row page-contact__strip-cta-row">
         <a class="page-inner__cta-primary" href="<?php echo esc_url( home_url( '/reservations' ) ); ?>">Make a Reservation</a>
         <a class="page-inner__cta-secondary" href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>">Plan a Private Event</a>

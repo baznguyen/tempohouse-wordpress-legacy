@@ -11,8 +11,8 @@ get_header();
   <!-- ── 1. Page Banner ──────────────────────────── -->
   <header class="page-inner__banner">
     <p class="page-inner__eyebrow">The Gallery</p>
-    <h1 class="page-inner__title">A gallery on the first floor.<br>An art-filled city below it.</h1>
-    <p class="page-inner__lead">Level 1 of TEMPO House is a dedicated gallery space for rotating exhibitions, creative programming, and intimate events. Accessible from the café below and the street above.</p>
+    <h1 class="page-inner__title">Level 1 Gallery, District 3.<br>A serious space for art.</h1>
+    <p class="page-inner__lead">The gallery at TEMPO House runs a year-round programme of rotating exhibitions across painting, photography, installation, and mixed media. Open to café and bar guests — no appointment, no admission fee.</p>
   </header>
 
   <!-- ── 2. Current Exhibition ───────────────────── -->
@@ -22,11 +22,11 @@ get_header();
 
         <div class="page-gallery__exhibition-text">
           <p class="page-inner__section-head">On Show</p>
-          <h2 class="page-inner__section-title" id="exhibition-title">Rotating Exhibitions.<br>New Work. Ongoing Programme.</h2>
+          <h2 class="page-inner__section-title" id="exhibition-title">Rotating Programme.<br>Regional Artists. Year-Round.</h2>
 
           <div class="page-inner__section-body">
-            <p>The gallery runs a rotating programme of exhibitions from emerging and established regional artists — spanning painting, photography, installation, and mixed media. Exhibitions typically run four to six weeks, each with an opening night event open to the community. As an art gallery in Ho Chi Minh City focused on access, we work with artists at different stages of their practice, not just those with institutional backing.</p>
-            <p>We believe art should be part of everyday life, not locked behind appointments or admission gates. The gallery at TEMPO House is open to all café and bar guests — walk in, look at the work, stay for a coffee. No prior arrangement needed. For those interested in showing at our gallery in Ho Chi Minh City, or partnering on a creative programme, we welcome conversations via the enquiry form below.</p>
+            <p>The gallery runs four to six exhibitions per year, each showing for four to six weeks with an opening night open to the public. Artists are drawn from Vietnam and the broader Southeast Asian region, working across painting, photography, installation, and mixed media. We show emerging and mid-career practitioners — not only those with gallery representation. The programme is built around the work, not the CV.</p>
+            <p>The gallery is open to all café and bar guests during trading hours. Walk in off Pasteur Street, take the stairs to Level 1, and spend time with the work. There is no appointment system, no ticketed entry, and no obligation to buy. For artists and organisations interested in the exhibition programme — or in using the space for a creative project — contact us via the form below.</p>
           </div>
 
           <div class="page-inner__cta-row">
@@ -53,7 +53,7 @@ get_header();
           <h2 class="page-inner__section-title" id="space-title">Level 1 Gallery<br>&middot; Ground Floor &middot; Outdoor</h2>
 
           <div class="page-inner__section-body">
-            <p>The gallery floor (Level 1) is a flexible, column-free space suited to exhibitions, talks, film screenings, and intimate events accommodating up to 80 guests standing. Combined with the café and bar ground floor and our outdoor area, the full venue accommodates up to 150 guests for standing events. Natural light runs through street-facing windows during the day. Neutral exhibition walls are designed to put the work first. Adjustable track lighting adapts to every programme and mood.</p>
+            <p>The gallery floor at Level 1 is a column-free space designed to hold work without competing with it. Neutral exhibition walls, adjustable track lighting, and natural light from street-facing windows during the day. The floor is non-fixed — furniture and layout reconfigure for exhibitions, talks, film screenings, and events up to 80 guests standing. Combined with the ground floor café and bar and the connecting outdoor area, the full venue at 218c Pasteur accommodates 150 or more for standing events.</p>
           </div>
 
           <ul class="page-inner__feature-list" aria-label="Gallery venue features">
@@ -92,21 +92,21 @@ get_header();
         <li class="page-inner__card">
           <span class="page-inner__card-num" aria-hidden="true">01</span>
           <h3 class="page-inner__card-title">Art Openings &amp; Exhibitions</h3>
-          <p class="page-inner__card-body">A proper setting for an opening night. The gallery floor is designed for work that deserves attention — good wall space, good light, room to move. We provide full room service, canapes through our catering partners, and curated music so the evening runs without friction.</p>
+          <p class="page-inner__card-body">The gallery floor is built for opening nights. Good wall space, good light, room to circulate without feeling crowded. We handle the venue setup, bar service, and coordination with catering partners so the artist and their team can focus on the work. The evening programme — from doors to close — runs without your intervention.</p>
           <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__card-cta" aria-label="Enquire about art openings and exhibitions">Enquire &rarr;</a>
         </li>
 
         <li class="page-inner__card">
           <span class="page-inner__card-num" aria-hidden="true">02</span>
           <h3 class="page-inner__card-title">Product Launches</h3>
-          <p class="page-inner__card-body">Level 1 gives product launches a considered, editorial backdrop that a hotel ballroom cannot replicate. Brands and creative studios use the gallery space to position a launch with intent — the venue becomes part of the narrative, not just the backdrop for it.</p>
+          <p class="page-inner__card-body">Level 1 gives a launch an editorial quality that a hotel function room does not. Brands and creative studios use the gallery space because the setting itself communicates intent — the architecture, the art programme context, the address on Pasteur Street. The venue becomes part of the story, not just where it was told.</p>
           <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__card-cta" aria-label="Enquire about product launches at the gallery">Enquire &rarr;</a>
         </li>
 
         <li class="page-inner__card">
           <span class="page-inner__card-num" aria-hidden="true">03</span>
           <h3 class="page-inner__card-title">Intimate Gatherings</h3>
-          <p class="page-inner__card-body">Birthday celebrations, engagement parties, brand dinners — the gallery is a creative space for moments that matter. Smaller than a banquet hall, more considered than a restaurant hire. An environment that makes the occasion feel earned.</p>
+          <p class="page-inner__card-body">Birthday dinners, engagement celebrations, brand gatherings of 20 to 60 people — the gallery is more considered than a restaurant hire and smaller in scale than an event hall. The room has genuine character without demanding attention. For occasions where the setting should feel earned rather than booked, this is the right space in District 3.</p>
           <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__card-cta" aria-label="Enquire about intimate gatherings at the gallery">Enquire &rarr;</a>
         </li>
 
@@ -119,8 +119,8 @@ get_header();
     <div class="page-inner__container">
       <div class="page-gallery__partnership-callout">
         <p class="page-inner__section-head">Working Together</p>
-        <h2 class="page-inner__section-title" id="partnership-title">We partner with leading HCMC caterers<br>and event vendors.</h2>
-        <p class="page-gallery__partnership-body">Tell us what you&rsquo;re imagining and we&rsquo;ll build it.</p>
+        <h2 class="page-inner__section-title" id="partnership-title">You bring the occasion.<br>We bring everything else.</h2>
+        <p class="page-gallery__partnership-body">Tell us what you&rsquo;re planning — we&rsquo;ll put together the right team of vendors, caterers, and crew from our network of trusted partners in Ho Chi Minh City. One point of contact. No chasing.</p>
         <div class="page-inner__cta-row page-gallery__partnership-cta-row">
           <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-primary">Start the Conversation</a>
         </div>

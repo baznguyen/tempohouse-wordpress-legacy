@@ -11,8 +11,8 @@ get_header();
   <!-- ── 1. Page Banner ──────────────────────────── -->
   <header class="page-inner__banner">
     <p class="page-inner__eyebrow">The Venue</p>
-    <h1 class="page-inner__title">One building.<br>Many ways to use it.</h1>
-    <p class="page-inner__lead">TEMPO House is a specialty café by day, a cocktail bar by night, an art gallery upstairs, and a private event space whenever you need one. District 3, Ho Chi Minh City.</p>
+    <h1 class="page-inner__title">218c Pasteur, District 3.<br>Café, bar, gallery, events.</h1>
+    <p class="page-inner__lead">TEMPO House is a specialty café by day, a cocktail bar by night, an art gallery on Level 1, and a private event venue when you need the whole building. One address in Ho Chi Minh City&rsquo;s most characterful inner-city neighbourhood.</p>
   </header>
 
   <!-- ── 2. Spaces Overview ──────────────────────── -->
@@ -29,28 +29,28 @@ get_header();
         <article class="page-inner__card">
           <span class="page-inner__card-num">01</span>
           <h3 class="page-inner__card-title">Specialty Café</h3>
-          <p class="page-inner__card-body">Where the city slows down. Specialty coffee, seasonal snacks, flexible seating.</p>
+          <p class="page-inner__card-body">Ground floor, open from 07:00. Single-origin filter coffee, espresso-based drinks, and seasonal food. The furniture is non-fixed — the room works for a solo laptop session, a group catch-up, or a working breakfast. Light pours through the front from morning to mid-afternoon.</p>
           <a href="<?php echo esc_url( home_url( '/cafe' ) ); ?>" class="page-inner__card-cta">Explore the Café &rarr;</a>
         </article>
 
         <article class="page-inner__card">
           <span class="page-inner__card-num">02</span>
           <h3 class="page-inner__card-title">Cocktail Bar</h3>
-          <p class="page-inner__card-body">Evening opens with cocktails and an upbeat tempo. District 3&rsquo;s bar of choice.</p>
+          <p class="page-inner__card-body">The same ground floor counter that runs espresso service by day opens as a full cocktail bar from 18:00. The drinks programme is original — not a generic spirits list. Table service, walk-ins welcome, and a sound programme that moves as the evening does. Closes at 01:00.</p>
           <a href="<?php echo esc_url( home_url( '/bar' ) ); ?>" class="page-inner__card-cta">Explore the Bar &rarr;</a>
         </article>
 
         <article class="page-inner__card">
           <span class="page-inner__card-num">03</span>
           <h3 class="page-inner__card-title">Art Gallery</h3>
-          <p class="page-inner__card-body">Level 1 rotating exhibitions and creative programme. Open to café guests.</p>
+          <p class="page-inner__card-body">Level 1 runs a rotating exhibition programme year-round — emerging and mid-career artists from Vietnam and Southeast Asia, across painting, photography, and installation. The gallery is free to enter for all café and bar guests. No appointment, no ticketed entry. Take the stairs from the ground floor.</p>
           <a href="<?php echo esc_url( home_url( '/gallery' ) ); ?>" class="page-inner__card-cta">See the Gallery &rarr;</a>
         </article>
 
         <article class="page-inner__card">
           <span class="page-inner__card-num">04</span>
           <h3 class="page-inner__card-title">Private Events</h3>
-          <p class="page-inner__card-body">Full venue hire for product launches, celebrations, corporate, and more.</p>
+          <p class="page-inner__card-body">The full building — both floors, outdoor area, bar, coffee counter, and gallery space — is available for exclusive hire. Product launches, private celebrations, corporate dinners, brand activations. Up to 150 guests standing. One of the few multi-format venue hire options in central Ho Chi Minh City with genuine architectural character.</p>
           <a href="<?php echo esc_url( home_url( '/events' ) ); ?>" class="page-inner__card-cta">Plan Your Event &rarr;</a>
         </article>
 
@@ -65,12 +65,12 @@ get_header();
 
         <div class="page-venue__building-text">
           <p class="page-inner__section-head">The Space</p>
-          <h2 class="page-inner__section-title" id="building-title">A 1920s shophouse.<br>Reimagined as a destination.</h2>
+          <h2 class="page-inner__section-title" id="building-title">A French-colonial shophouse.<br>Both floors. Outdoor area.</h2>
 
           <div class="page-inner__section-body">
-            <p>TEMPO House occupies a French-colonial shophouse on Pasteur Street &mdash; one of District 3&rsquo;s most characterful addresses. The original structure has been carefully restored rather than renovated beyond recognition: exposed brick, high ceilings, and timber details remain. The streetscape context &mdash; shaded pavements, colonial facades, independent businesses &mdash; is part of what makes the building feel worth arriving at.</p>
-            <p>Ground floor is the café and bar: non-fixed furniture that shifts throughout the day, natural light from front to back, and a counter that transitions from espresso bar in the morning to cocktail bar by evening. Level 1 is a column-free gallery space with neutral walls and adjustable track lighting &mdash; designed to hold rotating exhibitions without getting in the way of them. A connecting outdoor area ties the two levels together and works as a reception or spill-out zone.</p>
-            <p>The entire building is available for exclusive hire &mdash; both floors, the outdoor area, the bar and coffee equipment, and the lighting rig. For product launches, private celebrations, or corporate events that need a setting with genuine character rather than a hotel ballroom, TEMPO House is one of the few multi-function venues in inner Saigon that earns the word&nbsp;<em>destination</em>.</p>
+            <p>TEMPO House occupies a narrow shophouse on Pasteur Street, one of District 3&rsquo;s most intact colonial addresses. The structure has been restored with some care: exposed brick, high ceilings, and original timber detailing are present throughout. The building reads as itself — not as a renovation that has erased what made it worth keeping.</p>
+            <p>The ground floor holds the café and bar in a single open room. Counter service at the front, flexible seating throughout, natural light from both ends of the space. The counter transitions from espresso bar to cocktail bar as the day shifts — the same physical space, different programme. Level 1 is a column-free gallery floor with neutral walls and adjustable track lighting, designed to hold rotating exhibitions without competing with them. A connecting outdoor area links the two levels and functions as a reception zone, spill-out space, or pre-event gathering point.</p>
+            <p>For exclusive hire, the full building is available across both floors and the outdoor area, along with bar, coffee, lighting, and sound equipment. For multi-format venue hire in Ho Chi Minh City — product launches, private celebrations, corporate events — 218c Pasteur offers a setting with actual architectural character rather than a hotel ballroom dressed for the occasion.</p>
           </div>
         </div>
 
@@ -93,11 +93,11 @@ get_header();
 
         <div class="page-venue__neighbourhood-text">
           <p class="page-inner__section-head">District 3</p>
-          <h2 class="page-inner__section-title" id="neighbourhood-title">Pasteur Street.<br>One of Saigon&rsquo;s best addresses.</h2>
+          <h2 class="page-inner__section-title" id="neighbourhood-title">Pasteur Street.<br>District 3, Ho Chi Minh City.</h2>
 
           <div class="page-inner__section-body">
-            <p>District 3 is Saigon&rsquo;s most liveable inner-city district &mdash; French colonial architecture, shaded tree-lined streets, and the city&rsquo;s best concentration of independent cafés, restaurants, and galleries. It moves at a pace slightly removed from the District 1 bustle while staying right at the centre of things. 218c Pasteur sits at the heart of it.</p>
-            <p>B&#7871;n Th&agrave;nh market is a 10-minute walk. T&#7841;o &ETH;&agrave;n park &mdash; one of Saigon&rsquo;s greenest inner-city escapes &mdash; is minutes away. The neighbourhood rewards walking and cycling; Grab and ride-share drop-offs are seamless. Street parking is available directly on Pasteur and in the surrounding blocks.</p>
+            <p>Pasteur Street runs through the heart of District 3 under a canopy of old-growth trees. The streetscape is predominantly colonial — low-rise facades, independent businesses, residences above shops. It is one of the few streets in central Saigon that has retained this quality while remaining genuinely active. 218c sits on a stretch that includes some of the neighbourhood&rsquo;s best independent cafés and restaurants.</p>
+            <p>T&#7841;o &ETH;&agrave;n park is a four-minute walk — one of the city&rsquo;s largest inner-city green spaces, used daily by residents for morning exercise and evening gatherings. B&#7871;n Th&agrave;nh market is 10 minutes on foot. The area is well covered by Grab and ride-share, with a direct drop-off point on Pasteur Street. Street parking is available in the surrounding blocks, with additional lots on Nguy&#7877;n Th&#7883; Minh Khai.</p>
           </div>
 
           <div class="page-inner__info-grid page-venue__neighbourhood-grid">
@@ -177,7 +177,7 @@ get_header();
   <!-- ── 6. Footer CTA Strip ──────────────────────── -->
   <section class="page-venue__footer-cta" aria-label="Book or enquire">
     <div class="page-inner__container">
-      <h2 class="page-venue__footer-cta-title">Ready to visit, or planning something bigger?</h2>
+      <h2 class="page-venue__footer-cta-title">Coming in, or planning something?</h2>
       <div class="page-inner__cta-row page-venue__footer-cta-row">
         <a href="<?php echo esc_url( home_url( '/reservations' ) ); ?>" class="page-inner__cta-primary">Book a Table</a>
         <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-secondary">Host Your Event</a>

@@ -11,8 +11,8 @@ get_header();
   <!-- ── 1. Page banner ───────────────────────────── -->
   <header class="page-inner__banner">
     <p class="page-inner__eyebrow">The Bar</p>
-    <h1 class="page-inner__title">When the café closes,<br>the bar opens. That&rsquo;s when<br>the city really starts.</h1>
-    <p class="page-inner__lead">Cocktails made with intention. Evenings with enough music to set a mood without killing conversation. District&nbsp;3&rsquo;s late-night address for those who know.</p>
+    <h1 class="page-inner__title">When the café closes,<br>the bar opens. That&rsquo;s when<br>the night actually starts.</h1>
+    <p class="page-inner__lead">Cocktails built on classical foundations, pulled local with Vietnamese ingredients. District&nbsp;3&rsquo;s evening address for people who want a proper drink and somewhere worth staying.</p>
   </header>
 
   <!-- ── 2. The Programme (dark atmospheric) ─────── -->
@@ -24,8 +24,8 @@ get_header();
           <p class="page-inner__section-head">The Programme</p>
           <h2 class="page-inner__section-title" id="bar-programme-title">Classics. Originals.<br>Things that taste like somewhere.</h2>
           <div class="page-inner__section-body">
-            <p>Every drink on the menu starts from a classical foundation &mdash; Negronis, Sours, Highballs &mdash; then we pull in local Vietnamese ingredients to make them ours. Tropical herbs, lychee from the Mekong Delta, Vietnamese citrus, a gentle bitterness you won&rsquo;t find in the recipe books. The list rotates with the season, not the trend.</p>
-            <p>Natural wine, local craft beer, and a thoughtful low-and-no ABV selection mean nobody is left without something worth nursing. As the night deepens the tempo rises &mdash; measured, never frantic. This isn&rsquo;t a nightclub. It isn&rsquo;t a dive. It&rsquo;s somewhere in between, and better for it.</p>
+            <p>Every drink starts from a classical foundation — Negronis, Sours, Highballs — then we pull in Vietnamese ingredients to make them ours. Lychee from the Mekong Delta. Pandan. Calamansi in place of standard citrus. A gentle bitterness that isn&rsquo;t in the recipe books. The menu rotates with the season, not the trend cycle.</p>
+            <p>Natural wine, local craft beer, and a considered low-and-no ABV selection sit alongside the cocktail list, so nobody is stuck with soda water and apologies. As the evening moves, the tempo shifts — measured, never frantic. This is a cocktail bar in Saigon, not a nightclub. The distinction matters.</p>
           </div>
           <ul class="page-inner__feature-list page-bar__programme-list" aria-label="Bar menu highlights">
             <li class="page-inner__feature-item">House Originals</li>
@@ -52,12 +52,12 @@ get_header();
         <div class="page-bar__atmosphere-text">
           <h2 class="page-inner__section-title" id="bar-atmosphere-title">A bar you want to stay at.</h2>
           <div class="page-inner__section-body">
-            <p>As evening falls, the music shifts up, the lights soften, and the space transforms. The ground floor opens to the outdoor area &mdash; a rare exhale in the middle of Qu&#7853;n 3. Seating is non-fixed; the kind of arrangement you rearrange for yourself, pull chairs together, spread out, settle in.</p>
-            <p>Ideal for small groups, long-overdue catch-ups, a proper date, or a cocktail hour before a gallery opening on Level&nbsp;1. The kind of bar that earns the second round.</p>
+            <p>Evening kicks in, the lights drop, the playlist shifts, and the ground floor opens to the outdoor terrace — one of the few genuinely open-air spots in Quận 3. Seating is non-fixed. Pull chairs together, spread out, rearrange as the night calls for it.</p>
+            <p>Works for small groups, overdue catch-ups, a first date that needs somewhere with atmosphere, or a proper cocktail hour before heading upstairs to the gallery on Level&nbsp;1. The kind of bar that earns the second round without trying to.</p>
           </div>
           <ul class="page-inner__feature-list" aria-label="Atmosphere features">
             <li class="page-inner__feature-item">Indoor &amp; outdoor seating</li>
-            <li class="page-inner__feature-item">Curated playlist (tempo varies by hour)</li>
+            <li class="page-inner__feature-item">Playlist that shifts with the hour</li>
             <li class="page-inner__feature-item">Gallery access on Level&nbsp;1</li>
             <li class="page-inner__feature-item">Available for private cocktail receptions</li>
           </ul>
@@ -80,8 +80,8 @@ get_header();
           <p class="page-inner__section-head">Private Hire</p>
           <h2 class="page-inner__section-title" id="bar-private-title">The bar. The night. Yours.</h2>
           <div class="page-inner__section-body">
-            <p>The bar can be privately hired for cocktail receptions, launch events, and celebrations. Full venue buyout options are available &mdash; bar floor, gallery on Level&nbsp;1, and the outdoor terrace &mdash; or just the bar on its own for more intimate occasions.</p>
-            <p>We work with trusted caterer partners and offer curated bar packages tailored to the event. Tell us the occasion and we&rsquo;ll design the experience around it.</p>
+            <p>The bar is available for private hire — cocktail receptions, product launches, brand events, birthday dinners, post-wrap drinks. Full venue buyout covers the bar floor, gallery on Level&nbsp;1, and the outdoor terrace. Or the bar on its own for something more contained.</p>
+            <p>We work with trusted caterer partners and can build a bar package around your brief. Tell us the occasion, the headcount, and what you need it to feel like. We&rsquo;ll handle the rest.</p>
           </div>
           <div class="page-inner__cta-row">
             <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-primary">Enquire About Private Hire</a>
@@ -133,7 +133,7 @@ get_header();
   <!-- ── 6. Footer CTA ────────────────────────────── -->
   <section class="page-bar__footer-cta" aria-label="Reserve a table">
     <div class="page-inner__container">
-      <p class="page-bar__footer-cta-text">Reserve a table for the evening.</p>
+      <p class="page-bar__footer-cta-text">Come in tonight. Reserve a table if you&rsquo;re bringing people.</p>
       <a href="<?php echo esc_url( home_url( '/reservations' ) ); ?>" class="page-inner__cta-primary">Make a Reservation</a>
     </div>
   </section>

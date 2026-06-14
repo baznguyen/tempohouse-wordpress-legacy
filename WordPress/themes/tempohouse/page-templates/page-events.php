@@ -11,8 +11,8 @@ get_header();
   <!-- ── 1. Page Banner ──────────────────────────── -->
   <header class="page-inner__banner page-events__banner">
     <p class="page-inner__eyebrow">Private Events</p>
-    <h1 class="page-inner__title">Your event. Our venue.<br>A space that does the heavy lifting.</h1>
-    <p class="page-inner__lead">TEMPO House is available for private hire &mdash; the whole venue or by the floor. Product launches, gallery openings, birthdays, corporate dinners, weddings, and everything in between.</p>
+    <h1 class="page-inner__title">Event venue for private hire &mdash;<br>218c Pasteur, District 3, Ho Chi Minh City.</h1>
+    <p class="page-inner__lead">TEMPO House is a gallery, bar, and caf&eacute; available for exclusive hire &mdash; by the floor or the whole building. We host product launches, corporate dinners, art exhibitions, birthdays, weddings, and brand activations.</p>
     <div class="page-inner__cta-row">
       <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-primary">Start Your Enquiry</a>
       <a href="<?php echo esc_url( home_url( '/venue' ) ); ?>" class="page-inner__cta-secondary">See the Spaces &rarr;</a>
@@ -25,7 +25,7 @@ get_header();
 
       <div class="page-inner__section-head">
         <p class="page-inner__section-head">Available Spaces</p>
-        <h2 class="page-inner__section-title" id="spaces-title">Three spaces.<br>One address.</h2>
+        <h2 class="page-inner__section-title" id="spaces-title">Hire one floor<br>or the whole building.</h2>
       </div>
 
       <div class="page-events__spaces-grid">
@@ -38,7 +38,7 @@ get_header();
             <div class="page-events__space-card-body">
               <p class="page-inner__info-label">Space 01</p>
               <h3 class="page-events__space-title">Level 1 Gallery</h3>
-              <p class="page-events__space-desc">Column-free space with neutral walls and adjustable track lighting. The cleanest blank canvas in the building.</p>
+              <p class="page-events__space-desc">Column-free floor with neutral white walls and adjustable track lighting. There&rsquo;s nothing in the room that competes with what you bring in. Suitable for exhibitions, installations, and receptions where the visual setup is doing the work.</p>
               <dl class="page-events__space-meta">
                 <div>
                   <dt class="page-inner__info-label">Capacity</dt>
@@ -46,7 +46,7 @@ get_header();
                 </div>
                 <div>
                   <dt class="page-inner__info-label">Best For</dt>
-                  <dd class="page-inner__info-value">Exhibitions, launches, cocktail receptions</dd>
+                  <dd class="page-inner__info-value">Exhibitions, product launches, cocktail receptions</dd>
                 </div>
               </dl>
             </div>
@@ -61,7 +61,7 @@ get_header();
             <div class="page-events__space-card-body">
               <p class="page-inner__info-label">Space 02</p>
               <h3 class="page-events__space-title">Ground Floor</h3>
-              <p class="page-events__space-desc">Caf&eacute; and bar floor with indoor and outdoor flow. A setting with genuine character &mdash; counter, terrace, and street-side light.</p>
+              <p class="page-events__space-desc">The bar and caf&eacute; floor, with indoor seating, an outdoor terrace, and full bar access. The layout has character &mdash; counter, terrace, and street-side light from Pasteur. Works well for seated dinners, cocktail hours, and anything that benefits from a lived-in feel.</p>
               <dl class="page-events__space-meta">
                 <div>
                   <dt class="page-inner__info-label">Capacity</dt>
@@ -84,7 +84,7 @@ get_header();
             <div class="page-events__space-card-body">
               <p class="page-inner__info-label">Space 03</p>
               <h3 class="page-events__space-title">Full Venue</h3>
-              <p class="page-events__space-desc">Both floors plus the outdoor area under exclusive hire. The building becomes yours for the night &mdash; bar equipment, lighting rig, and all.</p>
+              <p class="page-events__space-desc">Both floors plus the outdoor terrace under exclusive hire. You get the gallery upstairs, the bar and terrace on the ground floor, and the full lighting and sound setup throughout. The building is entirely yours &mdash; no shared access, no overlap with other guests.</p>
               <dl class="page-events__space-meta">
                 <div>
                   <dt class="page-inner__info-label">Capacity</dt>
@@ -92,7 +92,7 @@ get_header();
                 </div>
                 <div>
                   <dt class="page-inner__info-label">Best For</dt>
-                  <dd class="page-inner__info-value">Large receptions, multi-format events, exclusive hire</dd>
+                  <dd class="page-inner__info-value">Large receptions, multi-format events, exclusive buyout</dd>
                 </div>
               </dl>
             </div>
@@ -109,7 +109,7 @@ get_header();
 
       <div class="page-inner__section-head">
         <p class="page-inner__section-head">What We Host</p>
-        <h2 class="page-inner__section-title" id="event-types-title">Every type of occasion.<br>One address in District 3.</h2>
+        <h2 class="page-inner__section-title" id="event-types-title">Eight types of event.<br>One venue hire in District 3.</h2>
       </div>
 
       <div class="page-events__event-types-grid">
@@ -117,56 +117,56 @@ get_header();
         <article class="page-inner__card">
           <span class="page-inner__card-num">01</span>
           <h3 class="page-inner__card-title">Product Launches</h3>
-          <p class="page-inner__card-body">Gallery L1 gives your product the setting it deserves &mdash; clean walls, focused lighting, and an audience that&rsquo;s primed to be impressed.</p>
+          <p class="page-inner__card-body">A product launch in a gallery photographs differently to a hotel ballroom. Gallery L1 gives you a column-free room, controlled track lighting, and walls you can use. The space is blank by design &mdash; your product is the feature.</p>
           <a href="<?php echo esc_url( home_url( '/events/product-launch' ) ); ?>" class="page-inner__card-cta">Learn more &rarr;</a>
         </article>
 
         <article class="page-inner__card">
           <span class="page-inner__card-num">02</span>
           <h3 class="page-inner__card-title">Corporate Events</h3>
-          <p class="page-inner__card-body">Team dinners, client entertaining, and off-sites that feel nothing like a hotel conference room. Flexible layout, full AV, proper food.</p>
+          <p class="page-inner__card-body">Team dinners, client entertainment, and off-sites that don&rsquo;t feel like a conference room. The ground floor seats up to 60, the gallery adds a second space if you need it. Full A/V, proper cocktails, and a kitchen partner for sit-down food.</p>
           <a href="<?php echo esc_url( home_url( '/events/corporate-events' ) ); ?>" class="page-inner__card-cta">Learn more &rarr;</a>
         </article>
 
         <article class="page-inner__card">
           <span class="page-inner__card-num">03</span>
           <h3 class="page-inner__card-title">Birthday Celebrations</h3>
-          <p class="page-inner__card-body">Whether you&rsquo;re after cocktails for 30 or a seated dinner for 60, we make birthdays feel like the occasion they are.</p>
+          <p class="page-inner__card-body">Cocktails for 30 on the terrace or a seated dinner for 60 on the ground floor. The venue works for birthdays because it already feels like somewhere worth going &mdash; the decoration is in the bones of the building.</p>
           <a href="<?php echo esc_url( home_url( '/events/birthday-celebration' ) ); ?>" class="page-inner__card-cta">Learn more &rarr;</a>
         </article>
 
         <article class="page-inner__card">
           <span class="page-inner__card-num">04</span>
           <h3 class="page-inner__card-title">Intimate Gatherings</h3>
-          <p class="page-inner__card-body">Smaller doesn&rsquo;t mean lesser. From 20-person dinner parties to exclusive bar nights, we curate private moments that feel genuinely special.</p>
+          <p class="page-inner__card-body">The ground floor holds events as small as 20 without feeling empty. Private dinner parties, exclusive bar nights, small group celebrations &mdash; we can close off the floor so the space is entirely yours.</p>
           <a href="<?php echo esc_url( home_url( '/events/intimate-gatherings' ) ); ?>" class="page-inner__card-cta">Learn more &rarr;</a>
         </article>
 
         <article class="page-inner__card">
           <span class="page-inner__card-num">05</span>
           <h3 class="page-inner__card-title">Weddings</h3>
-          <p class="page-inner__card-body">A French-colonial shophouse on one of Saigon&rsquo;s best streets. The kind of wedding venue that photographs like it was made for it.</p>
+          <p class="page-inner__card-body">A French-colonial shophouse on one of Saigon&rsquo;s best streets. The gallery floor makes a ceremony space that doesn&rsquo;t need to borrow from anywhere else. For couples who want something that photographs well without manufacturing it.</p>
           <a href="<?php echo esc_url( home_url( '/events/intimate-weddings' ) ); ?>" class="page-inner__card-cta">Learn more &rarr;</a>
         </article>
 
         <article class="page-inner__card">
           <span class="page-inner__card-num">06</span>
           <h3 class="page-inner__card-title">Engagement Parties</h3>
-          <p class="page-inner__card-body">Celebrate the start of something with a space that already feels like a destination. Cocktails, great food, a room worth sharing.</p>
+          <p class="page-inner__card-body">The terrace and ground floor work well together for this. Drinks outside, dinner inside, or both floors running at once for larger groups. A space that feels like a destination without requiring a lot of extra styling to get there.</p>
           <a href="<?php echo esc_url( home_url( '/events/engagement-party' ) ); ?>" class="page-inner__card-cta">Learn more &rarr;</a>
         </article>
 
         <article class="page-inner__card">
           <span class="page-inner__card-num">07</span>
           <h3 class="page-inner__card-title">Art Exhibitions</h3>
-          <p class="page-inner__card-body">Gallery L1 is designed to hold rotating exhibitions. Column-free, neutral, and lit for art. The space moves out of the work&rsquo;s way.</p>
+          <p class="page-inner__card-body">Gallery L1 was built to hold rotating exhibitions. Column-free floor plan, neutral walls, adjustable track lighting on a dimmer, and a separate entrance from the ground floor. The space gets out of the way of the work.</p>
           <a href="<?php echo esc_url( home_url( '/events/art-exhibitions' ) ); ?>" class="page-inner__card-cta">Learn more &rarr;</a>
         </article>
 
         <article class="page-inner__card">
           <span class="page-inner__card-num">08</span>
           <h3 class="page-inner__card-title">Brand Activations</h3>
-          <p class="page-inner__card-body">A crowd-drawing address in inner Saigon. Flexible layout and high visual impact make TEMPO House the right stage for experiential campaigns.</p>
+          <p class="page-inner__card-body">218c Pasteur draws a crowd. The full venue &mdash; gallery, bar, and terrace &mdash; gives you a flexible footprint across two floors for experiential campaigns. The address does part of the work before a single person walks in.</p>
           <a href="<?php echo esc_url( home_url( '/events/brand-activation' ) ); ?>" class="page-inner__card-cta">Learn more &rarr;</a>
         </article>
 
@@ -181,16 +181,16 @@ get_header();
 
         <div class="page-events__catering-text">
           <p class="page-inner__section-head">Catering &amp; Partners</p>
-          <h2 class="page-inner__section-title" id="catering-title">We work with<br>the best.</h2>
+          <h2 class="page-inner__section-title" id="catering-title">Food, bar, florals,<br>A/V &mdash; sourced for you.</h2>
           <div class="page-inner__section-body">
-            <p>We partner with leading HCMC caterers and event vendors so you don&rsquo;t have to source them separately. Food and beverage packages, floral, photography, A/V, and event styling can all be arranged through us or your own suppliers &mdash; we work both ways.</p>
+            <p>We work with a curated network of HCMC caterers and event vendors. They arrive with their own team, their own equipment, and a clear brief. You can use our partners or bring your own &mdash; either works. Bar service runs from our in-house cocktail menu and can be packaged by consumption or by package rate.</p>
           </div>
           <ul class="page-inner__feature-list">
-            <li class="page-inner__feature-item">Catering partners &mdash; full canaph&eacute; to sit-down</li>
-            <li class="page-inner__feature-item">Bar packages from our cocktail menu</li>
-            <li class="page-inner__feature-item">Floral &amp; event styling coordination</li>
-            <li class="page-inner__feature-item">A/V &amp; sound systems</li>
-            <li class="page-inner__feature-item">Photography referral network</li>
+            <li class="page-inner__feature-item">Catering partners &mdash; cana&eacute;p&eacute;s to full sit-down menus</li>
+            <li class="page-inner__feature-item">Bar packages drawn from our cocktail program</li>
+            <li class="page-inner__feature-item">Floral and event styling coordination</li>
+            <li class="page-inner__feature-item">A/V and sound system setup</li>
+            <li class="page-inner__feature-item">Photography referrals from our network</li>
           </ul>
         </div>
 
@@ -215,7 +215,7 @@ get_header();
         <span class="page-events__floorplan-label">Floor Plan &mdash; Coming Soon</span>
       </div>
 
-      <p class="page-events__floorplan-caption">Full floor plan available on request &mdash; email <a href="mailto:events@tempohouse.com.vn">events@tempohouse.com.vn</a></p>
+      <p class="page-events__floorplan-caption">Full floor plan and layout options available on request &mdash; email <a href="mailto:events@tempohouse.com.vn">events@tempohouse.com.vn</a></p>
 
     </div>
   </section>
@@ -234,8 +234,8 @@ get_header();
         <li class="page-events__step">
           <span class="page-events__step-num" aria-hidden="true">1</span>
           <div class="page-events__step-body">
-            <h3 class="page-events__step-title">Tell us about your event</h3>
-            <p class="page-events__step-desc">Use our enquiry form to share the basics &mdash; date, guest count, type of occasion, and anything else that matters. No commitment required.</p>
+            <h3 class="page-events__step-title">Send us the basics</h3>
+            <p class="page-events__step-desc">Fill out the enquiry form with your date, guest count, type of event, and any specifics that matter. No commitment, no sales call. We read every enquiry before responding.</p>
             <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-secondary">Start the enquiry &rarr;</a>
           </div>
         </li>
@@ -243,23 +243,23 @@ get_header();
         <li class="page-events__step">
           <span class="page-events__step-num" aria-hidden="true">2</span>
           <div class="page-events__step-body">
-            <h3 class="page-events__step-title">We match you to the right space and package</h3>
-            <p class="page-events__step-desc">We&rsquo;ll come back to you with the best-fit floor, layout options, and catering and vendor combinations that suit your brief and budget.</p>
+            <h3 class="page-events__step-title">We come back with a proposal</h3>
+            <p class="page-events__step-desc">We&rsquo;ll recommend the right floor or combination, lay out layout options for your guest count, and give you a clear picture of catering and vendor costs so you can plan against a real number.</p>
           </div>
         </li>
 
         <li class="page-events__step">
           <span class="page-events__step-num" aria-hidden="true">3</span>
           <div class="page-events__step-body">
-            <h3 class="page-events__step-title">We handle the details &mdash; you focus on the occasion</h3>
-            <p class="page-events__step-desc">From vendor coordination to day-of setup, our events team takes care of the logistics so you can show up to something already running smoothly.</p>
+            <h3 class="page-events__step-title">We handle the setup &mdash; you arrive to a running event</h3>
+            <p class="page-events__step-desc">Our events team coordinates with your vendors, manages the setup timeline, and is on-site for the duration. You don&rsquo;t troubleshoot on the night.</p>
           </div>
         </li>
 
       </ol>
 
       <div class="page-inner__cta-row page-events__process-cta">
-        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-primary">Start the Conversation</a>
+        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-primary">Send an Enquiry</a>
         <a href="mailto:events@tempohouse.com.vn" class="page-inner__cta-secondary">events@tempohouse.com.vn</a>
       </div>
 

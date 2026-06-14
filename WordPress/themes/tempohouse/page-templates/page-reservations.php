@@ -12,7 +12,7 @@ get_header();
   <header class="page-inner__banner">
     <p class="page-inner__eyebrow">Reservations</p>
     <h1 class="page-inner__title">Book a table.</h1>
-    <p class="page-inner__lead">Reservations recommended for evenings, weekends, and groups of four or more. Walk-ins are always welcome when we have availability.</p>
+    <p class="page-inner__lead">Reservations are recommended for evenings, weekends, and groups of four or more. Walk-ins are welcome when we have space. Fill in the form and we&rsquo;ll confirm within one business day. For same-day bookings, call us directly.</p>
   </header>
 
   <!-- ── Form ────────────────────────────────────────── -->
@@ -27,7 +27,7 @@ get_header();
             <input class="res-form__input" type="text" id="res-name" name="name" autocomplete="name" required>
           </div>
           <div class="res-form__group">
-            <label class="res-form__label" for="res-email">Email address <abbr title="required">*</abbr></label>
+            <label class="res-form__label" for="res-email">Email <abbr title="required">*</abbr></label>
             <input class="res-form__input" type="email" id="res-email" name="email" autocomplete="email" required>
           </div>
         </div>
@@ -38,36 +38,36 @@ get_header();
             <input class="res-form__input" type="tel" id="res-phone" name="phone" autocomplete="tel">
           </div>
           <div class="res-form__group">
-            <label class="res-form__label" for="res-date">Date <abbr title="required">*</abbr></label>
+            <label class="res-form__label" for="res-date">When are you coming? <abbr title="required">*</abbr></label>
             <input class="res-form__input" type="date" id="res-date" name="date" required>
           </div>
         </div>
 
         <div class="res-form__row res-form__row--split">
           <div class="res-form__group">
-            <label class="res-form__label" for="res-time">Time preference <abbr title="required">*</abbr></label>
+            <label class="res-form__label" for="res-time">Preferred time <abbr title="required">*</abbr></label>
             <div class="res-form__select-wrap">
               <select class="res-form__select" id="res-time" name="time_preference" required>
-                <option value="" disabled selected>Select a time</option>
-                <option value="morning">Morning 07:00–10:00</option>
-                <option value="late-morning">Late morning 10:00–12:00</option>
-                <option value="lunch">Lunch 12:00–14:00</option>
-                <option value="afternoon">Afternoon 14:00–17:00</option>
-                <option value="evening">Evening 18:00–20:00</option>
-                <option value="late-evening">Late evening 20:00–01:00</option>
+                <option value="" disabled selected>Pick a time slot</option>
+                <option value="morning">Morning &mdash; 07:00&ndash;10:00</option>
+                <option value="late-morning">Late morning &mdash; 10:00&ndash;12:00</option>
+                <option value="lunch">Lunch &mdash; 12:00&ndash;14:00</option>
+                <option value="afternoon">Afternoon &mdash; 14:00&ndash;17:00</option>
+                <option value="evening">Early evening &mdash; 18:00&ndash;20:00</option>
+                <option value="late-evening">Late evening &mdash; 20:00&ndash;01:00</option>
               </select>
             </div>
           </div>
           <div class="res-form__group">
-            <label class="res-form__label" for="res-party">Party size <abbr title="required">*</abbr></label>
+            <label class="res-form__label" for="res-party">How many people? <abbr title="required">*</abbr></label>
             <div class="res-form__select-wrap">
               <select class="res-form__select" id="res-party" name="party_size" required>
                 <option value="" disabled selected>Select party size</option>
                 <option value="1">Just me</option>
                 <option value="2">2 people</option>
-                <option value="3-4">3–4 people</option>
-                <option value="5-6">5–6 people</option>
-                <option value="7-10">7–10 people</option>
+                <option value="3-4">3&ndash;4 people</option>
+                <option value="5-6">5&ndash;6 people</option>
+                <option value="7-10">7&ndash;10 people</option>
                 <option value="10+">10+ people</option>
               </select>
             </div>
@@ -76,13 +76,13 @@ get_header();
 
         <div class="res-form__row">
           <div class="res-form__group">
-            <label class="res-form__label" for="res-space">Space preference <span class="res-form__optional">(optional)</span></label>
+            <label class="res-form__label" for="res-space">Where would you like to sit? <span class="res-form__optional">(optional)</span></label>
             <div class="res-form__select-wrap">
               <select class="res-form__select" id="res-space" name="space_preference">
                 <option value="">No preference</option>
-                <option value="cafe-indoors">Café (indoors)</option>
+                <option value="cafe-indoors">Café &mdash; indoors</option>
                 <option value="outdoor">Outdoor seating</option>
-                <option value="bar">Bar (evenings only)</option>
+                <option value="bar">Bar &mdash; evenings only</option>
               </select>
             </div>
           </div>
@@ -90,8 +90,8 @@ get_header();
 
         <div class="res-form__row">
           <div class="res-form__group">
-            <label class="res-form__label" for="res-notes">Additional notes <span class="res-form__optional">(optional)</span></label>
-            <textarea class="res-form__textarea" id="res-notes" name="notes" rows="4" placeholder="Dietary requirements, special occasions, accessibility needs…"></textarea>
+            <label class="res-form__label" for="res-notes">Anything we should know? <span class="res-form__optional">(optional)</span></label>
+            <textarea class="res-form__textarea" id="res-notes" name="notes" rows="4" placeholder="Dietary requirements, special occasions, accessibility needs&hellip;"></textarea>
           </div>
         </div>
 
@@ -120,8 +120,8 @@ get_header();
         <div>
           <p class="page-inner__info-label">Hours</p>
           <p class="page-inner__info-value">
-            Café 07:00–17:00<br>
-            Bar 18:00–01:00<br>
+            Caf&eacute; 07:00&ndash;17:00<br>
+            Bar 18:00&ndash;01:00<br>
             Open daily
           </p>
         </div>
@@ -130,7 +130,7 @@ get_header();
           <p class="page-inner__info-label">Address</p>
           <p class="page-inner__info-value">
             218c Pasteur<br>
-            Xuân Hoà, Quận 3<br>
+            Xu&acirc;n Ho&agrave;, Qu&#7853;n 3<br>
             Ho Chi Minh City
           </p>
         </div>
@@ -138,7 +138,7 @@ get_header();
         <div>
           <p class="page-inner__info-label">Walk-ins</p>
           <p class="page-inner__info-value">
-            Always welcome when we have availability. No reservation needed for 1–2 guests during quieter hours.
+            Welcome any time we have space. No reservation needed for 1&ndash;2 guests during café hours or before 19:00 on weeknights.
           </p>
         </div>
 
@@ -150,8 +150,8 @@ get_header();
   <section class="page-inner__section page-reservations__private-prompt">
     <div class="page-inner__container">
       <p class="page-reservations__private-eyebrow">Private Hire &amp; Events</p>
-      <h2 class="page-reservations__private-title">Planning something bigger?</h2>
-      <p class="page-reservations__private-body">For private hire, events, and group bookings of 10+, use our event enquiry form instead.</p>
+      <h2 class="page-reservations__private-title">Booking for a private event?</h2>
+      <p class="page-reservations__private-body">Full venue hire, group events, and bookings of 10 or more use a different form. Takes two minutes.</p>
       <a class="page-reservations__private-cta" href="/event-enquiry">Event Enquiry &rarr;</a>
     </div>
   </section>
@@ -204,7 +204,7 @@ get_header();
       if (json.success) {
         form.style.display = 'none';
         if (okBody) {
-          okBody.textContent = 'Thanks, ' + data.name.split(' ')[0] + ' — we’ll confirm your reservation within one business day.';
+          okBody.textContent = 'Thanks, ' + data.name.split(' ')[0] + ' — we'll confirm your reservation within one business day.';
         }
         okEl.hidden = false;
       } else {

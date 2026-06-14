@@ -11,8 +11,8 @@ get_header();
   <!-- ── 1. Page Banner ──────────────────────────── -->
   <header class="page-inner__banner">
     <p class="page-inner__eyebrow">The Café</p>
-    <h1 class="page-inner__title">Slow mornings. Good coffee.<br>The kind of café Melbourne would approve of.</h1>
-    <p class="page-inner__lead">Specialty coffee, smalls-style seasonal snacks, and a space designed for whatever you need it to be — a long work session, a catch-up, or just a reason to linger.</p>
+    <h1 class="page-inner__title">Specialty café, District 3.<br>Open from 07:00. No rush.</h1>
+    <p class="page-inner__lead">Single-origin coffee, rotating smalls, and a space that works for a two-hour laptop session or a long catch-up over a flat white. Melbourne-style coffee in Saigon, on Pasteur.</p>
   </header>
 
   <!-- ── 2. The Coffee ────────────────────────────── -->
@@ -25,9 +25,9 @@ get_header();
           <h2 class="page-inner__section-title" id="coffee-title">Specialty Coffee,<br>Done Properly.</h2>
 
           <div class="page-inner__section-body">
-            <p>At TEMPO House, every cup starts with intention. We source single-origin espresso and rotating filter coffees from producers whose growing practices we actually care about — the kind of supply chains you'd find in a Melbourne-style café where the barista can name the farm. No house blends designed to hide behind milk. No conveyor-belt café culture.</p>
-            <p>Our batch brew changes with the season, and our cold brew is slow-steeped in-house rather than poured from a bottle. If you know specialty coffee in District 3, you know how rare that is. If you're new to it, our team is happy to walk you through it without the pretension.</p>
-            <p>The bar follows a Melbourne-influenced approach: milk drinks made with care, extraction dialled properly, and enough quiet on the menu that the coffee itself can be the star. We're at 218c Pasteur in Quận 3 — come in before 10am for the best of the morning filter.</p>
+            <p>We source single-origin espresso and rotating filter coffees from producers whose growing practices we actually care about — the kind of supply chain where a barista can name the farm. No house blends designed to hide behind milk. No volume café culture.</p>
+            <p>Batch brew changes with the season. Cold brew is slow-steeped in-house, not poured from a bottle. If you know specialty coffee in District 3, you know how rare that is. If you&rsquo;re new to it, the team will walk you through it without the sermon.</p>
+            <p>The bar follows a Melbourne coffee approach: milk drinks made with care, extraction dialled correctly, and enough restraint on the menu that the coffee itself stays the point. We&rsquo;re at 218c Pasteur, Quận 3. Before 10am is the best window for morning filter.</p>
           </div>
 
           <ul class="page-inner__feature-list" aria-label="Coffee menu highlights">
@@ -66,8 +66,8 @@ get_header();
           <h2 class="page-inner__section-title" id="kitchen-title">Smalls. Snacks.<br>Things worth eating.</h2>
 
           <div class="page-inner__section-body">
-            <p>The kitchen at TEMPO House runs a rotating menu of tapas-style small plates built around seasonal availability. Nothing fussy, nothing unnecessary — considered food that earns its place alongside whatever you&rsquo;re drinking. Designed to share and graze across a long café morning or an early-evening wind-down.</p>
-            <p>The smalls format works in the daytime with a flat white and again in the evening beside one of our cocktails. Same kitchen, different mood. For private events and hired sessions, we partner with select Saigon caterers to extend the food offering beyond what the daily menu carries — reach us at <a href="mailto:hello@tempohouse.com.vn">hello@tempohouse.com.vn</a> for catering conversations.</p>
+            <p>The kitchen runs a rotating menu of tapas-style small plates built around seasonal availability. Nothing unnecessary — food that earns its place alongside whatever you&rsquo;re drinking. Designed to share across a long café morning or an early-evening wind-down before the bar opens.</p>
+            <p>The smalls format holds up in the daytime beside a flat white, and again in the evening next to one of the cocktails. Same kitchen, different mood. For private hire and events, we work with select Saigon caterers to extend beyond the daily menu — reach us at <a href="mailto:hello@tempohouse.com.vn">hello@tempohouse.com.vn</a> for details.</p>
           </div>
 
           <ul class="page-inner__feature-list" aria-label="Kitchen menu highlights">
@@ -93,11 +93,11 @@ get_header();
 
         <div class="page-cafe__space-text">
           <p class="page-inner__section-head">The Space</p>
-          <h2 class="page-inner__section-title" id="space-title">A space that works as hard as you don&rsquo;t want to.</h2>
+          <h2 class="page-inner__section-title" id="space-title">Good WiFi. Natural light.<br>No time limit.</h2>
 
           <div class="page-inner__section-body">
-            <p>Furniture is non-fixed — tables, chairs, indoor lounges, and an outdoor terrace — arranged so the room breathes differently depending on the time of day and what you need from it. TEMPO House is WFH-friendly without being a co-working office: good WiFi, accessible power points, and a level of quiet that lets you concentrate without feeling like you&rsquo;ve walked into a library.</p>
-            <p>Natural light runs through the space from morning until the afternoon crossover. The interiors are photography-worthy by design — an aesthetic Melbourne-style venue in Saigon that works as well for KOLs and content creators as it does for a two-hour laptop session or a relaxed catch-up over coffee. A space that doesn&rsquo;t need to announce itself.</p>
+            <p>Furniture is non-fixed — tables, chairs, indoor lounges, and an outdoor terrace — so the room can be arranged around what you actually need. TEMPO House is WFH-friendly without being a co-working office: reliable WiFi, accessible power points, and a noise level that lets you concentrate without feeling like you need to whisper.</p>
+            <p>Natural light carries through the space from the morning until afternoon. The interiors are considered and clean — the kind of WFH café in Ho Chi Minh City that content creators and KOLs find useful for exactly the same reasons someone working through a pitch deck does. No announcement required. Just come in and use it.</p>
             <p class="page-cafe__floorplan-note">Floor plan coming soon &mdash; email us at <a href="mailto:hello@tempohouse.com.vn">hello@tempohouse.com.vn</a> for layout details.</p>
           </div>
 
@@ -106,7 +106,7 @@ get_header();
             <li class="page-inner__feature-item">Fast WiFi + power outlets</li>
             <li class="page-inner__feature-item">Natural light throughout</li>
             <li class="page-inner__feature-item">Quiet working environment</li>
-            <li class="page-inner__feature-item">Photography-worthy interiors</li>
+            <li class="page-inner__feature-item">Photography-ready interiors</li>
           </ul>
         </div>
 
@@ -150,7 +150,7 @@ get_header();
   <!-- ── 6. Footer CTA Strip ──────────────────────── -->
   <section class="page-cafe__footer-cta" aria-label="Book or enquire">
     <div class="page-inner__container">
-      <h2 class="page-cafe__footer-cta-title">Want to book a table or enquire about the space?</h2>
+      <h2 class="page-cafe__footer-cta-title">Come in. Table or no table.</h2>
       <div class="page-inner__cta-row page-cafe__footer-cta-row">
         <a href="<?php echo esc_url( home_url( '/reservations' ) ); ?>" class="page-inner__cta-primary">Reserve a Table</a>
         <a href="<?php echo esc_url( home_url( '/events' ) ); ?>" class="page-inner__cta-secondary">Private Events</a>

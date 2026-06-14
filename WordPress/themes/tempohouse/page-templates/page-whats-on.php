@@ -26,8 +26,8 @@ $events_query = new WP_Query( $events_args );
     <!-- ── 1. Page banner ───────────────────────────── -->
     <header class="page-inner__banner">
         <p class="page-inner__eyebrow">Programming</p>
-        <h1 class="page-inner__title">What&rsquo;s On</h1>
-        <p class="page-inner__lead">Exhibitions, sessions, tastings, and occasions. Subscribe to be first on the list.</p>
+        <h1 class="page-inner__title">Events &amp; Programme</h1>
+        <p class="page-inner__lead">Gallery openings, live music sessions, cocktail masterclasses, private tastings. The full HCMC events programme&nbsp;&mdash; updated as it&nbsp;happens. Subscribe and you&rsquo;ll hear first.</p>
         <div class="page-inner__cta-row">
             <a href="<?php echo esc_url( home_url( '/#newsletter' ) ); ?>" class="page-inner__cta-primary">Subscribe to the List</a>
             <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-secondary">Host Your Own Event</a>
@@ -111,13 +111,13 @@ $events_query = new WP_Query( $events_args );
                     </article>
 
                     <article class="event-card" data-interior="sand">
-                        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="event-card__link" aria-label="Gallery Opening"></a>
+                        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="event-card__link" aria-label="Works on Paper"></a>
                         <div class="event-card__frame-art">
                             <div class="event-card__mat">
                                 <div class="event-card__artwork">
                                     <span class="event-card__category-ghost">Exhibition</span>
                                     <div class="event-card__title-bar">
-                                        <p class="event-card__title">Gallery Opening</p>
+                                        <p class="event-card__title">Works on Paper</p>
                                     </div>
                                     <div class="event-card__date-reveal">
                                         <span class="event-card__month">Rotating</span>
@@ -129,49 +129,13 @@ $events_query = new WP_Query( $events_args );
                     </article>
 
                     <article class="event-card" data-interior="cream">
-                        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="event-card__link" aria-label="Tasting Menu"></a>
-                        <div class="event-card__frame-art">
-                            <div class="event-card__mat">
-                                <div class="event-card__artwork">
-                                    <span class="event-card__category-ghost">Private Dining</span>
-                                    <div class="event-card__title-bar">
-                                        <p class="event-card__title">Tasting Menu</p>
-                                    </div>
-                                    <div class="event-card__date-reveal">
-                                        <span class="event-card__month">Weekly</span>
-                                        <span class="event-card__time">19:00 &ndash; 22:00</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="event-card" data-interior="sand">
-                        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="event-card__link" aria-label="Works on Paper"></a>
-                        <div class="event-card__frame-art">
-                            <div class="event-card__mat">
-                                <div class="event-card__artwork">
-                                    <span class="event-card__category-ghost">Art</span>
-                                    <div class="event-card__title-bar">
-                                        <p class="event-card__title">Works on Paper</p>
-                                    </div>
-                                    <div class="event-card__date-reveal">
-                                        <span class="event-card__month">TBD</span>
-                                        <span class="event-card__time">&nbsp;</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article class="event-card" data-interior="dark">
-                        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="event-card__link" aria-label="Cocktail Workshop"></a>
+                        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="event-card__link" aria-label="Cocktail Masterclass"></a>
                         <div class="event-card__frame-art">
                             <div class="event-card__mat">
                                 <div class="event-card__artwork">
                                     <span class="event-card__category-ghost">Workshop</span>
                                     <div class="event-card__title-bar">
-                                        <p class="event-card__title">Cocktail Workshop</p>
+                                        <p class="event-card__title">Cocktail Masterclass</p>
                                     </div>
                                     <div class="event-card__date-reveal">
                                         <span class="event-card__month">Monthly</span>
@@ -182,17 +146,53 @@ $events_query = new WP_Query( $events_args );
                         </div>
                     </article>
 
-                    <article class="event-card" data-interior="cream">
-                        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="event-card__link" aria-label="Brand Launch"></a>
+                    <article class="event-card" data-interior="sand">
+                        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="event-card__link" aria-label="Opening Night"></a>
                         <div class="event-card__frame-art">
                             <div class="event-card__mat">
                                 <div class="event-card__artwork">
-                                    <span class="event-card__category-ghost">Private Event</span>
+                                    <span class="event-card__category-ghost">Gallery Launch</span>
                                     <div class="event-card__title-bar">
-                                        <p class="event-card__title">Brand Launch</p>
+                                        <p class="event-card__title">Opening Night</p>
                                     </div>
                                     <div class="event-card__date-reveal">
-                                        <span class="event-card__month">By enquiry</span>
+                                        <span class="event-card__month">By programme</span>
+                                        <span class="event-card__time">&nbsp;</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="event-card" data-interior="dark">
+                        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="event-card__link" aria-label="Private Tasting"></a>
+                        <div class="event-card__frame-art">
+                            <div class="event-card__mat">
+                                <div class="event-card__artwork">
+                                    <span class="event-card__category-ghost">Dining</span>
+                                    <div class="event-card__title-bar">
+                                        <p class="event-card__title">Private Tasting</p>
+                                    </div>
+                                    <div class="event-card__date-reveal">
+                                        <span class="event-card__month">Weekly</span>
+                                        <span class="event-card__time">19:00 &ndash; 22:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="event-card" data-interior="cream">
+                        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="event-card__link" aria-label="The TEMPO Letter Launch"></a>
+                        <div class="event-card__frame-art">
+                            <div class="event-card__mat">
+                                <div class="event-card__artwork">
+                                    <span class="event-card__category-ghost">Brand Event</span>
+                                    <div class="event-card__title-bar">
+                                        <p class="event-card__title">The TEMPO Letter Launch</p>
+                                    </div>
+                                    <div class="event-card__date-reveal">
+                                        <span class="event-card__month">Occasional</span>
                                         <span class="event-card__time">&nbsp;</span>
                                     </div>
                                 </div>
@@ -209,7 +209,7 @@ $events_query = new WP_Query( $events_args );
 
     <!-- ── 3. Subscribe strip ────────────────────────── -->
     <section class="page-whats-on__subscribe-strip" aria-label="Newsletter subscription">
-        <p class="page-whats-on__subscribe-body">The programme is always evolving. Subscribe to the TEMPO Letter for first access.</p>
+        <p class="page-whats-on__subscribe-body">The TEMPO Letter goes out when something is worth saying: new exhibitions, upcoming sessions, first access to private tastings. No filler.</p>
         <a href="<?php echo esc_url( home_url( '/#newsletter' ) ); ?>" class="page-inner__cta-primary">Subscribe</a>
     </section>
 

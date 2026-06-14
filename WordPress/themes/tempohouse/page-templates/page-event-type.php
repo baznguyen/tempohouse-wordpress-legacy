@@ -50,8 +50,8 @@ if ( ! $event_eyebrow ) {
   <div class="page-event-type__banner-enquire">
     <div class="page-inner__container">
       <div class="page-event-type__banner-enquire-inner">
-        <p class="page-event-type__banner-enquire-text">Planning this type of event? We&rsquo;d love to hear about it.</p>
-        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-primary">Start Your Enquiry</a>
+        <p class="page-event-type__banner-enquire-text">Have a date in mind? Tell us about your event and we&rsquo;ll get back to you with availability and a proposal.</p>
+        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-primary">Send an Enquiry</a>
       </div>
     </div>
   </div>
@@ -106,14 +106,16 @@ if ( ! $event_eyebrow ) {
           <!-- ── Why TEMPO House feature list ──── -->
           <div class="page-event-type__why">
             <p class="page-inner__section-head">Why TEMPO House</p>
-            <h2 class="page-inner__section-title page-event-type__why-title">Built for events<br>like this one.</h2>
+            <h2 class="page-inner__section-title page-event-type__why-title">A private event venue<br>in District 3, Saigon.</h2>
             <ul class="page-inner__feature-list">
-              <li class="page-inner__feature-item">Level 1 gallery, ground floor, and outdoor area</li>
-              <li class="page-inner__feature-item">Capacity from 20 to 150+ guests</li>
-              <li class="page-inner__feature-item">Catering and vendor partnerships &mdash; we do the sourcing</li>
-              <li class="page-inner__feature-item">Flexible non-fixed layout &mdash; the space adapts to your format</li>
-              <li class="page-inner__feature-item">Dedicated event coordination from enquiry to pack-down</li>
-              <li class="page-inner__feature-item">Central District 3 location &mdash; 218c Pasteur, HCMC</li>
+              <li class="page-inner__feature-item">Three hireable spaces &mdash; Gallery L1, ground floor bar, outdoor terrace</li>
+              <li class="page-inner__feature-item">Capacity from 20 to 150+ guests, depending on floor and layout</li>
+              <li class="page-inner__feature-item">Column-free gallery with adjustable track lighting on a dimmer</li>
+              <li class="page-inner__feature-item">Full bar access &mdash; in-house cocktail program and packaged bar options</li>
+              <li class="page-inner__feature-item">Catering and vendor sourcing included &mdash; we coordinate so you don&rsquo;t have to</li>
+              <li class="page-inner__feature-item">No fixed furniture &mdash; layout adapts to seated dinners, standing receptions, or open floor</li>
+              <li class="page-inner__feature-item">On-site events team for setup, coordination, and day-of logistics</li>
+              <li class="page-inner__feature-item">218c Pasteur, Qu&#7853;n 3 &mdash; central, accessible, a destination address</li>
             </ul>
           </div>
 
@@ -126,14 +128,16 @@ if ( ! $event_eyebrow ) {
     <section class="page-inner__section page-event-type__why-section" aria-labelledby="why-tempo-title">
       <div class="page-inner__container">
         <p class="page-inner__section-head">Why TEMPO House</p>
-        <h2 class="page-inner__section-title" id="why-tempo-title">Built for events<br>like this one.</h2>
+        <h2 class="page-inner__section-title" id="why-tempo-title">A private event venue<br>in District 3, Saigon.</h2>
         <ul class="page-inner__feature-list">
-          <li class="page-inner__feature-item">Level 1 gallery, ground floor, and outdoor area</li>
-          <li class="page-inner__feature-item">Capacity from 20 to 150+ guests</li>
-          <li class="page-inner__feature-item">Catering and vendor partnerships &mdash; we do the sourcing</li>
-          <li class="page-inner__feature-item">Flexible non-fixed layout &mdash; the space adapts to your format</li>
-          <li class="page-inner__feature-item">Dedicated event coordination from enquiry to pack-down</li>
-          <li class="page-inner__feature-item">Central District 3 location &mdash; 218c Pasteur, HCMC</li>
+          <li class="page-inner__feature-item">Three hireable spaces &mdash; Gallery L1, ground floor bar, outdoor terrace</li>
+          <li class="page-inner__feature-item">Capacity from 20 to 150+ guests, depending on floor and layout</li>
+          <li class="page-inner__feature-item">Column-free gallery with adjustable track lighting on a dimmer</li>
+          <li class="page-inner__feature-item">Full bar access &mdash; in-house cocktail program and packaged bar options</li>
+          <li class="page-inner__feature-item">Catering and vendor sourcing included &mdash; we coordinate so you don&rsquo;t have to</li>
+          <li class="page-inner__feature-item">No fixed furniture &mdash; layout adapts to seated dinners, standing receptions, or open floor</li>
+          <li class="page-inner__feature-item">On-site events team for setup, coordination, and day-of logistics</li>
+          <li class="page-inner__feature-item">218c Pasteur, Qu&#7853;n 3 &mdash; central, accessible, a destination address</li>
         </ul>
       </div>
     </section>
@@ -180,11 +184,11 @@ if ( ! $event_eyebrow ) {
     <div class="page-inner__container page-event-type__bottom-cta-inner">
       <div>
         <p class="page-inner__section-head">Ready to plan?</p>
-        <h2 class="page-event-type__bottom-cta-title">Let&rsquo;s make it happen.</h2>
-        <p class="page-event-type__bottom-cta-body">Tell us about your event and we&rsquo;ll come back to you with the right space, the right package, and a timeline that works.</p>
+        <h2 class="page-event-type__bottom-cta-title">This space is available.<br>Let&rsquo;s talk about your event.</h2>
+        <p class="page-event-type__bottom-cta-body">Share your date, guest count, and the kind of event you&rsquo;re planning. We&rsquo;ll come back with the right floor, a layout proposal, and clear pricing &mdash; no vague quotes.</p>
       </div>
       <div class="page-inner__cta-row">
-        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-primary">Start Your Enquiry</a>
+        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-primary">Send an Enquiry</a>
         <a href="<?php echo esc_url( home_url( '/events' ) ); ?>" class="page-inner__cta-secondary">All Event Types &rarr;</a>
       </div>
     </div>
