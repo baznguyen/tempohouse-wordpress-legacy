@@ -67,6 +67,11 @@
   object-fit: contain;
 }
 
+/* Night theme: swap to white mark */
+.site-nav__logo-img--night { display: none; }
+html[data-tempo-time="night"] .site-nav__logo-img--day   { display: none; }
+html[data-tempo-time="night"] .site-nav__logo-img--night { display: block; }
+
 /* RIGHT — Reserve pill */
 
 .site-nav__reserve {

@@ -20,12 +20,20 @@
       MENU
     </button>
 
-    <!-- CENTER: Brand logo -->
+    <!-- CENTER: Brand logo — day/afternoon = terracotta mark, night = white mark -->
     <a class="site-nav__brand" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="TEMPO House — home">
       <img
-        class="site-nav__logo-img"
-        src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/logo.png' ); ?>"
+        class="site-nav__logo-img site-nav__logo-img--day"
+        src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/logo-mark.svg' ); ?>"
         alt="TEMPO House"
+        width="60"
+        height="60"
+      >
+      <img
+        class="site-nav__logo-img site-nav__logo-img--night"
+        src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/logo-mark-white.svg' ); ?>"
+        alt=""
+        aria-hidden="true"
         width="60"
         height="60"
       >
