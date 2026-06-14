@@ -4,7 +4,8 @@
   "testsEnvironment": false,
   "plugins": [
     "https://downloads.wordpress.org/plugin/advanced-custom-fields.latest-stable.zip",
-    "https://downloads.wordpress.org/plugin/wordpress-seo.latest-stable.zip"
+    "https://downloads.wordpress.org/plugin/wordpress-seo.latest-stable.zip",
+    "./plugins/tempohouse-reservations"
   ],
   "config": {
     "WP_DEBUG": true,
