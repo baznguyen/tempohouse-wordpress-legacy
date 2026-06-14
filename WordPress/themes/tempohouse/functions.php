@@ -6,7 +6,7 @@ require_once get_template_directory() . '/inc/seo.php';
 require_once get_template_directory() . '/inc/enquiry.php';
 
 function tempohouse_enqueue_assets() {
-    $ver = '3.18.1';
+    $ver = '3.18.2';
     $uri = get_template_directory_uri();
 
     wp_enqueue_style( 'tempohouse-tokens',     $uri . '/assets/css/tokens.css',                [],                        $ver );

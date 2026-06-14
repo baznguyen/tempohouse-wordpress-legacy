@@ -136,11 +136,27 @@
 }
 
 .page-inner__section-body {
+  font-family: var(--font-body);
   font-size: var(--text-base);
   font-weight: 300;
   line-height: var(--leading-loose);
   color: var(--color-text-secondary);
   max-width: 64ch;
+}
+
+.page-inner__section-body p,
+.page-inner__section-body ul,
+.page-inner__section-body ol {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 300;
+  line-height: var(--leading-loose);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-4);
+}
+
+.page-inner__section-body p:last-child {
+  margin-bottom: 0;
 }
 
 .page-inner__section--dark .page-inner__section-body {
@@ -278,17 +294,20 @@
 .page-inner__feature-item {
   display: flex;
   align-items: baseline;
-  gap: 0;
-  font-size: var(--text-sm);
+  gap: var(--space-4);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
   font-weight: 300;
   color: var(--color-text-secondary);
-  line-height: var(--leading-normal);
-  padding-left: var(--space-5);
-  border-left: 2px solid var(--color-border-accent);
+  line-height: var(--leading-loose);
 }
 
 .page-inner__feature-item::before {
-  content: none;
+  content: '·';
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  font-size: var(--text-lg);
+  line-height: 1;
 }
 
 .page-inner__card-grid {
@@ -350,7 +369,8 @@
 }
 
 .page-inner__card-body {
-  font-size: var(--text-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
   font-weight: 300;
   line-height: var(--leading-loose);
   color: var(--color-text-secondary);
