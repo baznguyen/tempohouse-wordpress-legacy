@@ -23,24 +23,25 @@ body:has(.event-card:active)::before {
   background: rgba(10, 8, 6, 0.50);
 }
 
-/* ── The Space — whole carousel rises above dark plane ── */
-
-body:has(.moods__frame:hover) .moods__frames-wrap,
-body:has(.moods__frame:active) .moods__frames-wrap {
-  z-index: 260;
-}
-
-/* ── The Space — dim non-hovered frames, brighten the hovered one ── */
-
-body:has(.moods__frame:hover) .moods__frame:not(:hover),
-body:has(.moods__frame:active) .moods__frame:not(:active) {
-  opacity: 0.5;
-  filter: saturate(0.4) brightness(0.92);
-}
+/* ── The Space — hovered frame punches above the dark overlay ────────
+   .moods__frames-wrap has no position so z-index on it is ignored.
+   .moods__frame already has position:absolute in root stacking context;
+   setting z-index:260 here lifts only the active frame above body::before
+   at z-index:250. Non-hovered frames stay at z-index:2 — naturally
+   darkened by the overlay. ──────────────────────────────────────────── */
 
 body:has(.moods__frame:hover) .moods__frame:hover,
 body:has(.moods__frame:active) .moods__frame:active {
-  filter: brightness(1.12) saturate(1.1);
+  z-index: 260;
+  filter: brightness(1.08) saturate(1.1);
+}
+
+/* ── The Space — extra dim on non-hovered frames for stronger contrast ── */
+
+body:has(.moods__frame:hover) .moods__frame:not(:hover),
+body:has(.moods__frame:active) .moods__frame:not(:active) {
+  opacity: 0.35;
+  filter: saturate(0.3) brightness(0.85);
 }
 
 /* ── What's On — viewport rises above dark plane ──────── */
