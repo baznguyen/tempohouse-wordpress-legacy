@@ -4,7 +4,7 @@
     <header class="events-venue__header">
       <p class="events-venue__eyebrow">Private Hire &middot; Events</p>
       <h2 class="events-venue__title">The Space Is Yours.</h2>
-      <p class="events-venue__lead">Three distinct atmospheres, one address in the heart of District&nbsp;1. From an intimate dinner for twelve to a standing cocktail reception for eighty &mdash; TEMPO House is available for exclusive hire.</p>
+      <p class="events-venue__lead">Three distinct atmospheres, one address in the heart of District&nbsp;3. From an intimate dinner for twelve to a standing cocktail reception for eighty &mdash; TEMPO House is available for exclusive hire.</p>
     </header>
 
     <div class="events-venue__grid">
