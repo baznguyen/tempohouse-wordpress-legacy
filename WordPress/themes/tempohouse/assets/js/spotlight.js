@@ -35,8 +35,22 @@
     el.addEventListener('mouseleave', unlockScroll);
   }
 
+  // Card-aware delegate: lock only while the pointer is over an actual card,
+  // not the surrounding viewport padding (120px top / 72px bottom).
+  function attachCards(viewportSelector) {
+    var vp = document.querySelector(viewportSelector);
+    if (!vp) return;
+    vp.addEventListener('mouseover', function (e) {
+      if (e.target.closest('.event-card')) lockScroll();
+    });
+    vp.addEventListener('mouseout', function (e) {
+      var to = e.relatedTarget;
+      if (!to || !to.closest('.event-card')) unlockScroll();
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     attach('.moods__frames-wrap');
-    attach('.events__viewport');
+    attachCards('.events__viewport');
   });
 })();
