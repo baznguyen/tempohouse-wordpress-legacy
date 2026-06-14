@@ -12,7 +12,7 @@ get_header();
   <header class="page-inner__banner">
     <div class="page-inner__container">
       <p class="page-inner__eyebrow">Contact</p>
-      <h1 class="page-inner__title">218c Pasteur, District&nbsp;3.</h1>
+      <h1 class="page-inner__title">218c Pasteur, District&nbsp;3,<br>Ho Chi Minh City.<br>Drop in or drop us a note.</h1>
       <p class="page-inner__lead">Right address, right team. Use the directory below or drop in.</p>
     </div>
   </header>

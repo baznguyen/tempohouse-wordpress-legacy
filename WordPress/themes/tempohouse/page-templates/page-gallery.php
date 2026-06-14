@@ -11,7 +11,7 @@ get_header();
   <!-- ── 1. Page Banner ──────────────────────────── -->
   <header class="page-inner__banner">
     <p class="page-inner__eyebrow">The Gallery</p>
-    <h1 class="page-inner__title">Level 1 Gallery, District 3.<br>A serious space for art.</h1>
+    <h1 class="page-inner__title">Contemporary art in Saigon.<br>Level 1 is always open.</h1>
     <p class="page-inner__lead">The gallery at TEMPO House runs a year-round programme of rotating exhibitions across painting, photography, installation, and mixed media. Open to café and bar guests — no appointment, no admission fee.</p>
   </header>
 

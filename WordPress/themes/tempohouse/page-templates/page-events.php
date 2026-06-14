@@ -11,7 +11,7 @@ get_header();
   <!-- ── 1. Page Banner ──────────────────────────── -->
   <header class="page-inner__banner page-events__banner">
     <p class="page-inner__eyebrow">Private Events</p>
-    <h1 class="page-inner__title">Event venue for private hire &mdash;<br>218c Pasteur, District 3, Ho Chi Minh City.</h1>
+    <h1 class="page-inner__title">An event venue that doesn&rsquo;t look like one.<br>Private hire, District 3, Saigon.</h1>
     <p class="page-inner__lead">TEMPO House is a gallery, bar, and caf&eacute; available for exclusive hire &mdash; by the floor or the whole building. We host product launches, corporate dinners, art exhibitions, birthdays, weddings, and brand activations.</p>
     <div class="page-inner__cta-row">
       <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-primary">Start Your Enquiry</a>

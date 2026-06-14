@@ -26,7 +26,7 @@ $events_query = new WP_Query( $events_args );
     <!-- ── 1. Page banner ───────────────────────────── -->
     <header class="page-inner__banner">
         <p class="page-inner__eyebrow">Programming</p>
-        <h1 class="page-inner__title">Events &amp; Programme</h1>
+        <h1 class="page-inner__title">What&rsquo;s happening at TEMPO House.</h1>
         <p class="page-inner__lead">Gallery openings, live music sessions, cocktail masterclasses, private tastings. The full HCMC events programme&nbsp;&mdash; updated as it&nbsp;happens. Subscribe and you&rsquo;ll hear first.</p>
         <div class="page-inner__cta-row">
             <a href="<?php echo esc_url( home_url( '/#newsletter' ) ); ?>" class="page-inner__cta-primary">Subscribe to the List</a>

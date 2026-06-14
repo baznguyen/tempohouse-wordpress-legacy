@@ -11,7 +11,7 @@ get_header();
   <!-- ── 1. Page Banner ──────────────────────────── -->
   <header class="page-inner__banner">
     <p class="page-inner__eyebrow">The Café</p>
-    <h1 class="page-inner__title">Specialty café, District 3.<br>Open from 07:00. No rush.</h1>
+    <h1 class="page-inner__title">Specialty café, District 3.<br>The kind that earns a regular.</h1>
     <p class="page-inner__lead">Single-origin coffee, rotating smalls, and a space that works for a two-hour laptop session or a long catch-up over a flat white. Melbourne-style coffee in Saigon, on Pasteur.</p>
   </header>
 

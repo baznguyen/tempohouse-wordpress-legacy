@@ -11,7 +11,7 @@ get_header();
   <!-- ── 1. Page Banner ──────────────────────────── -->
   <header class="page-inner__banner">
     <p class="page-inner__eyebrow">The Venue</p>
-    <h1 class="page-inner__title">218c Pasteur, District 3.<br>Café, bar, gallery, events.</h1>
+    <h1 class="page-inner__title">Café in the morning. Bar at night.<br>Gallery always. 218c Pasteur, District&nbsp;3.</h1>
     <p class="page-inner__lead">TEMPO House is a specialty café by day, a cocktail bar by night, an art gallery on Level 1, and a private event venue when you need the whole building. One address in Ho Chi Minh City&rsquo;s most characterful inner-city neighbourhood.</p>
   </header>
 

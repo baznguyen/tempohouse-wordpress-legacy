@@ -11,7 +11,7 @@ get_header();
   <!-- ── Banner ──────────────────────────────────────── -->
   <header class="page-inner__banner">
     <p class="page-inner__eyebrow">Reservations</p>
-    <h1 class="page-inner__title">Book a table.</h1>
+    <h1 class="page-inner__title">Reserve a table at TEMPO House.</h1>
     <p class="page-inner__lead">Reservations are recommended for evenings, weekends, and groups of four or more. Walk-ins are welcome when we have space. Fill in the form and we&rsquo;ll confirm within one business day. For same-day bookings, call us directly.</p>
   </header>
 
