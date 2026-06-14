@@ -1,0 +1,247 @@
+/* TEMPO House Reservations — Admin Styles */
+
+:root {
+  --thr-ink:      #1A1816;
+  --thr-cream:    #F7F3EE;
+  --thr-amber:    #DDAA62;
+  --thr-terra:    #7c3b3b;
+  --thr-green:    #2d6a4f;
+  --thr-orange:   #e07b39;
+  --thr-red:      #c0392b;
+  --thr-muted:    rgba(26,24,22,0.45);
+  --thr-border:   rgba(26,24,22,0.10);
+  --thr-card-bg:  #ffffff;
+  --thr-radius:   4px;
+}
+
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+.thr-wrap { max-width: 1400px; }
+
+.thr-page-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.thr-ref-inline {
+  font-size: 0.85rem;
+  font-weight: 400;
+  font-family: monospace;
+  background: rgba(221,170,98,0.12);
+  border: 1px solid rgba(221,170,98,0.3);
+  color: #9a6b20;
+  padding: 2px 10px;
+  border-radius: 3px;
+}
+
+.thr-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 28px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--thr-border);
+}
+
+/* ── Stats grid ───────────────────────────────────────────────────────────── */
+.thr-stats-grid {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.thr-stat {
+  background: var(--thr-card-bg);
+  border: 1px solid var(--thr-border);
+  border-radius: var(--thr-radius);
+  padding: 20px 24px;
+  min-width: 120px;
+  text-align: center;
+}
+
+.thr-stat__value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--thr-ink);
+}
+
+.thr-stat__label {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--thr-muted);
+  margin-top: 6px;
+}
+
+.thr-stat--ok      { border-color: rgba(45,106,79,0.3); }
+.thr-stat--ok      .thr-stat__value { color: var(--thr-green); }
+.thr-stat--warning { border-color: rgba(221,170,98,0.4); }
+.thr-stat--warning .thr-stat__value { color: #9a6b20; }
+.thr-stat--live    { border-color: rgba(224,123,57,0.4); }
+.thr-stat--live    .thr-stat__value { color: var(--thr-orange); }
+
+/* ── Cards ────────────────────────────────────────────────────────────────── */
+.thr-card {
+  background: var(--thr-card-bg);
+  border: 1px solid var(--thr-border);
+  border-radius: var(--thr-radius);
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+
+.thr-card h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--thr-muted);
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--thr-border);
+}
+
+/* ── Tables ───────────────────────────────────────────────────────────────── */
+.thr-table {
+  font-size: 0.875rem;
+  border-radius: var(--thr-radius);
+  overflow: hidden;
+}
+
+.thr-table th {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--thr-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.thr-table td, .thr-table th { padding: 10px 12px; }
+
+.thr-row-vip { background: rgba(221,170,98,0.06) !important; }
+
+.thr-muted { color: var(--thr-muted); font-size: 0.82rem; }
+.thr-ref   { font-family: monospace; font-weight: 600; color: #9a6b20; text-decoration: none; }
+.thr-ref:hover { text-decoration: underline; }
+
+/* ── Badges ───────────────────────────────────────────────────────────────── */
+.thr-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 3px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.thr-badge--vip       { background: rgba(184,134,11,0.1); color: #8a6500; border: 1px solid rgba(184,134,11,0.25); }
+.thr-badge--pending   { background: rgba(221,170,98,0.12); color: #9a6b20; border: 1px solid rgba(221,170,98,0.3); }
+.thr-badge--confirmed { background: rgba(45,106,79,0.1);  color: #1e5e3c; border: 1px solid rgba(45,106,79,0.25); }
+.thr-badge--seated    { background: rgba(224,123,57,0.1); color: #b35a15; border: 1px solid rgba(224,123,57,0.25); }
+.thr-badge--done      { background: rgba(100,116,139,0.1); color: #475569; border: 1px solid rgba(100,116,139,0.2); }
+.thr-badge--cancelled { background: rgba(192,57,43,0.08); color: #9b2118; border: 1px solid rgba(192,57,43,0.2); }
+.thr-badge--noshow    { background: rgba(100,116,139,0.08); color: #64748b; border: 1px solid rgba(100,116,139,0.2); }
+
+/* ── Filters ──────────────────────────────────────────────────────────────── */
+.thr-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 12px 16px;
+  background: #fff;
+  border: 1px solid var(--thr-border);
+  border-radius: var(--thr-radius);
+}
+
+.thr-filters input[type="text"],
+.thr-filters input[type="date"],
+.thr-filters select { margin: 0; }
+
+.thr-result-count {
+  font-size: 0.82rem;
+  color: var(--thr-muted);
+  margin-bottom: 10px;
+}
+
+/* ── Detail view grid ─────────────────────────────────────────────────────── */
+.thr-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 900px) { .thr-detail-grid { grid-template-columns: 1fr; } }
+
+.thr-detail-table { width: 100%; border-collapse: collapse; }
+.thr-detail-table th, .thr-detail-table td { padding: 8px 0; border-bottom: 1px solid var(--thr-border); text-align: left; }
+.thr-detail-table th { width: 160px; color: var(--thr-muted); font-weight: 400; font-size: 0.82rem; }
+.thr-detail-table td { font-weight: 500; }
+
+/* ── Status action buttons ────────────────────────────────────────────────── */
+.thr-status-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.thr-status-btn.confirm  { background: var(--thr-green);  color: #fff; border-color: var(--thr-green); }
+.thr-status-btn.cancel   { background: var(--thr-red);    color: #fff; border-color: var(--thr-red); }
+
+/* ── Email status list ────────────────────────────────────────────────────── */
+.thr-email-status { list-style: none; margin: 0; padding: 0; }
+.thr-email-status li { padding: 6px 0; border-bottom: 1px solid var(--thr-border); font-size: 0.85rem; }
+.thr-email-status li:last-child { border-bottom: none; }
+
+/* ── Settings ─────────────────────────────────────────────────────────────── */
+.thr-settings-sections { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 16px; }
+.thr-label { display: block; font-weight: 600; font-size: 0.82rem; margin-bottom: 4px; }
+.thr-field { margin-bottom: 12px !important; }
+.thr-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+
+/* ── Pagination ───────────────────────────────────────────────────────────── */
+.thr-pagination { display: flex; gap: 4px; margin-top: 16px; flex-wrap: wrap; }
+
+/* ── Empty state ──────────────────────────────────────────────────────────── */
+.thr-empty { color: var(--thr-muted); font-style: italic; padding: 24px 0; }
+
+/* ── Phase notice ─────────────────────────────────────────────────────────── */
+.thr-phase-notice {
+  background: rgba(221,170,98,0.06);
+  border: 1px solid rgba(221,170,98,0.25);
+  border-left: 4px solid var(--thr-amber);
+  border-radius: var(--thr-radius);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+/* ── VIP toggle ───────────────────────────────────────────────────────────── */
+.thr-toggle-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; }
+
+/* ── Notes ────────────────────────────────────────────────────────────────── */
+.thr-notes-diner {
+  background: rgba(221,170,98,0.06);
+  border-left: 3px solid var(--thr-amber);
+  padding: 10px 14px;
+  border-radius: 0 3px 3px 0;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+/* ── Danger button variant ────────────────────────────────────────────────── */
+.thr-btn-danger { color: var(--thr-red) !important; border-color: rgba(192,57,43,0.3) !important; }
+.thr-btn-danger:hover { background: rgba(192,57,43,0.08) !important; }
+
+/* ── Shift report print ───────────────────────────────────────────────────── */
+@media print {
+  #adminmenumain, #adminmenuback, #wpadminbar, .thr-filters, .thr-stats-grid .thr-stat + .thr-stat + .thr-stat { display: none !important; }
+  .thr-shift-table { font-size: 0.8rem; }
+  .thr-wrap { max-width: 100%; }
+  body { background: #fff; }
+}
