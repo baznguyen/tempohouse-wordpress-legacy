@@ -9,7 +9,8 @@
 .moods {
   position: relative;
   min-height: 120vh;
-  overflow: hidden;
+  overflow: clip;
+  overflow-clip-margin: 88px; /* allows frame glow (inset: -64px + box-shadow spread) to bleed out without clipping */
   background: var(--color-bg);
 }
 
@@ -324,6 +325,7 @@
     min-height: auto;
     overflow-x: clip;
     overflow-y: visible;
+    overflow-clip-margin: 0; /* reset desktop margin — mobile uses frames-wrap instead */
   }
 
   .moods__eyebrow {
@@ -351,6 +353,7 @@
     display: flex;
     overflow-x: auto;
     overflow-y: clip; /* overflow-x:auto creates implicit overflow-y:auto without this */
+    overflow-clip-margin: 110px; /* allows the -88px beam ::before to show above frames-wrap */
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     gap: 56px;

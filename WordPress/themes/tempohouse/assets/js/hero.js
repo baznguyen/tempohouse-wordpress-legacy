@@ -10,8 +10,9 @@ document.addEventListener('DOMContentLoaded', function () {
     hero.setAttribute('data-tempo-act', act);
 
     // ── Per-letter scroll parallax ────────────────────
-    // Letters: T  E  M  P  O  H  O  U  S  E
-    var letterSpeeds = [0.55, 0.22, 0.72, 0.32, 0.48, 0.60, 0.38, 0.75, 0.28, 0.50];
+    // Letters: T     E     M     P     O     H     O     U     S     E
+    // Slow anchors (E, P, S) hold the word together; fast letters (M, U) fly
+    var letterSpeeds = [0.62, 0.20, 0.90, 0.28, 0.55, 0.68, 0.35, 0.95, 0.24, 0.58];
     var bleedChars   = document.querySelectorAll('.hero__bleed-char');
     var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -21,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       function maxOffset() {
         var w = window.innerWidth;
-        return w >= 1024 ? 130 : w >= 768 ? 80 : 48;
+        return w >= 1024 ? 220 : w >= 768 ? 150 : 90;
       }
 
       function updateLetters() {
