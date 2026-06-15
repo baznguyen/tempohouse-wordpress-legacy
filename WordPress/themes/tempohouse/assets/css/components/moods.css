@@ -135,26 +135,16 @@
   transform: translateY(-6px);
 }
 
-/* ── Desktop frontal flood: ambient warm halo around frame */
+/* ── Desktop halo: ::before is kept as a no-op shell for the mobile beam override.
+   The ambient glow is now filter: drop-shadow() in spotlight.css — applied post-
+   compositing so it can't be clipped by the will-change:transform layer bounds. */
 .moods__frame::before {
   content: '';
   position: absolute;
-  inset: -64px;
-  background: radial-gradient(
-    ellipse 72% 76% at 50% 50%,
-    rgba(255, 228, 130, 0.30) 0%,
-    rgba(255, 215, 88, 0.13) 42%,
-    rgba(255, 202, 55, 0.04) 65%,
-    transparent 80%
-  );
   opacity: 0;
   transition: opacity 0.55s var(--ease-out-expo);
   pointer-events: none;
   z-index: -1;
-}
-
-.moods__frame:hover::before {
-  opacity: 1;
 }
 
 /* ── Desktop frontal flood: warm wash on artwork interior */

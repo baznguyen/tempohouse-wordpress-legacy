@@ -33,7 +33,14 @@ body:has(.event-card:active)::before {
 body:has(.moods__frame:hover) .moods__frame:hover,
 body:has(.moods__frame:active) .moods__frame:active {
   z-index: 260;
-  filter: brightness(1.08) saturate(1.1);
+  /* drop-shadow applied post-compositing — extends beyond layer bounds in all
+     directions, no top-clip from will-change:transform layer paint bounds */
+  filter:
+    brightness(1.08)
+    saturate(1.1)
+    drop-shadow(0 0 18px rgba(255, 218, 110, 0.42))
+    drop-shadow(0 0 50px rgba(255, 200, 60, 0.22))
+    drop-shadow(0 0 88px rgba(255, 190, 50, 0.10));
 }
 
 /* ── The Space — extra dim on non-hovered frames for stronger contrast ── */
