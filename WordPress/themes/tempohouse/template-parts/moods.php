@@ -19,9 +19,10 @@ $bg_map = [
 ];
 
 $fallback = [
-    [ 'slug' => 'cafe',    'num' => '01', 'mode' => 'Day',   'time' => '07:00 – 17:00', 'title' => 'Specialty Café',   'cta' => 'Explore the Café',  'bg' => 'var(--tempo-cream-dark)', 'speed' => '-0.07', 'href' => '#' ],
-    [ 'slug' => 'bar',     'num' => '02', 'mode' => 'Night', 'time' => '18:00 – 01:00', 'title' => 'Cocktail Bar',     'cta' => 'Explore the Bar',   'bg' => 'var(--tempo-ink)',        'speed' => '0.05',  'href' => '#' ],
-    [ 'slug' => 'gallery', 'num' => '03', 'mode' => 'Event', 'time' => 'By programme',  'title' => 'Gallery & Events', 'cta' => 'See the Space',     'bg' => 'var(--tempo-sand)',       'speed' => '-0.04', 'href' => '#' ],
+    [ 'slug' => 'cafe',    'num' => '01', 'mode' => 'Day',     'time' => '07:00 – 17:00', 'title' => 'Specialty Café',  'cta' => 'Explore the Café',  'bg' => 'var(--tempo-cream-dark)', 'speed' => '-0.07', 'href' => '/cafe' ],
+    [ 'slug' => 'bar',     'num' => '02', 'mode' => 'Night',   'time' => '18:00 – 01:00', 'title' => 'Cocktail Bar',    'cta' => 'Explore the Bar',   'bg' => 'var(--tempo-ink)',        'speed' => '0.05',  'href' => '/bar' ],
+    [ 'slug' => 'gallery', 'num' => '03', 'mode' => 'Gallery', 'time' => 'By programme',  'title' => 'Gallery',         'cta' => 'See the Gallery',   'bg' => 'var(--tempo-sand)',       'speed' => '-0.04', 'href' => '/gallery' ],
+    [ 'slug' => 'events',  'num' => '04', 'mode' => 'Private', 'time' => 'By enquiry',    'title' => 'Private Events',  'cta' => 'Plan Your Event',   'bg' => '#1E1610',                 'speed' => '0.06',  'href' => '/events' ],
 ];
 ?>
 <section class="moods" aria-label="The space">
@@ -68,6 +69,7 @@ $fallback = [
 
       <?php foreach ( $fallback as $f ) : ?>
       <article class="moods__frame" data-frame="<?php echo esc_attr( $f['slug'] ); ?>" style="--speed: <?php echo esc_attr( $f['speed'] ); ?>">
+        <a href="<?php echo esc_url( home_url( $f['href'] ) ); ?>" class="moods__frame-link" aria-label="<?php echo esc_attr( $f['title'] ); ?>"></a>
         <div class="moods__frame-art">
           <div class="moods__mat">
             <div class="moods__artwork" style="background: <?php echo esc_attr( $f['bg'] ); ?>">
@@ -98,6 +100,7 @@ $fallback = [
       <button class="moods__dot moods__dot--active" aria-label="Frame 1"></button>
       <button class="moods__dot" aria-label="Frame 2"></button>
       <button class="moods__dot" aria-label="Frame 3"></button>
+      <button class="moods__dot" aria-label="Frame 4"></button>
     </div>
     <button class="moods__nav-btn moods__nav-next" aria-label="Next">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">

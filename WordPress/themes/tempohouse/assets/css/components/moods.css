@@ -98,6 +98,16 @@
   min-width: 220px;
 }
 
+.moods__frame[data-frame="events"] {
+  --frame-clr: #4A1F1F;
+  --artwork-bg: #1E1610;
+  bottom: 5%;
+  left: 26%;
+  width: 24vw;
+  max-width: 340px;
+  min-width: 180px;
+}
+
 /* ── Frame anatomy ──────────────────────────────── */
 
 .moods__frame-link {
@@ -186,6 +196,7 @@
 .moods__frame[data-frame="cafe"]    .moods__artwork { min-height: 320px; }
 .moods__frame[data-frame="bar"]     .moods__artwork { min-height: 280px; }
 .moods__frame[data-frame="gallery"] .moods__artwork { min-height: 330px; }
+.moods__frame[data-frame="events"]  .moods__artwork { min-height: 260px; }
 
 /* ── Frame content ──────────────────────────────── */
 
@@ -198,7 +209,8 @@
   user-select: none;
 }
 
-.moods__frame[data-frame="bar"] .moods__num {
+.moods__frame[data-frame="bar"] .moods__num,
+.moods__frame[data-frame="events"] .moods__num {
   color: rgba(247, 243, 238, 0.10);
 }
 
@@ -219,8 +231,9 @@
   background: linear-gradient(to top, rgba(26, 24, 22, 0.72) 0%, transparent 100%);
 }
 
-.moods__frame[data-frame="bar"] .moods__title-bar {
-  background: linear-gradient(to top, rgba(26, 24, 22, 0.85) 0%, transparent 100%);
+.moods__frame[data-frame="bar"] .moods__title-bar,
+.moods__frame[data-frame="events"] .moods__title-bar {
+  background: linear-gradient(to top, rgba(10, 6, 4, 0.92) 0%, transparent 100%);
 }
 
 .moods__label-mode {
