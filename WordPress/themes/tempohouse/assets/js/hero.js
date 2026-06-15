@@ -9,15 +9,41 @@ document.addEventListener('DOMContentLoaded', function () {
             : 'evening';
     hero.setAttribute('data-tempo-act', act);
 
-    // Scroll parallax
-    var rafId = 0;
-    window.addEventListener('scroll', function () {
-      if (rafId) return;
-      rafId = requestAnimationFrame(function () {
-        hero.style.setProperty('--scroll-y', window.pageYOffset + 'px');
+    // ── Per-letter scroll parallax ────────────────────
+    // Letters: T  E  M  P  O  H  O  U  S  E
+    var letterSpeeds = [0.55, 0.22, 0.72, 0.32, 0.48, 0.60, 0.38, 0.75, 0.28, 0.50];
+    var bleedChars   = document.querySelectorAll('.hero__bleed-char');
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!reducedMotion && bleedChars.length) {
+      var rafId      = 0;
+      var heroHeight = hero.offsetHeight || window.innerHeight;
+
+      function maxOffset() {
+        var w = window.innerWidth;
+        return w >= 1024 ? 130 : w >= 768 ? 80 : 48;
+      }
+
+      function updateLetters() {
+        var progress = Math.min(1, window.pageYOffset / heroHeight);
+        var max      = maxOffset();
+        bleedChars.forEach(function (el, i) {
+          var y = -(progress * (letterSpeeds[i] || 0.4) * max);
+          el.style.transform = 'translateY(' + y.toFixed(2) + 'px)';
+        });
         rafId = 0;
+      }
+
+      window.addEventListener('scroll', function () {
+        if (rafId) return;
+        rafId = requestAnimationFrame(updateLetters);
+      }, { passive: true });
+
+      window.addEventListener('resize', function () {
+        heroHeight = hero.offsetHeight || window.innerHeight;
+        if (!rafId) rafId = requestAnimationFrame(updateLetters);
       });
-    }, { passive: true });
+    }
   }
 
   // ── Drawer nav ──────────────────────────────────

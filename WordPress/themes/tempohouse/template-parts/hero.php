@@ -22,7 +22,7 @@ $letters_house = [ 'H', 'O', 'U', 'S', 'E' ];
     </div>
 
     <p class="hero__tagline"><em>Where the city slows down.</em></p>
-    <p class="hero__descriptor">District 1 &middot; Ho Chi Minh City</p>
+    <p class="hero__descriptor">District 3 &middot; Ho Chi Minh City</p>
 
     <div class="hero__ctas">
       <a href="<?php echo esc_url( home_url( '/reservations' ) ); ?>" class="hero__cta-primary">Reserve a table</a>
