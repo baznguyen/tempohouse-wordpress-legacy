@@ -1878,7 +1878,8 @@
   }
 
   function deleteZone(id) {
-    apiFetch('DELETE', 'furniture/' + id).then(function () {
+    var endpoint = S.activeLayout ? 'slots/' + id : 'furniture/' + id;
+    apiFetch('DELETE', endpoint).then(function () {
       delete S.tables[id];
       renderZoneLayer();
       deselect();
@@ -2785,7 +2786,8 @@
       return;
     }
 
-    apiFetch('DELETE', 'furniture/' + id).then(function () {
+    var endpoint = S.activeLayout ? 'slots/' + id : 'furniture/' + id;
+    apiFetch('DELETE', endpoint).then(function () {
       var node = stage.findOne('#tbl-' + id);
       if (node) node.destroy();
       delete S.tables[id];
