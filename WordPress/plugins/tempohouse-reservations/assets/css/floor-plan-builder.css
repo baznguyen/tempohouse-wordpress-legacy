@@ -1321,6 +1321,8 @@
   gap: 8px;
   border-bottom: 1px solid var(--border-2);
   flex-shrink: 0;
+  cursor: grab;
+  user-select: none;
 }
 .fp-fp-title {
   flex: 1;

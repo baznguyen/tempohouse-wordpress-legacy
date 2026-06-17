@@ -1190,6 +1190,7 @@
     // No transformer for zones
     transformer.nodes([]);
     tableLayer.batchDraw();
+    updateZoneButton();
   }
 
   /* ══════════════════════════════════════════════════════════════════
@@ -1264,11 +1265,29 @@
     if (delBtn) delBtn.disabled = true;
     var dupBtn = document.getElementById('fp-tb-dup');
     if (dupBtn) dupBtn.disabled = false;
+    // Position panel near the collective bounding box of selected items
+    setTimeout(function () {
+      var nodes = Array.from(S.selectedIds).map(function (sid) {
+        return stage.findOne('#tbl-' + sid);
+      }).filter(Boolean);
+      if (!nodes.length) return;
+      var x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+      nodes.forEach(function (n) {
+        var r = n.getClientRect();
+        if (r.x < x1) x1 = r.x;
+        if (r.y < y1) y1 = r.y;
+        if (r.x + r.width  > x2) x2 = r.x + r.width;
+        if (r.y + r.height > y2) y2 = r.y + r.height;
+      });
+      positionFloatPanelByRect({ x: x1, y: y1, width: x2 - x1, height: y2 - y1 });
+    }, 10);
   }
 
   function updateZoneButton() {
     var zoneBtn = document.getElementById('fp-tb-zone-btn');
-    if (zoneBtn) zoneBtn.disabled = S.selectedIds.size < 2;
+    if (!zoneBtn) return;
+    var zoneSelected = !!(S.selected && S.tables[S.selected] && S.tables[S.selected].type === 'zone');
+    zoneBtn.disabled = S.selectedIds.size < 2 || zoneSelected;
   }
 
   /* ══════════════════════════════════════════════════════════════════
@@ -2123,6 +2142,48 @@
     bindEl('fp-fp-close',  'click', function () { hideFloatPanel(); deselect(); });
     bindEl('fp-fp-delete', 'click', function (e) { deleteSelectedWithConfirm(e.currentTarget); });
     bindEl('fp-fp-back',   'click', deselect);
+    makePanelDraggable();
+  }
+
+  function makePanelDraggable() {
+    var panel = document.getElementById('fp-float-panel');
+    if (!panel) return;
+    var hd = panel.querySelector('.fp-fp-hd');
+    if (!hd) return;
+
+    var _drag = null;
+
+    hd.addEventListener('mousedown', function (e) {
+      if (e.target.closest && e.target.closest('.fp-fp-close')) return;
+      if (panel.hidden) return;
+      e.preventDefault();
+      _drag = {
+        startX:   e.clientX,
+        startY:   e.clientY,
+        origLeft: panel.offsetLeft,
+        origTop:  panel.offsetTop,
+      };
+      document.body.style.userSelect = 'none';
+      hd.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', function (e) {
+      if (!_drag) return;
+      var wrap = document.getElementById('fp-canvas-wrap');
+      var wrapW = wrap ? wrap.offsetWidth  : 9999;
+      var wrapH = wrap ? wrap.offsetHeight : 9999;
+      var newLeft = Math.max(0, Math.min(_drag.origLeft + (e.clientX - _drag.startX), wrapW - panel.offsetWidth));
+      var newTop  = Math.max(0, Math.min(_drag.origTop  + (e.clientY - _drag.startY), wrapH - panel.offsetHeight));
+      panel.style.left = newLeft + 'px';
+      panel.style.top  = newTop  + 'px';
+    });
+
+    document.addEventListener('mouseup', function () {
+      if (!_drag) return;
+      _drag = null;
+      document.body.style.userSelect = '';
+      hd.style.cursor = '';
+    });
   }
 
   function bindToolbar() {
