@@ -40,10 +40,9 @@ get_header();
     </div>
   </div>
 
-  <!-- ── 1c. Cocktail strip — animated marquee ────────
-       Items duplicated for seamless loop (translateX -50%). -->
-  <div class="page-bar__cocktail-strip" aria-label="Cocktail list">
-    <div class="page-bar__cocktail-track" aria-hidden="true">
+  <!-- ── 1c. Cocktail strip ──────────────────────────── -->
+  <div class="page-bar__cocktail-strip" aria-hidden="true">
+    <div class="page-bar__cocktail-track">
       <span class="page-bar__cocktail-item">Lychee Martini</span>
       <span class="page-bar__cocktail-sep">&middot;</span>
       <span class="page-bar__cocktail-item">Panpan Spritz</span>
@@ -55,28 +54,6 @@ get_header();
       <span class="page-bar__cocktail-item">Manhattan</span>
       <span class="page-bar__cocktail-sep">&middot;</span>
       <span class="page-bar__cocktail-item">Old Fashioned</span>
-      <span class="page-bar__cocktail-sep">&middot;</span>
-      <span class="page-bar__cocktail-item">Pornstar Martini</span>
-      <span class="page-bar__cocktail-sep">&middot;</span>
-      <span class="page-bar__cocktail-item">Yuzu Spritz</span>
-      <span class="page-bar__cocktail-sep">&middot;</span>
-      <!-- Duplicate set for seamless loop -->
-      <span class="page-bar__cocktail-item">Lychee Martini</span>
-      <span class="page-bar__cocktail-sep">&middot;</span>
-      <span class="page-bar__cocktail-item">Panpan Spritz</span>
-      <span class="page-bar__cocktail-sep">&middot;</span>
-      <span class="page-bar__cocktail-item">Negroni</span>
-      <span class="page-bar__cocktail-sep">&middot;</span>
-      <span class="page-bar__cocktail-item">Espresso Martini</span>
-      <span class="page-bar__cocktail-sep">&middot;</span>
-      <span class="page-bar__cocktail-item">Manhattan</span>
-      <span class="page-bar__cocktail-sep">&middot;</span>
-      <span class="page-bar__cocktail-item">Old Fashioned</span>
-      <span class="page-bar__cocktail-sep">&middot;</span>
-      <span class="page-bar__cocktail-item">Pornstar Martini</span>
-      <span class="page-bar__cocktail-sep">&middot;</span>
-      <span class="page-bar__cocktail-item">Yuzu Spritz</span>
-      <span class="page-bar__cocktail-sep">&middot;</span>
     </div>
     <p class="page-bar__cocktail-source">218c Pasteur, District 3, Ho Chi Minh City &mdash; Nightly from 18:00</p>
   </div>

@@ -142,32 +142,20 @@
   line-height: var(--leading-normal);
 }
 
-/* ── 1c. Cocktail strip — animated marquee ──────────
-   Continuous horizontal scroll gives the bar page
-   kinetic energy absent from the café. Pauses on hover. */
+/* ── 1c. Cocktail strip ──────────────────────────── */
 
 .page-bar__cocktail-strip {
-  padding-block: var(--space-8);
+  padding-block: var(--space-10);
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
-  overflow: hidden;
 }
 
 .page-bar__cocktail-track {
   display: flex;
-  flex-wrap: nowrap;
   align-items: center;
-  width: max-content;
-  animation: bar-ticker 36s linear infinite;
-}
-
-.page-bar__cocktail-track:hover {
-  animation-play-state: paused;
-}
-
-@keyframes bar-ticker {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
 }
 
 .page-bar__cocktail-item {
@@ -178,7 +166,6 @@
   letter-spacing: var(--tracking-tight);
   color: var(--color-text-primary);
   white-space: nowrap;
-  padding-inline: var(--space-5);
 }
 
 .page-bar__cocktail-sep {
@@ -552,13 +539,12 @@
   letter-spacing: -0.03em;
 }
 
-/* Concert bill — left amber rule gives "printed programme" feel */
+/* Concert bill — full-width rules only, no decorative one-side borders */
 .page-bar__night-bill {
   list-style: none;
-  padding: 0 0 0 var(--space-8);
+  padding: 0;
   margin: 0 0 var(--space-12);
   border-top: 1px solid var(--color-border-strong);
-  border-left: 2px solid rgba(221, 170, 98, 0.35);
 }
 
 .page-bar__night-bill-item {
@@ -741,16 +727,6 @@
 
   .page-bar__provenance-item:nth-child(even) {
     border-left: 1px solid var(--color-border);
-  }
-
-  .page-bar__cocktail-strip {
-    overflow-x: auto;
-  }
-
-  .page-bar__cocktail-track {
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    padding-inline: var(--gutter);
   }
 
   .page-bar__night-header {
