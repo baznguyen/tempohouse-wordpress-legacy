@@ -19,7 +19,7 @@ $bg_map = [
 ];
 
 $fallback = [
-    [ 'slug' => 'cafe',    'num' => '01', 'mode' => 'Day',     'time' => '07:00 – 17:00', 'title' => 'Specialty Café',  'cta' => 'Explore the Café',  'bg' => 'var(--tempo-cream-dark)', 'speed' => '-0.07', 'href' => '/cafe' ],
+    [ 'slug' => 'cafe',    'num' => '01', 'mode' => 'Day',     'time' => '08:00 – 17:00', 'title' => 'Specialty Café',  'cta' => 'Explore the Café',  'bg' => 'var(--tempo-cream-dark)', 'speed' => '-0.07', 'href' => '/cafe' ],
     [ 'slug' => 'bar',     'num' => '02', 'mode' => 'Night',   'time' => '18:00 – 01:00', 'title' => 'Cocktail Bar',    'cta' => 'Explore the Bar',   'bg' => 'var(--tempo-ink)',        'speed' => '0.05',  'href' => '/bar' ],
     [ 'slug' => 'gallery', 'num' => '03', 'mode' => 'Gallery', 'time' => 'By programme',  'title' => 'Gallery',         'cta' => 'See the Gallery',   'bg' => 'var(--tempo-sand)',       'speed' => '-0.04', 'href' => '/gallery' ],
     [ 'slug' => 'events',  'num' => '04', 'mode' => 'Private', 'time' => 'By enquiry',    'title' => 'Private Events',  'cta' => 'Plan Your Event',   'bg' => '#1E1610',                 'speed' => '0.06',  'href' => '/events' ],
@@ -29,8 +29,8 @@ $fallback = [
   <p class="moods__eyebrow">The Space</p>
 
   <div class="moods__bleed-text" aria-hidden="true">
-    <span class="moods__bleed-line">CURATING</span>
-    <span class="moods__bleed-line">EXPERIENCES</span>
+    <span class="moods__bleed-line">Creating experiences</span>
+    <span class="moods__bleed-line">to be shared</span>
   </div>
 
   <div class="moods__frames-wrap">

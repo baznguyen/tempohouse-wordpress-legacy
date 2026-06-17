@@ -7,12 +7,14 @@ class THR_Cron {
     const HOOK_FEEDBACK      = 'thr_send_feedback';
     const HOOK_SHIFT_REPORT  = 'thr_send_shift_report';
     const HOOK_WAITLIST_SWEEP= 'thr_waitlist_sweep';
+    const HOOK_NOSHOW_SWEEP  = 'thr_noshow_sweep';
 
     public function init(): void {
         add_action( self::HOOK_REMINDER,       [ $this, 'process_reminders' ] );
         add_action( self::HOOK_FEEDBACK,        [ $this, 'process_feedback' ] );
         add_action( self::HOOK_SHIFT_REPORT,    [ $this, 'process_shift_report' ] );
         add_action( self::HOOK_WAITLIST_SWEEP,  [ $this, 'process_waitlist_sweep' ] );
+        add_action( self::HOOK_NOSHOW_SWEEP,    [ $this, 'process_no_show_sweep' ] );
 
         // When a reservation is cancelled, fire waitlist check
         add_action( 'thr_reservation_status_changed', [ $this, 'on_status_changed' ], 10, 3 );
@@ -31,6 +33,9 @@ class THR_Cron {
             // Run waitlist sweep every 2 hours
             wp_schedule_event( time(), 'twicedaily', self::HOOK_WAITLIST_SWEEP );
         }
+        if ( ! wp_next_scheduled( self::HOOK_NOSHOW_SWEEP ) ) {
+            wp_schedule_event( time(), 'hourly', self::HOOK_NOSHOW_SWEEP );
+        }
         // Shift report: schedule for ~10 PM venue time (15:00 UTC)
         // Recalculated each activation; admin can change via settings
         self::reschedule_shift_report();
@@ -41,6 +46,7 @@ class THR_Cron {
         wp_clear_scheduled_hook( self::HOOK_FEEDBACK );
         wp_clear_scheduled_hook( self::HOOK_SHIFT_REPORT );
         wp_clear_scheduled_hook( self::HOOK_WAITLIST_SWEEP );
+        wp_clear_scheduled_hook( self::HOOK_NOSHOW_SWEEP );
     }
 
     public static function reschedule_shift_report(): void {
@@ -48,7 +54,7 @@ class THR_Cron {
         if ( ! THR_Settings::get( 'shift_report_enabled', false ) ) return;
         if ( ! THR_Settings::get( 'shift_report_email', '' ) ) return;
 
-        $time_str = THR_Settings::get( 'shift_report_time', '22:00' ); // GMT+7
+        $time_str = THR_Settings::get( 'shift_report_time', '15:00' ); // GMT+7
         [ $h, $m ] = array_map( 'intval', explode( ':', $time_str ) );
         // Convert to UTC
         $utc_h = ( $h - 7 + 24 ) % 24;
@@ -85,9 +91,9 @@ class THR_Cron {
             }
         }
 
-        if ( THR_Settings::get( 'reminder_4h', true ) ) {
-            $window_start = gmdate( 'Y-m-d H:i:s', $now + 3 * 3600 + 30 * 60 );
-            $window_end   = gmdate( 'Y-m-d H:i:s', $now + 4 * 3600 + 30 * 60 );
+        if ( THR_Settings::get( 'reminder_2h', true ) ) {
+            $window_start = gmdate( 'Y-m-d H:i:s', $now + 1 * 3600 + 30 * 60 );
+            $window_end   = gmdate( 'Y-m-d H:i:s', $now + 2 * 3600 + 30 * 60 );
             $rows = $wpdb->get_results( $wpdb->prepare(
                 "SELECT * FROM $table
                  WHERE status IN ('confirmed')
@@ -96,7 +102,7 @@ class THR_Cron {
                 $window_start, $window_end
             ) );
             foreach ( $rows as $r ) {
-                THR_Email::send_reminder( $r, '4h' );
+                THR_Email::send_reminder( $r, '2h' );
                 $wpdb->update( $table, [ 'reminder_4h_sent_at' => current_time( 'mysql', true ) ], [ 'id' => $r->id ] );
             }
         }
@@ -147,6 +153,31 @@ class THR_Cron {
              WHERE status='waiting' AND requested_date < %s",
             current_time( 'mysql', true ), $yesterday
         ) );
+    }
+
+    // ── No-show auto-flag (runs hourly) ──────────────────────────────────────
+
+    public function process_no_show_sweep(): void {
+        global $wpdb;
+        $table      = THR_Database::t( 'reservations' );
+        $now_local  = gmdate( 'Y-m-d H:i:s', time() + 7 * 3600 );
+
+        $rows = $wpdb->get_results( $wpdb->prepare(
+            "SELECT * FROM $table
+             WHERE status = 'confirmed'
+               AND seated_at IS NULL
+               AND DATE_ADD(reservation_dt, INTERVAL (duration_min / 2) MINUTE) < %s",
+            $now_local
+        ) );
+
+        foreach ( $rows as $r ) {
+            $wpdb->update(
+                $table,
+                [ 'status' => 'no_show', 'updated_at' => current_time( 'mysql', true ) ],
+                [ 'id' => $r->id ]
+            );
+            do_action( 'thr_reservation_status_changed', $r, 'confirmed', 'no_show' );
+        }
     }
 
     // ── On reservation status change — notify waitlist ────────────────────────

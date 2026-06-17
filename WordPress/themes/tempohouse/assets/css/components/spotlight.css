@@ -47,8 +47,7 @@ body:has(.moods__frame:active) .moods__frame:active {
 
 body:has(.moods__frame:hover) .moods__frame:not(:hover),
 body:has(.moods__frame:active) .moods__frame:not(:active) {
-  opacity: 0.35;
-  filter: saturate(0.3) brightness(0.85);
+  opacity: 0.32; /* opacity only — GPU composited vs filter which triggers CPU repaint */
 }
 
 /* ── What's On — viewport rises above dark plane ──────── */
@@ -56,5 +55,28 @@ body:has(.moods__frame:active) .moods__frame:not(:active) {
 body:has(.event-card:hover) .events__viewport,
 body:has(.event-card:active) .events__viewport {
   z-index: 260;
+}
+
+/* ── Tempo Frame — art frame punches above the dark plane ────
+   Any <a class="tempo-frame"> or <div class="tempo-frame" data-interactive>
+   dims the page on hover and lifts the active frame above the overlay.
+   The downlight glow simulates gallery track lighting.
+   ─────────────────────────────────────────────────────────── */
+
+body:has(a.tempo-frame:hover)::before,
+body:has(.tempo-frame[data-interactive]:hover)::before {
+  background: rgba(10, 8, 6, 0.48);
+}
+
+body:has(a.tempo-frame:hover) a.tempo-frame:hover,
+body:has(.tempo-frame[data-interactive]:hover) .tempo-frame[data-interactive]:hover {
+  z-index: 260;
+  position: relative;
+  filter:
+    brightness(1.06)
+    saturate(1.08)
+    drop-shadow(0 0 16px rgba(221, 170, 98, 0.36))
+    drop-shadow(0 0 44px rgba(221, 170, 98, 0.18))
+    drop-shadow(0 0 80px rgba(221, 170, 98, 0.08));
 }
 

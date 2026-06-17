@@ -16,6 +16,7 @@ foreach ( $rows as $r ) {
         'seated'    => '<span style="color:#e74c3c;">Seated</span>',
         default     => esc_html( ucfirst( $r->status ) ),
     };
+    $zalo = isset( $r->diner_zalo ) && $r->diner_zalo ? esc_html( $r->diner_zalo ) : '';
 
     $rows_html .= <<<ROW
   <tr>
@@ -25,6 +26,7 @@ foreach ( $rows as $r ) {
     <td style="padding:10px 8px;border-bottom:1px solid rgba(247,243,238,0.08);color:rgba(247,243,238,0.6);">{$occ}</td>
     <td style="padding:10px 8px;border-bottom:1px solid rgba(247,243,238,0.08);">{$status}</td>
     <td style="padding:10px 8px;border-bottom:1px solid rgba(247,243,238,0.08);color:rgba(247,243,238,0.55);font-size:13px;">{$notes}</td>
+    <td style="padding:10px 8px;border-bottom:1px solid rgba(247,243,238,0.08);color:rgba(247,243,238,0.55);font-size:13px;">{$zalo}</td>
   </tr>
 ROW;
 }
@@ -42,6 +44,7 @@ $table_html = $rows_html
       <th style="padding:8px;text-align:left;color:rgba(247,243,238,0.4);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid rgba(247,243,238,0.12);">Occasion</th>
       <th style="padding:8px;text-align:left;color:rgba(247,243,238,0.4);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid rgba(247,243,238,0.12);">Status</th>
       <th style="padding:8px;text-align:left;color:rgba(247,243,238,0.4);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid rgba(247,243,238,0.12);">Notes</th>
+      <th style="padding:8px;text-align:left;color:rgba(247,243,238,0.4);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid rgba(247,243,238,0.12);">Zalo</th>
     </tr>
   </thead>
   <tbody>

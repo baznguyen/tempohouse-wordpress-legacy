@@ -140,7 +140,7 @@ class THR_API_Reservations {
         if ( ! $row ) return THR_API::error( 'thr_not_found', 'Reservation not found.', 404 );
 
         $body    = $req->get_json_params() ?? [];
-        $allowed = [ 'diner_name', 'diner_email', 'diner_phone', 'party_size', 'reservation_dt',
+        $allowed = [ 'diner_name', 'diner_email', 'diner_phone', 'diner_zalo', 'party_size', 'reservation_dt',
                      'duration_min', 'occasion', 'notes_diner', 'notes_internal', 'is_vip',
                      'area_label', 'furniture_ids', 'floor_plan_id', 'diner_lang' ];
         $update  = array_intersect_key( $body, array_flip( $allowed ) );
@@ -178,7 +178,7 @@ class THR_API_Reservations {
         if ( ! $row ) return THR_API::error( 'thr_not_found', 'Reservation not found.', 404 );
 
         $new_status = sanitize_text_field( $req->get_param( 'status' ) );
-        $valid      = [ 'pending', 'confirmed', 'seated', 'completed', 'cancelled', 'no_show' ];
+        $valid      = [ 'pending', 'confirmed', 'seated', 'completed', 'cancelled', 'no_show', 'late' ];
         if ( ! in_array( $new_status, $valid, true ) ) {
             return THR_API::error( 'thr_invalid_status', 'Invalid status value.', 422 );
         }
@@ -203,6 +203,15 @@ class THR_API_Reservations {
 
         $data = $this->validate_reservation_data( $body, true );
         if ( is_wp_error( $data ) ) return $data;
+
+        // Capacity guard: check overlapping confirmed reservations
+        $max_capacity = (int) THR_Settings::get( 'venue_capacity', 60 );
+        if ( $max_capacity > 0 ) {
+            $booked = $this->get_booked_covers( $data['reservation_dt'], (int) THR_Settings::get( 'default_duration', 120 ) );
+            if ( $booked + (int) $data['party_size'] > $max_capacity ) {
+                return THR_API::error( 'thr_no_capacity', 'Sorry, we are fully booked for this time.', 409 );
+            }
+        }
 
         // Public bookings always start as pending
         $data['status'] = 'pending';
@@ -320,6 +329,7 @@ class THR_API_Reservations {
             'diner_name'   => $name,
             'diner_email'  => $email,
             'diner_phone'  => sanitize_text_field( $body['diner_phone'] ?? '' ),
+            'diner_zalo'   => sanitize_text_field( $body['diner_zalo'] ?? '' ) ?: null,
             'diner_lang'   => in_array( $body['diner_lang'] ?? '', [ 'en', 'vi' ], true ) ? $body['diner_lang'] : 'en',
             'reservation_dt' => $dt,
             'party_size'   => $size,
@@ -416,6 +426,7 @@ class THR_API_Reservations {
             'diner_name'       => $row->diner_name,
             'diner_email'      => $row->diner_email,
             'diner_phone'      => $row->diner_phone,
+            'diner_zalo'       => $row->diner_zalo,
             'diner_lang'       => $row->diner_lang,
             'occasion'         => $row->occasion,
             'notes_diner'      => $row->notes_diner,
@@ -428,7 +439,30 @@ class THR_API_Reservations {
             'created_at'       => $row->created_at,
             'updated_at'       => $row->updated_at,
             'tags'             => $tags,
+            'is_returning'     => $this->is_returning_guest( $row->diner_email, (int) $row->id ),
         ];
+    }
+
+    private function get_booked_covers( string $dt_utc, int $duration_min ): int {
+        global $wpdb;
+        $start = sanitize_text_field( $dt_utc );
+        $end   = gmdate( 'Y-m-d H:i:s', strtotime( $dt_utc . ' UTC' ) + $duration_min * 60 );
+        return (int) $wpdb->get_var( $wpdb->prepare(
+            "SELECT COALESCE(SUM(party_size),0) FROM {$this->table}
+             WHERE status IN ('confirmed','seated','pending')
+               AND reservation_dt < %s
+               AND DATE_ADD(reservation_dt, INTERVAL duration_min MINUTE) > %s",
+            $end, $start
+        ) );
+    }
+
+    private function is_returning_guest( string $email, int $current_id ): bool {
+        global $wpdb;
+        return (bool) $wpdb->get_var( $wpdb->prepare(
+            "SELECT COUNT(*) FROM {$this->table}
+             WHERE diner_email = %s AND id != %d AND status IN ('confirmed','completed','seated')",
+            $email, $current_id
+        ) );
     }
 
     private function generate_reference(): string {

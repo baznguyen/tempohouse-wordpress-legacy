@@ -24,8 +24,8 @@ class THR_Email {
     }
 
     public static function send_reminder( object $reservation, string $type = '24h' ): bool {
-        $when = $type === '4h'
-            ? self::localise( $reservation->diner_lang, 'in 4 hours',  'trong 4 giờ nữa' )
+        $when = $type === '2h'
+            ? self::localise( $reservation->diner_lang, 'in 2 hours',  'trong 2 giờ nữa' )
             : self::localise( $reservation->diner_lang, 'tomorrow',     'ngày mai' );
         $subject = self::localise(
             $reservation->diner_lang,
@@ -100,6 +100,38 @@ class THR_Email {
             "From: {$from_name} <{$from_email}>",
         ];
         return wp_mail( $to, $subject, $body, $headers );
+    }
+
+    // ── Event enquiry emails ───────────────────────────────────────────────────
+
+    public static function send_event_enquiry_auto_reply( object $enquiry ): bool {
+        $subject = 'Thank you for your event enquiry — ' . $enquiry->reference_code;
+        $body    = self::render_event_enquiry_reply( $enquiry );
+        return self::send( $enquiry->contact_email, $subject, $body );
+    }
+
+    public static function send_event_enquiry_notification( object $enquiry ): bool {
+        $venue_email = THR_Settings::get( 'venue_email' ) ?: get_option( 'admin_email' );
+        $subject     = '[TEMPO House] New Event Enquiry — ' . $enquiry->reference_code;
+        $body        = self::render_event_enquiry_reply( $enquiry, true );
+        return self::send( $venue_email, $subject, $body );
+    }
+
+    private static function render_event_enquiry_reply( object $enquiry, bool $internal = false ): string {
+        $file = THR_PLUGIN_DIR . 'templates/emails/event-enquiry-reply.php';
+        if ( ! file_exists( $file ) ) return '';
+
+        $logo_url    = THR_Settings::get( 'email_logo_url' );
+        $accent      = THR_Settings::get( 'email_accent_color', '#DDAA62' );
+        $venue_name  = THR_Settings::get( 'venue_name', 'TEMPO House' );
+        $venue_address = THR_Settings::get( 'venue_address' );
+
+        $v = compact( 'enquiry', 'logo_url', 'accent', 'venue_name', 'venue_address', 'internal' );
+
+        ob_start();
+        extract( $v, EXTR_SKIP );
+        include $file;
+        return ob_get_clean();
     }
 
     // ── Private helpers ────────────────────────────────────────────────────────

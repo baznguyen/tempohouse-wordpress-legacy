@@ -44,19 +44,15 @@
 .moods__bleed-line {
   display: block;
   font-family: var(--font-accent);
-  font-size: clamp(4rem, 14vw, 22rem);
+  font-size: clamp(4rem, 12vw, 20rem);
   font-weight: 300;
-  letter-spacing: -0.04em;
-  line-height: 0.88;
+  letter-spacing: -0.03em;
+  line-height: 1.0;
   color: rgba(26, 24, 22, 0.13);
   white-space: nowrap;
 }
 
 /* ── Frames ─────────────────────────────────────── */
-
-.moods__frames-wrap {
-  /* transparent pass-through on desktop */
-}
 
 .moods__frame {
   position: absolute;
@@ -347,7 +343,7 @@
   }
 
   .moods__bleed-line {
-    font-size: clamp(3rem, 11vw, 8rem);
+    font-size: clamp(2.4rem, 10vw, 6rem);
     color: rgba(26, 24, 22, 0.20);
   }
 
@@ -394,11 +390,10 @@
     transition: opacity 0.35s ease, filter 0.35s ease;
   }
 
-  /* Non-hovered frames dim — mirrors the What's On behaviour */
+  /* Non-hovered frames dim — opacity only for GPU compositing vs filter CPU repaint */
   .moods__frames-wrap:has(.moods__frame:hover) .moods__frame:not(:hover),
   .moods__frames-wrap:has(.moods__frame:active) .moods__frame:not(:active) {
-    opacity: 0.5;
-    filter: saturate(0.4) brightness(0.92);
+    opacity: 0.38;
   }
 
   /* Mobile: override desktop frontal flood → downlight wall flood (hover-only) */

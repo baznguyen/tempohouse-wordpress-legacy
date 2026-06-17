@@ -15,6 +15,30 @@ get_header();
     <p class="page-inner__lead">The gallery at TEMPO House runs a year-round programme of rotating exhibitions across painting, photography, installation, and mixed media. Open to café and bar guests — no appointment, no admission fee.</p>
   </header>
 
+  <!-- ── 1b. Gallery provenance strip ─────────────── -->
+  <div class="page-gallery__provenance" aria-hidden="true">
+    <div class="page-inner__container">
+      <dl class="page-gallery__provenance-grid">
+        <div class="page-gallery__provenance-item">
+          <dt class="page-gallery__provenance-label">Programme</dt>
+          <dd class="page-gallery__provenance-value">4&ndash;6 rotating exhibitions per year</dd>
+        </div>
+        <div class="page-gallery__provenance-item">
+          <dt class="page-gallery__provenance-label">Medium</dt>
+          <dd class="page-gallery__provenance-value">Painting &middot; Photography &middot; Installation</dd>
+        </div>
+        <div class="page-gallery__provenance-item">
+          <dt class="page-gallery__provenance-label">Artists</dt>
+          <dd class="page-gallery__provenance-value">Regional &amp; Southeast Asian</dd>
+        </div>
+        <div class="page-gallery__provenance-item">
+          <dt class="page-gallery__provenance-label">Access</dt>
+          <dd class="page-gallery__provenance-value">Free entry &mdash; no appointment</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
   <!-- ── 2. Current Exhibition ───────────────────── -->
   <section class="page-inner__section page-inner__section--alt" aria-labelledby="exhibition-title">
     <div class="page-inner__container">
@@ -35,8 +59,12 @@ get_header();
           </div>
         </div>
 
-        <div class="page-inner__img-placeholder" role="img" aria-label="Current exhibition at TEMPO House Gallery">
-          <span>Current Exhibition &mdash; Photography Available</span>
+        <div class="tempo-frame tempo-frame--placeholder" data-interactive aria-label="Current exhibition at TEMPO House Gallery">
+          <div class="tempo-frame__mat">
+            <div class="tempo-frame__artwork">
+              <span class="tempo-frame__label">Current Exhibition</span>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -56,7 +84,7 @@ get_header();
             <p>The gallery floor at Level 1 is a column-free space designed to hold work without competing with it. Neutral exhibition walls, adjustable track lighting, and natural light from street-facing windows during the day. The floor is non-fixed — furniture and layout reconfigure for exhibitions, talks, film screenings, and events up to 80 guests standing. Combined with the ground floor café and bar and the connecting outdoor area, the full venue at 218c Pasteur accommodates 150 or more for standing events.</p>
           </div>
 
-          <ul class="page-inner__feature-list" aria-label="Gallery venue features">
+          <ul class="page-inner__feature-list page-gallery__menu-list" aria-label="Gallery venue features">
             <li class="page-inner__feature-item">Level 1: up to 80 guests (standing)</li>
             <li class="page-inner__feature-item">Ground floor + outdoor: full venue to 150+</li>
             <li class="page-inner__feature-item">Natural light + adjustable track lighting</li>
@@ -70,8 +98,12 @@ get_header();
           </div>
         </div>
 
-        <div class="page-inner__img-placeholder" role="img" aria-label="Level 1 gallery floor at TEMPO House District 3">
-          <span>Gallery Space &mdash; Photography Available</span>
+        <div class="tempo-frame tempo-frame--placeholder" data-interactive aria-label="Level 1 gallery floor at TEMPO House District 3">
+          <div class="tempo-frame__mat">
+            <div class="tempo-frame__artwork">
+              <span class="tempo-frame__label">Gallery Space</span>
+            </div>
+          </div>
         </div>
 
       </div>

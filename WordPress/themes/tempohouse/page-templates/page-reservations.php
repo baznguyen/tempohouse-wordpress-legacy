@@ -49,7 +49,7 @@ get_header();
             <div class="res-form__select-wrap">
               <select class="res-form__select" id="res-time" name="time_preference" required>
                 <option value="" disabled selected>Pick a time slot</option>
-                <option value="morning">Morning &mdash; 07:00&ndash;10:00</option>
+                <option value="morning">Morning &mdash; 08:00&ndash;10:00</option>
                 <option value="late-morning">Late morning &mdash; 10:00&ndash;12:00</option>
                 <option value="lunch">Lunch &mdash; 12:00&ndash;14:00</option>
                 <option value="afternoon">Afternoon &mdash; 14:00&ndash;17:00</option>
@@ -120,7 +120,7 @@ get_header();
         <div>
           <p class="page-inner__info-label">Hours</p>
           <p class="page-inner__info-value">
-            Caf&eacute; 07:00&ndash;17:00<br>
+            Caf&eacute; 08:00&ndash;17:00<br>
             Bar 18:00&ndash;01:00<br>
             Open daily
           </p>

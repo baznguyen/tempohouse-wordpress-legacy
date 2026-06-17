@@ -1,10 +1,22 @@
 <?php
 function tempohouse_meta_tags() {
     $site_name    = get_bloginfo( 'name' );
-    $default_desc = $site_name . ' — specialty café, cocktail bar and gallery, Ho Chi Minh City.';
+    $default_desc = 'Specialty café, cocktail bar and rotating gallery at 218c Pasteur, District 3, Saigon. Private event venue for intimate hire. Ho Chi Minh City.';
 
     $description = $default_desc;
     if ( is_singular() ) {
+        // Template-specific descriptions — keyword-rich, accurate to page content.
+        // Yoast or excerpt override below; these serve as the fallback.
+        if ( is_page_template( 'page-templates/page-cafe.php' ) ) {
+            $description = 'Specialty coffee and matcha café at 218c Pasteur, District 3, Ho Chi Minh City. Vietnam Highlands beans, Ito En matcha from Uji, Kyoto. Flat white, Bạc Xỉu, Affogato and six matcha variations. Open daily 08:00–17:00.';
+        } elseif ( is_page_template( 'page-templates/page-bar.php' ) ) {
+            $description = 'Cocktail bar and wine at 218c Pasteur, District 3, Ho Chi Minh City. Classic and original cocktails — Lychee Martini, Panpan Spritz, Espresso Martini, Negroni, Manhattan. Natural wine, Champagne, house pours by the glass from 140k. Happy Hour daily 18:00–20:00. Opens nightly at 18:00.';
+        } elseif ( is_page_template( 'page-templates/page-gallery.php' ) ) {
+            $description = 'Contemporary art gallery in District 3, Ho Chi Minh City. Rotating exhibitions across painting, photography and installation — regional and Southeast Asian artists. Free entry, no appointment. Level 1 at TEMPO House.';
+        } elseif ( is_page_template( 'page-templates/page-venue.php' ) ) {
+            $description = 'Private event venue at 218c Pasteur, District 3, Saigon. Gallery floor, café, bar and outdoor terrace — up to 150 guests. Available for private hire, product launches, art openings and intimate events.';
+        }
+
         $yoast = get_post_meta( get_the_ID(), '_yoast_wpseo_metadesc', true );
         if ( $yoast ) {
             $description = $yoast;
@@ -80,7 +92,7 @@ function tempohouse_event_schema() {
         'location'    => [
             '@type'   => 'Place',
             'name'    => 'TEMPO House',
-            'address' => 'District 1, Ho Chi Minh City, Vietnam',
+            'address' => '218c Pasteur Street, District 3, Ho Chi Minh City, Vietnam',
         ],
         'url'         => $url,
     ];
@@ -107,3 +119,4 @@ function tempohouse_canonical() {
     echo '<link rel="canonical" href="' . esc_url( $url ) . '">' . "\n";
 }
 add_action( 'wp_head', 'tempohouse_canonical' );
+

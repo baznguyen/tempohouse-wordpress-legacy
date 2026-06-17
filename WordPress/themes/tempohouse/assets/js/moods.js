@@ -22,8 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ── Mobile infinite carousel ──────────────────────
   if (!wrap) return;
-
-  // Only run on mobile (carousel mode)
   if (!window.matchMedia('(max-width: 1100px)').matches) return;
 
   if (typeof window.tempoDragScroll === 'function') {
@@ -31,17 +29,15 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   var realItems = Array.from(wrap.children);
-  var REAL = realItems.length; // 3
+  var REAL = realItems.length;
 
-  // Prepend a full clone set (so scrolling left wraps to the end)
+  // Prepend + append clone sets for infinite wrap
   realItems.forEach(function (el) {
     var c = el.cloneNode(true);
     c.setAttribute('aria-hidden', 'true');
     c.classList.add('is-clone');
     wrap.insertBefore(c, wrap.firstChild);
   });
-
-  // Append a full clone set (so scrolling right wraps to the start)
   realItems.forEach(function (el) {
     var c = el.cloneNode(true);
     c.setAttribute('aria-hidden', 'true');
@@ -49,39 +45,34 @@ document.addEventListener('DOMContentLoaded', function () {
     wrap.appendChild(c);
   });
 
-  // DOM is now: [headClones(0…REAL-1) | realItems(REAL…2*REAL-1) | tailClones(2*REAL…3*REAL-1)]
+  // DOM: [headClones(0…REAL-1) | realItems(REAL…2*REAL-1) | tailClones(2*REAL…3*REAL-1)]
 
-  var prevBtn = section.querySelector('.moods__nav-prev');
-  var nextBtn = section.querySelector('.moods__nav-next');
-  var dots    = Array.from(section.querySelectorAll('.moods__dot'));
+  // Cache scroll-pad — CSS value, only changes on resize
+  var scrollPad = parseFloat(getComputedStyle(wrap).scrollPaddingInlineStart) || 0;
+
+  var prevBtn    = section.querySelector('.moods__nav-prev');
+  var nextBtn    = section.querySelector('.moods__nav-next');
+  var dots       = Array.from(section.querySelectorAll('.moods__dot'));
   var settleTimer = null;
+  var dotsRafId   = 0;
 
-  // ── Helpers ───────────────────────────────────────
-
-  function getChildren() { return Array.from(wrap.children); }
-
-  // Find the child whose left edge is closest to the container's left edge
-  // (matches scroll-snap behaviour: snapped card sits at container left + scroll-padding)
+  // Use wrap.children (live collection) directly — no array allocation per call
   function getCurrentIndex() {
-    var wrapLeft = wrap.getBoundingClientRect().left;
-    var scrollPad = parseFloat(getComputedStyle(wrap).scrollPaddingInlineStart) || 0;
-    var snapLine = wrapLeft + scrollPad;
-    var children = getChildren();
+    var snapLine = wrap.getBoundingClientRect().left + scrollPad;
+    var children = wrap.children;
     var best = REAL, bestDist = Infinity;
-    children.forEach(function (el, i) {
-      var d = Math.abs(el.getBoundingClientRect().left - snapLine);
+    for (var i = 0; i < children.length; i++) {
+      var d = Math.abs(children[i].getBoundingClientRect().left - snapLine);
       if (d < bestDist) { bestDist = d; best = i; }
-    });
+    }
     return best;
   }
 
   function scrollToIdx(idx, smooth) {
-    var card = getChildren()[idx];
+    var card = wrap.children[idx];
     if (!card) return;
-    var scrollPad = parseFloat(getComputedStyle(wrap).scrollPaddingInlineStart) || 0;
-    var wrapRect  = wrap.getBoundingClientRect();
-    var cardRect  = card.getBoundingClientRect();
-    var target    = wrap.scrollLeft + cardRect.left - wrapRect.left - scrollPad;
+    var target = wrap.scrollLeft + card.getBoundingClientRect().left
+               - wrap.getBoundingClientRect().left - scrollPad;
     if (smooth) {
       wrap.scrollTo({ left: target, behavior: 'smooth' });
     } else {
@@ -91,10 +82,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function normalize() {
     var idx = getCurrentIndex();
-    // Jumped into head clones → reset to equivalent real item
     if (idx < REAL) {
       scrollToIdx(idx + REAL, false);
-    // Jumped into tail clones → reset to equivalent real item
     } else if (idx >= REAL * 2) {
       scrollToIdx(idx - REAL, false);
     }
@@ -107,29 +96,32 @@ document.addEventListener('DOMContentLoaded', function () {
     dots.forEach(function (d, i) {
       d.classList.toggle('moods__dot--active', i === dotIdx);
     });
-    // Never disable — infinite loop has no ends
     if (prevBtn) prevBtn.disabled = false;
     if (nextBtn) nextBtn.disabled = false;
   }
 
-  // ── Scroll listener ───────────────────────────────
+  // ── Scroll listeners ──────────────────────────────
 
   wrap.addEventListener('scroll', function () {
-    updateDots();
+    // Throttle dot updates to one rAF per frame
+    if (!dotsRafId) dotsRafId = requestAnimationFrame(function () {
+      updateDots();
+      dotsRafId = 0;
+    });
     clearTimeout(settleTimer);
     settleTimer = setTimeout(normalize, 180);
   }, { passive: true });
 
-  // scrollend fires when scroll fully settles (Chrome 114+, FF 109+)
   wrap.addEventListener('scrollend', function () {
     clearTimeout(settleTimer);
     normalize();
   }, { passive: true });
 
-  // ── Resize: re-snap when vw changes (frame widths are calc(100vw - X)) ──
+  // ── Resize: re-snap + recache scroll-pad ─────────
 
   var resizeTimer = null;
   window.addEventListener('resize', function () {
+    scrollPad = parseFloat(getComputedStyle(wrap).scrollPaddingInlineStart) || 0;
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () {
       scrollToIdx(getCurrentIndex(), false);
@@ -145,21 +137,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (prevBtn) {
     prevBtn.disabled = false;
-    prevBtn.addEventListener('click', function () {
-      scrollToIdx(getCurrentIndex() - 1, true);
-    });
+    prevBtn.addEventListener('click', function () { scrollToIdx(getCurrentIndex() - 1, true); });
   }
-
   if (nextBtn) {
     nextBtn.disabled = false;
-    nextBtn.addEventListener('click', function () {
-      scrollToIdx(getCurrentIndex() + 1, true);
-    });
+    nextBtn.addEventListener('click', function () { scrollToIdx(getCurrentIndex() + 1, true); });
   }
 
   dots.forEach(function (d, i) {
-    d.addEventListener('click', function () {
-      scrollToIdx(REAL + i, true);
-    });
+    d.addEventListener('click', function () { scrollToIdx(REAL + i, true); });
   });
 });

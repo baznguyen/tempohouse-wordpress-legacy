@@ -6,7 +6,7 @@
   const api = thrBooking.apiUrl;
 
   let selected = { date: null, time: null, partySize: 2, occasion: 'dinner' };
-  let currentLang = 'en';
+  let currentLang = (thrBooking.config && thrBooking.config.defaultLang === 'vi') ? 'vi' : 'en';
 
   // ── Bilingual strings ─────────────────────────────────────────────────────
   const STRINGS = {
@@ -30,8 +30,10 @@
       phFullName:              'Your name',
       lblEmail:                'Email',
       phEmail:                 'your@email.com',
-      lblPhone:                'Phone / Zalo',
+      lblPhone:                'Phone',
       phPhone:                 '+84 xxx xxx xxx',
+      lblZalo:                 'Zalo (optional)',
+      phZalo:                  '+84 xxx xxx xxx',
       lblSpecialRequests:      'Special requests',
       phSpecialRequests:       'Allergies, high chair, birthday cake…',
       lblLanguage:             'Language preference',
@@ -87,8 +89,10 @@
       phFullName:              'Họ và tên',
       lblEmail:                'Email',
       phEmail:                 'email@cua.ban',
-      lblPhone:                'Điện thoại / Zalo',
+      lblPhone:                'Số điện thoại',
       phPhone:                 '+84 xxx xxx xxx',
+      lblZalo:                 'Zalo (tuỳ chọn)',
+      phZalo:                  '+84 xxx xxx xxx',
       lblSpecialRequests:      'Yêu cầu đặc biệt',
       phSpecialRequests:       'Dị ứng, ghế trẻ em, bánh sinh nhật…',
       lblLanguage:             'Ngôn ngữ ưu tiên',
@@ -138,7 +142,11 @@
     initOccasionSelect();
     initDateInput();
     bindEvents();
-    applyLocale('en');
+    // Apply default language from server config; also mark the correct radio
+    var initLang = (thrBooking.config && thrBooking.config.defaultLang === 'vi') ? 'vi' : 'en';
+    var initRadio = document.querySelector('input[name="thr-lang"][value="' + initLang + '"]');
+    if (initRadio) initRadio.checked = true;
+    applyLocale(initLang);
     populateSummary();
     if (cfg.cancelPolicy) {
       const el = document.getElementById('thr-policy-text');
@@ -426,6 +434,7 @@
     const name  = document.getElementById('thr-name').value.trim();
     const email = document.getElementById('thr-email').value.trim();
     const phone = document.getElementById('thr-phone').value.trim();
+    const zalo  = document.getElementById('thr-zalo') ? document.getElementById('thr-zalo').value.trim() : null;
     const notes = document.getElementById('thr-notes').value.trim();
 
     if (!name || !email) {
@@ -450,7 +459,8 @@
       body: JSON.stringify({
         diner_name:     name,
         diner_email:    email,
-        diner_phone:    phone,
+        diner_phone:    phone || null,
+        diner_zalo:     zalo || null,
         diner_lang:     currentLang,
         reservation_dt: utcDt,
         party_size:     selected.partySize,

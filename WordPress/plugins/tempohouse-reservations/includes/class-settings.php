@@ -37,16 +37,23 @@ class THR_Settings {
         'occasion_types'      => 'Dinner:dinner|Bar:bar|Birthday:birthday|Anniversary:anniversary|Corporate:corporate|Event:event|Custom:custom',
         // Reminder email timing
         'reminder_24h'        => true,  // send 24h before
-        'reminder_4h'         => true,  // send 4h before
+        'reminder_2h'         => true,  // send 2h before
         'feedback_delay_min'  => 120,   // send feedback email N minutes after reservation ends
         // Cancellation policy copy
         'cancel_policy_text'  => 'Reservations may be cancelled up to 24 hours before the booking time.',
         // Public booking behaviour
         'auto_confirm_public' => true,  // auto-confirm public bookings; set false for manual review
+        'booking_default_lang' => 'vi', // default language for public booking form
         // Shift report email
         'shift_report_enabled' => false,
         'shift_report_email'   => '',
-        'shift_report_time'    => '22:00',  // venue local time (GMT+7) to send the report
+        'shift_report_time'    => '15:00',  // venue local time (GMT+7) to send the report
+        // Venue capacity
+        'venue_capacity'       => 60,   // max covers; 0 = no guard
+        // VietQR payment settings
+        'vietqr_bank_id'       => 'VCB',  // Vietcombank default
+        'vietqr_account_no'    => '',
+        'vietqr_account_name'  => '',
     ];
 
     public static function maybe_set_defaults(): void {

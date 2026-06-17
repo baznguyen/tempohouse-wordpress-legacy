@@ -3,7 +3,7 @@
  * Plugin Name:  TEMPO House Reservations
  * Plugin URI:   https://tempohouse.com.vn
  * Description:  Full-stack reservation management for TEMPO House — floor plan builder, multi-role admin, diner booking widget, email notifications.
- * Version:      1.3.0
+ * Version:      1.4.0
  * Author:       Raging Monk
  * Text Domain:  tempohouse-res
  * Domain Path:  /languages
@@ -13,8 +13,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'THR_VERSION',       '1.3.0' );
-define( 'THR_DB_VERSION',    '1.1' );
+define( 'THR_VERSION',       '1.4.0' );
+define( 'THR_DB_VERSION',    '1.3' );
 define( 'THR_PLUGIN_FILE',   __FILE__ );
 define( 'THR_PLUGIN_DIR',    plugin_dir_path( __FILE__ ) );
 define( 'THR_PLUGIN_URL',    plugin_dir_url( __FILE__ ) );

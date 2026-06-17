@@ -18,6 +18,7 @@ class THR_API {
         ( new THR_API_Waitlist() )->register();
         ( new THR_API_Reports() )->register();
         ( new THR_API_Settings() )->register();
+        ( new THR_API_Events() )->register();
     }
 
     // Allow the Next.js frontend and booking subdomain to call the API

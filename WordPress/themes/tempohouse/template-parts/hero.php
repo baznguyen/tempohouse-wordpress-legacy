@@ -21,7 +21,7 @@ $letters_house = [ 'H', 'O', 'U', 'S', 'E' ];
       </span>
     </div>
 
-    <p class="hero__tagline"><em>Where the city slows down.</em></p>
+    <p class="hero__tagline"><em>Saigon at its own pace.</em></p>
     <p class="hero__descriptor">District 3 &middot; Ho Chi Minh City</p>
 
     <div class="hero__ctas">

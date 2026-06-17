@@ -51,18 +51,24 @@
              data-ph-i18n="phFullName" autocomplete="name" required>
     </div>
 
+    <div class="thr-field-group">
+      <label class="thr-label" for="thr-email">
+        <span data-i18n="lblEmail">Email</span> <span class="thr-required">*</span>
+      </label>
+      <input type="email" id="thr-email" class="thr-input" placeholder="your@email.com"
+             data-ph-i18n="phEmail" autocomplete="email" required>
+    </div>
+
     <div class="thr-field-row">
       <div class="thr-field-group">
-        <label class="thr-label" for="thr-email">
-          <span data-i18n="lblEmail">Email</span> <span class="thr-required">*</span>
-        </label>
-        <input type="email" id="thr-email" class="thr-input" placeholder="your@email.com"
-               data-ph-i18n="phEmail" autocomplete="email" required>
-      </div>
-      <div class="thr-field-group">
-        <label class="thr-label" for="thr-phone" data-i18n="lblPhone">Phone / Zalo</label>
+        <label class="thr-label" for="thr-phone" data-i18n="lblPhone">Phone</label>
         <input type="tel" id="thr-phone" class="thr-input" placeholder="+84 xxx xxx xxx"
                data-ph-i18n="phPhone" autocomplete="tel">
+      </div>
+      <div class="thr-field-group">
+        <label class="thr-label" for="thr-zalo" data-i18n="lblZalo">Zalo (optional)</label>
+        <input type="tel" id="thr-zalo" class="thr-input" placeholder="+84 xxx xxx xxx"
+               data-ph-i18n="phZalo" autocomplete="tel">
       </div>
     </div>
 
@@ -75,7 +81,7 @@
     <div class="thr-field-group">
       <label class="thr-label" data-i18n="lblLanguage">Language preference</label>
       <div class="thr-lang-toggle">
-        <label><input type="radio" name="thr-lang" value="en" checked> English</label>
+        <label><input type="radio" name="thr-lang" value="en"> English</label>
         <label><input type="radio" name="thr-lang" value="vi"> Tiếng Việt</label>
       </div>
     </div>

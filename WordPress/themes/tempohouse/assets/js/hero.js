@@ -25,11 +25,13 @@ document.addEventListener('DOMContentLoaded', function () {
         return w >= 1024 ? 220 : w >= 768 ? 150 : 90;
       }
 
+      // Cache maxOffset — only changes on resize
+      var cachedMax = maxOffset();
+
       function updateLetters() {
         var progress = Math.min(1, window.pageYOffset / heroHeight);
-        var max      = maxOffset();
         bleedChars.forEach(function (el, i) {
-          var y = -(progress * (letterSpeeds[i] || 0.4) * max);
+          var y = -(progress * (letterSpeeds[i] || 0.4) * cachedMax);
           el.style.transform = 'translateY(' + y.toFixed(2) + 'px)';
         });
         rafId = 0;
@@ -42,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       window.addEventListener('resize', function () {
         heroHeight = hero.offsetHeight || window.innerHeight;
+        cachedMax  = maxOffset();
         if (!rafId) rafId = requestAnimationFrame(updateLetters);
       });
     }

@@ -4,7 +4,8 @@ defined( 'ABSPATH' ) || exit;
 class THR_Booking_Widget {
 
     public function init(): void {
-        add_shortcode( 'th_booking_form', [ $this, 'render_shortcode' ] );
+        add_shortcode( 'th_booking_form',      [ $this, 'render_shortcode' ] );
+        add_shortcode( 'th_events_enquiry',    [ $this, 'render_events_shortcode' ] );
         add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
         add_action( 'init', [ $this, 'register_page_template' ] );
         add_filter( 'page_template', [ $this, 'load_page_template' ] );
@@ -40,14 +41,38 @@ class THR_Booking_Widget {
                 'advanceMax'      => (int) THR_Settings::get( 'booking_advance_max', 60 ),
                 'occasionTypes'   => THR_Settings::occasion_types(),
                 'cancelPolicy'    => THR_Settings::get( 'cancel_policy_text' ),
+                'defaultLang'     => THR_Settings::get( 'booking_default_lang', 'vi' ),
             ],
         ] );
+
+        // Events enquiry form assets (only when shortcode is present)
+        $post = get_post();
+        if ( $post && has_shortcode( $post->post_content, 'th_events_enquiry' ) ) {
+            wp_enqueue_script(
+                'th-events-enquiry',
+                THR_PLUGIN_URL . 'assets/js/events-enquiry.js',
+                [],
+                THR_VERSION,
+                true
+            );
+            wp_localize_script( 'th-events-enquiry', 'thrEvents', [
+                'apiUrl' => rest_url( THR_REST_NS . '/' ),
+                'nonce'  => wp_create_nonce( 'wp_rest' ),
+            ] );
+        }
     }
 
     public function render_shortcode( array $atts = [] ): string {
         $atts = shortcode_atts( [ 'title' => 'Make a Reservation' ], $atts );
         ob_start();
         include THR_PLUGIN_DIR . 'templates/booking-form.php';
+        return ob_get_clean();
+    }
+
+    public function render_events_shortcode( array $atts = [] ): string {
+        $atts = shortcode_atts( [], $atts );
+        ob_start();
+        include THR_PLUGIN_DIR . 'templates/events-enquiry-form.php';
         return ob_get_clean();
     }
 
@@ -74,6 +99,8 @@ class THR_Booking_Widget {
     private function is_booking_context(): bool {
         if ( is_page( 'reservations' ) || is_page( 'book' ) || is_page( 'dat-ban' ) || is_page( 'cancel' ) ) return true;
         $post = get_post();
-        return $post && has_shortcode( $post->post_content, 'th_booking_form' );
+        if ( ! $post ) return false;
+        return has_shortcode( $post->post_content, 'th_booking_form' )
+            || has_shortcode( $post->post_content, 'th_events_enquiry' );
     }
 }

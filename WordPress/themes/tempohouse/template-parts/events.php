@@ -110,7 +110,7 @@ $total       = count( $event_items );
 
   <div class="container">
     <div class="events__footer">
-      <p class="events__footer-note"><em>The programme is taking shape. Subscribe to be first to know.</em></p>
+      <p class="events__footer-note"><em>The programme rotates. The list gets first notice.</em></p>
       <a href="<?php echo esc_url( home_url( '/whats-on' ) ); ?>" class="events__footer-cta">See all events &rarr;</a>
     </div>
   </div>

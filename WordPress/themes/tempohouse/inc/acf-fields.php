@@ -100,7 +100,7 @@ acf_add_local_field_group([
             'name'        => 'space_time',
             'label'       => 'Hours',
             'type'        => 'text',
-            'placeholder' => '07:00 – 17:00',
+            'placeholder' => '08:00 – 17:00',
         ],
         [
             'key'         => 'field_space_frame_num',

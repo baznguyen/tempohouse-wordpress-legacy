@@ -49,8 +49,22 @@
     });
   }
 
+  // Delegate: lock scroll while pointer is inside any data-interactive tempo-frame.
+  // Moving between two frames stays locked — only unlocks when leaving to a non-frame target.
+  function attachInteractiveFrames() {
+    document.addEventListener('mouseover', function (e) {
+      if (e.target.closest('.tempo-frame[data-interactive]')) lockScroll();
+    });
+    document.addEventListener('mouseout', function (e) {
+      var to = e.relatedTarget;
+      if (to && to.closest('.tempo-frame[data-interactive]')) return;
+      if (e.target.closest('.tempo-frame[data-interactive]')) unlockScroll();
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     attach('.moods__frames-wrap');
     attachCards('.events__viewport');
+    attachInteractiveFrames();
   });
 })();

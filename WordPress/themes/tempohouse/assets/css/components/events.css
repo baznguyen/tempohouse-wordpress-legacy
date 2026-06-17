@@ -43,7 +43,9 @@
 
 .events__viewport {
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;          /* clips infinite marquee */
+  overflow-y: clip;            /* y-clip with margin — not hidden (which clips ::before beam) */
+  overflow-clip-margin: 110px; /* lets the -88px downlight cone breathe above cards */
   padding-block: 120px 72px;
 }
 
@@ -55,6 +57,7 @@
   padding-right: 32px;
   width: max-content;
   animation: galleryWalk 24s linear infinite;
+  will-change: transform; /* keep marquee on GPU compositor thread */
 }
 
 .events__track:hover {
@@ -74,14 +77,12 @@
   width: 332px;
   cursor: pointer;
   isolation: isolate;
-  transition:
-    opacity 0.35s ease,
-    filter 0.35s ease;
+  will-change: transform; /* pre-promote; avoids promotion cost on hover */
+  transition: opacity 0.35s ease;
 }
 
 .events__track:has(.event-card:hover) .event-card:not(:hover) {
-  opacity: 0.5;
-  filter: saturate(0.4) brightness(0.92);
+  opacity: 0.38; /* opacity only — GPU-composited vs filter which forces CPU repaint per frame */
 }
 
 .event-card[data-interior="dark"]  { --artwork-bg: var(--tempo-ink); }

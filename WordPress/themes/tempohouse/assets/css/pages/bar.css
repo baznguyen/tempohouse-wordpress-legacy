@@ -1,22 +1,649 @@
+/* ══════════════════════════════════════════════
+   /bar — Cocktail Bar Page
+   Design signature: amber / candlelit / editorial.
+   Three unique section types (manifesto, time
+   installation, concert bill) give this page a
+   different visual language from the café.
+   All rules scoped to .page-bar namespace.
+   ══════════════════════════════════════════════ */
+
+.page-bar {
+  display: block;
+}
+
+/* ── Bar amber accent — "evening" pillar ───────── */
+
+.page-bar .page-inner__eyebrow {
+  color: var(--tempo-amber);
+}
+
+.page-bar .page-inner__eyebrow::before {
+  background: rgba(221, 170, 98, 0.25);
+}
+
+/* Override inner-page.css terracotta border → amber.
+   Inner pages default to terracotta; bar is amber. */
+.page-bar .tempo-frame {
+  --tempo-frame-border: var(--tempo-amber);
+}
+
+/* Em-dash bullets in amber for bar feature lists */
+.page-bar .page-inner__feature-item::before {
+  content: '—';
+  color: var(--tempo-amber);
+}
+
+/* Bar sections: tighter rhythm — more kinetic than café */
+.page-bar .page-inner__section {
+  padding-block: var(--space-20);
+}
+
+/* ── 1. Banner ──────────────────────────────────── */
+
+.page-bar__banner {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Candlelight: warm glow from BOTTOM-right —
+   the inverse of café's morning glow top-right */
+.page-bar__banner::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  right: -8%;
+  width: 55%;
+  height: 130%;
+  background: radial-gradient(
+    ellipse at 70% 80%,
+    rgba(221, 170, 98, 0.10) 0%,
+    rgba(200, 184, 154, 0.04) 45%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-bar__banner > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ghost "18" — bar opening hour.
+   Slightly more present than café's "07" — evening
+   feels denser than morning's openness. */
+.page-bar__banner-hour {
+  position: absolute;
+  top: -0.08em;
+  right: calc(var(--gutter) * -0.25);
+  font-family: var(--font-accent);
+  font-size: clamp(12rem, 36vw, 38rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: rgba(221, 170, 98, 0.08);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.page-bar__title-em {
+  font-style: italic;
+  color: var(--color-text-secondary);
+}
+
+.page-bar__banner-lead {
+  max-width: 44ch;
+}
+
+/* ── 1b. Provenance strip ────────────────────────── */
+
+.page-bar__provenance {
+  background: var(--color-bg-alt);
+  border-top: 1px solid var(--color-border-strong);
+  border-bottom: 1px solid var(--color-border-strong);
+  padding-block: var(--space-10);
+}
+
+.page-bar__provenance-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.page-bar__provenance-item {
+  padding-inline: var(--space-8);
+  border-left: 1px solid var(--color-border);
+}
+
+.page-bar__provenance-item:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+
+.page-bar__provenance-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--tempo-amber);
+  margin-bottom: var(--space-2);
+}
+
+.page-bar__provenance-value {
+  display: block;
+  font-family: var(--font-accent);
+  font-size: var(--text-base);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+}
+
+/* ── 1c. Cocktail strip ──────────────────────────── */
+
+.page-bar__cocktail-strip {
+  padding-block: var(--space-10);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.page-bar__cocktail-track {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
+}
+
+.page-bar__cocktail-item {
+  font-family: var(--font-accent);
+  font-size: clamp(1.8rem, 4vw, 3.5rem);
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.page-bar__cocktail-sep {
+  font-family: var(--font-accent);
+  font-size: clamp(1.8rem, 4vw, 3.5rem);
+  font-weight: 300;
+  color: var(--tempo-amber);
+  opacity: 0.45;
+  flex-shrink: 0;
+}
+
+.page-bar__cocktail-source {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-top: var(--space-4);
+}
+
+/* ── 2. The Cocktail Programme ───────────────────── */
+
+.page-bar__programme {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ambient candlelight from BOTTOM — distinguishes this
+   dark section from any other brand's dark section */
+.page-bar__programme::before {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 170%;
+  background: radial-gradient(ellipse at 50% 90%, rgba(221, 170, 98, 0.10) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-bar__programme .page-inner__container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Programme frame: dark canvas so it reads
+   as depth, not a cream interruption on dark bg */
 .page-bar__programme-img {
+  --tempo-frame-canvas: rgba(20, 15, 10, 0.92);
+}
+
+.page-bar__programme-img .tempo-frame__artwork {
   aspect-ratio: 3 / 4;
 }
 
 .page-bar__programme-list .page-inner__feature-item {
-  color: rgba(247, 243, 238, 0.65);
+  color: var(--color-text-secondary);
 }
 
-.page-bar__programme-list .page-inner__feature-item::before {
-  color: var(--tempo-amber);
+/* ── 2b. Signature Cocktails Gallery ─────────────── */
+
+.page-bar__signatures-head {
+  margin-bottom: var(--space-14);
 }
 
-.page-bar__atmosphere-img {
+.page-bar__signatures-intro {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-12);
+  align-items: start;
+}
+
+.page-bar__signatures-source {
+  font-family: var(--font-accent);
+  font-size: var(--text-base);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--color-text-secondary);
+  line-height: var(--leading-loose);
+  max-width: 32ch;
+}
+
+.page-bar__signatures-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+  margin-bottom: var(--space-8);
+}
+
+.page-bar__sig-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.page-bar__sig-frame .tempo-frame__artwork {
   aspect-ratio: 3 / 4;
 }
 
-.page-bar__private-img {
-  aspect-ratio: 4 / 3;
+/* Alternate frame canvas across the 3×2 grid.
+   Without real photography, dark/light alternation gives
+   each frame a distinct weight — reads like a curated
+   gallery hang, not a repeated placeholder. */
+.page-bar__sig-item:nth-child(2) .page-bar__sig-frame,
+.page-bar__sig-item:nth-child(4) .page-bar__sig-frame,
+.page-bar__sig-item:nth-child(6) .page-bar__sig-frame {
+  --tempo-frame-canvas: rgba(20, 15, 10, 0.90);
 }
+
+.page-bar__sig-label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+/* Catalogue numbers: gallery-label style —
+   each cocktail numbered like an artwork */
+.page-bar__sig-num {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  color: var(--tempo-amber);
+  padding-top: 0.25em;
+  flex-shrink: 0;
+}
+
+.page-bar__sig-name {
+  font-family: var(--font-accent);
+  font-size: var(--text-lg);
+  font-weight: 300;
+  color: var(--color-text-primary);
+  line-height: var(--leading-snug);
+  margin: 0 0 var(--space-1);
+}
+
+.page-bar__sig-notes {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  line-height: var(--leading-normal);
+  margin: 0;
+}
+
+.page-bar__signatures-footnote {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.page-bar__signatures-dots {
+  display: none;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+}
+
+/* ── 2c. Manifesto strip — UNIQUE TO BAR ───────────
+   Full-width typographic statement.
+   A short bold line of copy, nothing else.
+   Reads like a printed bar card slipped between pages. */
+
+.page-bar__manifesto {
+  padding-block: var(--space-16);
+  text-align: center;
+  border-top: 1px solid var(--color-border-strong);
+  border-bottom: 1px solid var(--color-border-strong);
+  background: var(--color-bg-alt);
+}
+
+/* Short amber rule — editorial accent above the quote */
+.page-bar__manifesto::before {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 1px;
+  background: var(--tempo-amber);
+  opacity: 0.6;
+  margin: 0 auto var(--space-8);
+}
+
+.page-bar__manifesto-text {
+  font-family: var(--font-accent);
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+  letter-spacing: var(--tracking-tight);
+  max-width: 22ch;
+  margin: 0 auto var(--space-6);
+}
+
+.page-bar__manifesto-attr {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--tempo-amber);
+  opacity: 0.75;
+}
+
+/* ── 3. Happy Hour — time installation ─────────────
+   The hours "18—20" as proportioned display numerals.
+   Generous but not overwhelming — reads as designed,
+   not accidental. The pair of numbers IS the headline. */
+
+.page-bar__happy-hour {
+  border-top: 1px solid var(--color-border-strong);
+  border-bottom: 1px solid var(--color-border-strong);
+}
+
+.page-bar__happy-hour-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-16);
+  align-items: center;
+}
+
+.page-bar__hh-left {
+  padding-block: var(--space-4);
+}
+
+.page-bar__hh-times {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  line-height: 1;
+  margin-block: var(--space-5) var(--space-6);
+}
+
+/* Proportional display numerals — large enough to be the
+   visual statement, controlled enough to feel editorial */
+.page-bar__hh-time {
+  font-family: var(--font-accent);
+  font-size: clamp(4.5rem, 10vw, 8.5rem);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  color: var(--color-text-primary);
+}
+
+.page-bar__hh-sep {
+  font-family: var(--font-accent);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 300;
+  color: var(--tempo-amber);
+  opacity: 0.6;
+  align-self: center;
+}
+
+.page-bar__hh-sub {
+  font-family: var(--font-accent);
+  font-size: var(--text-base);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--color-text-secondary);
+  line-height: var(--leading-loose);
+  max-width: 28ch;
+}
+
+.page-bar__happy-hour-deals {
+  padding-top: var(--space-2);
+}
+
+.page-bar__deal-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.page-bar__deal-item:first-of-type {
+  border-top: 1px solid var(--color-border);
+}
+
+.page-bar__deal-label {
+  font-family: var(--font-accent);
+  font-size: var(--text-lg);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--color-text-primary);
+}
+
+.page-bar__deal-value {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--tempo-amber);
+}
+
+.page-bar__deal-note {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-top: var(--space-4);
+}
+
+/* ── 4. The Wine List ───────────────────────────── */
+
+/* Subtle amber wash on the wine frame canvas —
+   warm, prestigious, slightly golden */
+.page-bar__wine-img {
+  --tempo-frame-canvas: rgba(221, 170, 98, 0.07);
+}
+
+.page-bar__wine-img .tempo-frame__artwork {
+  aspect-ratio: 3 / 4;
+}
+
+.page-bar__wine-list .page-inner__feature-item {
+  color: var(--color-text-secondary);
+}
+
+/* ── 5. Night Programme — concert bill ─────────────
+   Full-width dark section. Heading stacks top.
+   Below: the bill list reads like a printed programme.
+   No split-with-frame — unique layout for the bar.
+   The design system has no true dark section background
+   (page-inner__section--dark uses --color-bg-alt).
+   We apply --tempo-ink directly — bar-specific decision. */
+
+.page-bar__night {
+  background: var(--tempo-ink);
+  border-color: rgba(221, 170, 98, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ambient amber candlelight in the corner */
+.page-bar__night::before {
+  content: '';
+  position: absolute;
+  bottom: -10%;
+  right: -5%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(ellipse, rgba(221, 170, 98, 0.07) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-bar__night .page-inner__container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Text colour inversions for ink background */
+.page-bar__night .page-inner__section-head {
+  color: var(--tempo-amber);
+}
+
+.page-bar__night .page-inner__section-head::before {
+  background: rgba(221, 170, 98, 0.25);
+}
+
+.page-bar__night .page-inner__section-title {
+  color: var(--color-text-inverse);
+}
+
+/* Header: stacked (section-head above big H2) —
+   simpler than a grid, lets the big title breathe */
+.page-bar__night-header {
+  margin-bottom: var(--space-12);
+  padding-bottom: var(--space-10);
+  border-bottom: 1px solid rgba(221, 170, 98, 0.12);
+}
+
+/* Poster-scale title — larger than café section titles */
+.page-bar__night .page-inner__section-title {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  line-height: 1.1;
+  margin-top: var(--space-3);
+}
+
+/* Concert bill — each programme type as a horizontal entry.
+   Reads like a printed venue programme, not a bullet list. */
+.page-bar__night-bill {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-12);
+  border-top: 1px solid rgba(221, 170, 98, 0.12);
+}
+
+.page-bar__night-bill-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-8);
+  padding-block: var(--space-5);
+  border-bottom: 1px solid rgba(221, 170, 98, 0.08);
+}
+
+.page-bar__bill-label {
+  font-family: var(--font-accent);
+  font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--color-text-inverse);
+  flex-shrink: 0;
+}
+
+.page-bar__bill-note {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(247, 243, 238, 0.40);
+  text-align: right;
+}
+
+/* Footer row: body copy left, CTAs right */
+.page-bar__night-footer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-12);
+  align-items: center;
+  padding-top: var(--space-8);
+  border-top: 1px solid rgba(221, 170, 98, 0.08);
+}
+
+.page-bar__night-body {
+  font-family: var(--font-accent);
+  font-size: var(--text-base);
+  font-weight: 300;
+  font-style: italic;
+  color: rgba(247, 243, 238, 0.55);
+  line-height: var(--leading-loose);
+  max-width: 40ch;
+  margin: 0;
+}
+
+.page-bar__night-cta {
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+}
+
+/* CTAs on ink background — secondary gets a ghost treatment */
+.page-bar__night .page-inner__cta-secondary {
+  color: rgba(247, 243, 238, 0.65);
+  border-color: rgba(247, 243, 238, 0.2);
+}
+
+/* ── 6. The Atmosphere ──────────────────────────── */
+
+.page-bar__atmosphere-img {
+  --tempo-frame-canvas: rgba(20, 15, 10, 0.88);
+}
+
+.page-bar__atmosphere-img .tempo-frame__artwork {
+  aspect-ratio: 3 / 4;
+}
+
+/* ── 7. Info strip ──────────────────────────────── */
+
+.page-bar__info-block {
+  display: contents;
+}
+
+/* ── 8. Footer CTA ──────────────────────────────── */
 
 .page-bar__footer-cta {
   text-align: center;
@@ -43,53 +670,107 @@
   flex-wrap: wrap;
 }
 
-.page-bar__footer-cta .page-inner__cta-primary {
-  display: inline-flex;
+/* ── Lamp clearance — signatures grid on mobile ─── */
+@media (max-width: 1000px) and (hover: hover) {
+  .page-bar__signatures-grid {
+    padding-top: 84px;
+    margin-top: -84px;
+  }
 }
 
-.page-bar__info-block {
-  display: contents;
+/* ── Responsive: 1000px ─────────────────────────── */
+@media (max-width: 1000px) {
+  .page-bar__signatures-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(260px, 1fr));
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: var(--space-6);
+    padding-bottom: var(--space-4);
+  }
+
+  .page-bar__signatures-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .page-bar__sig-item {
+    scroll-snap-align: start;
+    min-width: 260px;
+  }
+
+  .page-bar__signatures-dots {
+    display: flex;
+  }
+
+  .page-bar__signatures-intro {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  .page-bar__night-footer {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .page-bar__happy-hour-inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
 }
 
-.page-bar__programme {
-  position: relative;
-  overflow: hidden;
-}
-
-.page-bar__programme::before {
-  content: '';
-  position: absolute;
-  top: -40%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 800px;
-  height: 800px;
-  background: radial-gradient(ellipse, rgba(221, 170, 98, 0.08) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.page-bar__programme .page-inner__container {
-  position: relative;
-  z-index: 1;
-}
-
-.page-bar__programme .page-inner__img-placeholder {
-  border-color: rgba(247, 243, 238, 0.12);
-}
-
+/* ── Responsive: 768px ──────────────────────────── */
 @media (max-width: 768px) {
-  .page-bar__programme-img,
-  .page-bar__atmosphere-img,
-  .page-bar__private-img {
+  .page-bar__programme-img .tempo-frame__artwork,
+  .page-bar__atmosphere-img .tempo-frame__artwork,
+  .page-bar__wine-img .tempo-frame__artwork {
     aspect-ratio: 16 / 9;
   }
 
   .page-bar__footer-cta {
     padding: var(--space-16) var(--gutter);
   }
+
+  .page-bar__provenance-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6) 0;
+  }
+
+  .page-bar__provenance-item:nth-child(odd) {
+    padding-left: 0;
+    border-left: none;
+  }
+
+  .page-bar__provenance-item:nth-child(even) {
+    border-left: 1px solid var(--color-border);
+  }
+
+  .page-bar__cocktail-strip {
+    overflow-x: auto;
+  }
+
+  .page-bar__cocktail-track {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    padding-inline: var(--gutter);
+  }
+
+  .page-bar__night-bill-item {
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .page-bar__bill-note {
+    text-align: left;
+  }
+
+  .page-bar__manifesto-text {
+    font-size: clamp(1.7rem, 6vw, 2.8rem);
+  }
 }
 
+/* ── Responsive: 480px ──────────────────────────── */
 @media (max-width: 480px) {
   .page-bar__footer-cta-text {
     font-size: 1.5rem;
@@ -99,4 +780,54 @@
     flex-direction: column;
     align-items: center;
   }
+
+  .page-bar__provenance-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-5) 0;
+  }
+
+  .page-bar__provenance-item,
+  .page-bar__provenance-item:nth-child(even) {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-5);
+  }
+
+  .page-bar__provenance-item:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .page-bar__signatures-grid {
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+  }
+
+  .page-bar__sig-item {
+    min-width: 220px;
+  }
+
+  .page-bar__hh-time {
+    font-size: 3.5rem;
+  }
+
+  .page-bar__hh-sep {
+    font-size: 2rem;
+  }
+}
+
+/* ── Carousel dot styles ────────────────────────── */
+.page-bar__signatures-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-border-strong);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.page-bar__signatures-dot.is-active {
+  background: var(--tempo-amber);
 }

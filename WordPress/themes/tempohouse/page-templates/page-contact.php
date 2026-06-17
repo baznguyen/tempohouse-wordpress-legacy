@@ -47,7 +47,7 @@ get_header();
           <div class="page-contact__hours">
             <div class="page-contact__hours-row">
               <span class="page-contact__hours-label">Caf&eacute;</span>
-              <span class="page-contact__hours-value">07:00 &ndash; 17:00 daily</span>
+              <span class="page-contact__hours-value">08:00 &ndash; 17:00 daily</span>
             </div>
             <div class="page-contact__hours-row">
               <span class="page-contact__hours-label">Bar</span>

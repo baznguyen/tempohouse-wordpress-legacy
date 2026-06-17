@@ -30,13 +30,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // PHP renders 2× items [A B C A' B' C']; REAL = half that count
   var allCards = Array.from(track.querySelectorAll('.event-card'));
-  var REAL = Math.round(allCards.length / 2); // 3
+  var REAL = Math.round(allCards.length / 2);
 
   // Mark track as infinite so the CSS nth-child hide is lifted
   track.classList.add('is-infinite');
 
-  // Prepend head clones (clone of the first REAL real items placed before them)
-  // This gives: [hA hB hC | A B C | A' B' C']
+  // Prepend head clones: [hA hB hC | A B C | A' B' C']
   allCards.slice(0, REAL).forEach(function (el) {
     var c = el.cloneNode(true);
     c.setAttribute('aria-hidden', 'true');
@@ -44,34 +43,30 @@ document.addEventListener('DOMContentLoaded', function () {
     track.insertBefore(c, track.firstChild);
   });
 
-  // DOM: head(0…REAL-1) | real(REAL…2*REAL-1) | phpTail(2*REAL…3*REAL-1)
-  // Start the viewport scrolled to the first real item (index REAL)
+  // Cache full card list after DOM is built — doesn't change after init
+  var cards = Array.from(track.querySelectorAll('.event-card'));
 
-  var prevBtn = section.querySelector('.events__nav-prev');
-  var nextBtn = section.querySelector('.events__nav-next');
-  var dots    = Array.from(section.querySelectorAll('.events__dot'));
+  // Cache scroll-pad — CSS value, only changes on resize
+  var scrollPad = parseFloat(getComputedStyle(viewport).scrollPaddingInlineStart) || 0;
+
+  var prevBtn    = section.querySelector('.events__nav-prev');
+  var nextBtn    = section.querySelector('.events__nav-next');
+  var dots       = Array.from(section.querySelectorAll('.events__dot'));
   var settleTimer = null;
-
-  // ── Helpers ───────────────────────────────────────
-
-  function getCards() { return Array.from(track.querySelectorAll('.event-card')); }
+  var dotsRafId   = 0;
 
   function getCurrentIndex() {
-    var vpLeft    = viewport.getBoundingClientRect().left;
-    var scrollPad = parseFloat(getComputedStyle(viewport).scrollPaddingInlineStart) || 0;
-    var snapLine  = vpLeft + scrollPad;
-    var cards     = getCards();
+    var snapLine = viewport.getBoundingClientRect().left + scrollPad;
     var best = REAL, bestDist = Infinity;
-    cards.forEach(function (el, i) {
-      var d = Math.abs(el.getBoundingClientRect().left - snapLine);
+    for (var i = 0; i < cards.length; i++) {
+      var d = Math.abs(cards[i].getBoundingClientRect().left - snapLine);
       if (d < bestDist) { bestDist = d; best = i; }
-    });
+    }
     return best;
   }
 
   function scrollToIdx(idx, smooth) {
-    var cards   = getCards();
-    var card    = cards[idx];
+    var card = cards[idx];
     if (!card) return;
     var vpRect   = viewport.getBoundingClientRect();
     var cardRect = card.getBoundingClientRect();
@@ -103,10 +98,14 @@ document.addEventListener('DOMContentLoaded', function () {
     if (nextBtn) nextBtn.disabled = false;
   }
 
-  // ── Scroll listener ───────────────────────────────
+  // ── Scroll listeners ──────────────────────────────
 
   viewport.addEventListener('scroll', function () {
-    updateDots();
+    // Throttle dot updates to one rAF per frame
+    if (!dotsRafId) dotsRafId = requestAnimationFrame(function () {
+      updateDots();
+      dotsRafId = 0;
+    });
     clearTimeout(settleTimer);
     settleTimer = setTimeout(normalize, 180);
   }, { passive: true });
@@ -114,6 +113,17 @@ document.addEventListener('DOMContentLoaded', function () {
   viewport.addEventListener('scrollend', function () {
     clearTimeout(settleTimer);
     normalize();
+  }, { passive: true });
+
+  // ── Resize: re-snap + recache scroll-pad ─────────
+
+  var resizeTimer = null;
+  window.addEventListener('resize', function () {
+    scrollPad = parseFloat(getComputedStyle(viewport).scrollPaddingInlineStart) || 0;
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      scrollToIdx(getCurrentIndex(), false);
+    }, 150);
   }, { passive: true });
 
   // ── Init ──────────────────────────────────────────
@@ -125,21 +135,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (prevBtn) {
     prevBtn.disabled = false;
-    prevBtn.addEventListener('click', function () {
-      scrollToIdx(getCurrentIndex() - 1, true);
-    });
+    prevBtn.addEventListener('click', function () { scrollToIdx(getCurrentIndex() - 1, true); });
   }
-
   if (nextBtn) {
     nextBtn.disabled = false;
-    nextBtn.addEventListener('click', function () {
-      scrollToIdx(getCurrentIndex() + 1, true);
-    });
+    nextBtn.addEventListener('click', function () { scrollToIdx(getCurrentIndex() + 1, true); });
   }
 
   dots.forEach(function (d, i) {
-    d.addEventListener('click', function () {
-      scrollToIdx(REAL + i, true);
-    });
+    d.addEventListener('click', function () { scrollToIdx(REAL + i, true); });
   });
 });

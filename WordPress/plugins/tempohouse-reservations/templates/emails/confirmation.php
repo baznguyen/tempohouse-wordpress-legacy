@@ -23,6 +23,47 @@ $lbl_location = $is_vi ? 'Địa chỉ' : 'Location';
 $btn_directions = $is_vi ? 'Xem bản đồ'  : 'Get Directions';
 $btn_cancel     = $is_vi ? 'Hủy đặt bàn' : 'Cancel Reservation';
 
+// VietQR deposit section
+$deposit_html = '';
+if ( (float) $r->deposit_amount > 0 && ! $r->deposit_paid ) {
+    $bank_id      = THR_Settings::get( 'vietqr_bank_id', 'VCB' );
+    $account_no   = THR_Settings::get( 'vietqr_account_no', '' );
+    $account_name = THR_Settings::get( 'vietqr_account_name', 'TEMPO House' );
+    $amount_raw   = (int) $r->deposit_amount;
+    $amount_fmt   = number_format( $amount_raw ) . ' đ';
+    $add_info     = urlencode( 'Deposit ' . $r->reference_code );
+    $enc_name     = urlencode( $account_name );
+
+    $qr_url   = "https://img.vietqr.io/image/{$bank_id}-{$account_no}-qr_only.png?amount={$amount_raw}&addInfo={$add_info}&accountName={$enc_name}";
+    $dep_hd   = $is_vi ? 'Yêu cầu đặt cọc' : 'Deposit Required';
+    $dep_note = $is_vi
+        ? "Vui lòng chuyển khoản <strong>{$amount_fmt}</strong> để xác nhận chỗ của bạn. Quét mã QR bên dưới hoặc chuyển khoản thủ công."
+        : "Please transfer <strong>{$amount_fmt}</strong> to confirm your seat. Scan the QR code below or transfer manually.";
+    $dep_confirm = $is_vi
+        ? 'Đặt cọc xác nhận chỗ của bạn. Chúng tôi sẽ liên hệ sau khi nhận được.'
+        : 'Your deposit confirms your reservation. We will follow up once received.';
+
+    if ( $account_no ) {
+        $deposit_html = <<<DEP
+<div style="margin:32px 0;padding:20px 24px;border:1px solid rgba(221,170,98,0.3);border-radius:4px;background:rgba(221,170,98,0.04);">
+  <h3 style="margin:0 0 8px;font-size:16px;color:#DDAA62;">{$dep_hd}</h3>
+  <p style="margin:0 0 16px;font-size:14px;">{$dep_note}</p>
+  <div style="text-align:center;margin-bottom:16px;">
+    <img src="{$qr_url}" alt="VietQR" width="200" height="200" style="border-radius:4px;background:#fff;padding:8px;">
+  </div>
+  <div style="font-size:13px;line-height:1.8;">
+    <div><strong>Bank:</strong> {$bank_id}</div>
+    <div><strong>Account:</strong> {$account_no}</div>
+    <div><strong>Name:</strong> {$account_name}</div>
+    <div><strong>Amount:</strong> {$amount_fmt}</div>
+    <div><strong>Reference:</strong> {$r->reference_code}</div>
+  </div>
+  <p style="margin:12px 0 0;font-size:12px;color:rgba(247,243,238,0.5);">{$dep_confirm}</p>
+</div>
+DEP;
+    }
+}
+
 $content = <<<HTML
 <h2>{$h1}{$vip_badge}</h2>
 <p style="margin-bottom:24px;">{$intro}</p>
@@ -51,6 +92,8 @@ $content = <<<HTML
     <span class="detail-value">{$venue_address}</span>
   </div>
 </div>
+
+{$deposit_html}
 
 <p>{$save_note}</p>
 

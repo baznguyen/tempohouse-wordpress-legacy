@@ -1,3 +1,57 @@
+/* ── Gallery provenance strip ────────────────────── */
+
+.page-gallery__provenance {
+  background: var(--color-bg-alt);
+  border-top: 1px solid var(--color-border-strong);
+  border-bottom: 1px solid var(--color-border-strong);
+  padding-block: var(--space-10);
+}
+
+.page-gallery__provenance-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.page-gallery__provenance-item {
+  padding-inline: var(--space-8);
+  border-left: 1px solid var(--color-border);
+}
+
+.page-gallery__provenance-item:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+
+.page-gallery__provenance-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--tempo-terracotta);
+  margin-bottom: var(--space-2);
+}
+
+.page-gallery__provenance-value {
+  display: block;
+  font-family: var(--font-accent);
+  font-size: var(--text-base);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+}
+
+/* Em-dash bullets in terracotta for all gallery feature lists */
+.page-gallery .page-inner__feature-item::before {
+  content: '—';
+  color: var(--tempo-terracotta);
+}
+
+/* ── Exhibition tag ──────────────────────────────── */
+
 .page-gallery__exhibition-tag {
   display: inline-flex;
   align-items: center;
@@ -74,6 +128,20 @@
 }
 
 @media (max-width: 768px) {
+  .page-gallery__provenance-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6) 0;
+  }
+
+  .page-gallery__provenance-item:nth-child(odd) {
+    padding-left: 0;
+    border-left: none;
+  }
+
+  .page-gallery__provenance-item:nth-child(even) {
+    border-left: 1px solid var(--color-border);
+  }
+
   .page-gallery__partnership-callout {
     padding: var(--space-12) var(--space-8);
   }
@@ -84,6 +152,24 @@
 }
 
 @media (max-width: 480px) {
+  .page-gallery__provenance-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-5) 0;
+  }
+
+  .page-gallery__provenance-item,
+  .page-gallery__provenance-item:nth-child(even) {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-5);
+  }
+
+  .page-gallery__provenance-item:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
   .page-gallery__events-head {
     margin-bottom: var(--space-8);
   }

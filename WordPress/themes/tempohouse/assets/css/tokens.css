@@ -2,7 +2,7 @@
   /* ── Brand palette */
   --tempo-cream:      #F7F3EE;
   --tempo-cream-dark: #EDE7DE;
-  --tempo-ink:        #1A1816;
+  --tempo-ink:        #1A1816; /* ← used for artwork interiors, NOT section backgrounds */
   --tempo-terracotta: #7c3b3b;
   --tempo-amber:      #DDAA62;
   --tempo-sage:       #6B7B5E;
@@ -21,6 +21,12 @@
   --color-border-strong:  rgba(26, 24, 22, 0.22);
   --color-border-accent:  rgba(123, 59, 59, 0.4);
   --color-nav-bg:         rgba(247, 243, 238, 0.92);
+  /* Warm espresso — artwork canvas and frame interiors ONLY.
+     Do NOT use as a section background; section contrast uses --color-bg-alt. */
+  --color-section-dark:   #2D2924;
+  /* Gallery-grade picture-frame border — used by .tempo-frame
+     Warm sand: reads as natural wood against cream without the harshness of dark walnut */
+  --tempo-frame-border:   var(--tempo-sand);
 
   /* ── Typography */
   --font-display: 'Bricolage Grotesque', sans-serif;

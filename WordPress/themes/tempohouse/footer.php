@@ -45,7 +45,7 @@
       <div class="site-footer__hours">
         <div class="site-footer__hours-row">
           <span class="site-footer__hours-mode">Caf&eacute;</span>
-          <span class="site-footer__hours-time">07:00 &ndash; 17:00</span>
+          <span class="site-footer__hours-time">08:00 &ndash; 17:00</span>
         </div>
         <div class="site-footer__hours-row">
           <span class="site-footer__hours-mode">Bar</span>
@@ -84,6 +84,8 @@
       <p class="site-footer__descriptor">Specialty Caf&eacute; &nbsp;&middot;&nbsp; Cocktail Bar &nbsp;&middot;&nbsp; Art Gallery &nbsp;&middot;&nbsp; Events</p>
       <div class="site-footer__legal">
         <a href="<?php echo esc_url( home_url( '/privacy-policy' ) ); ?>" class="site-footer__legal-link">Privacy Policy</a>
+        <span class="site-footer__divider" aria-hidden="true">&middot;</span>
+        <a href="https://ragingmonk.co" target="_blank" rel="noopener noreferrer" class="site-footer__legal-link site-footer__legal-link--credit">Designed by Raging Monk</a>
       </div>
     </div>
   </div>
