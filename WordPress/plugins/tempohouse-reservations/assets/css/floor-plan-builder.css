@@ -1415,6 +1415,42 @@
   margin-top: 2px;
 }
 
+/* Zone rotation control */
+.fp-zone-rot-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.fp-zone-rot-ctrl .fp-zone-rot-input {
+  width: 64px;
+  flex-shrink: 0;
+  text-align: center;
+  padding: 0 6px;
+}
+.fp-zone-rot-presets {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+.fp-zone-rot-presets button {
+  height: 22px;
+  padding: 0 7px;
+  font-size: 10px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--text-2);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
+}
+.fp-zone-rot-presets button:hover {
+  background: var(--accent-lt);
+  color: var(--accent);
+  border-color: var(--accent-bd);
+}
+
 /* Field row inside float panel */
 .fp-fp-field {
   display: flex;

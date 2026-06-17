@@ -659,6 +659,8 @@
 
     group.on('dragstart', function () {
       pushUndo(item.id);
+      var d = S.tables[item.id];
+      if (d) { d._preDragX = d.pos_x; d._preDragY = d.pos_y; }
     });
 
     group.on('dragmove', function () {
@@ -708,9 +710,73 @@
       this.position({ x: d.pos_x, y: d.pos_y });
       markDirty();
       tableLayer.batchDraw();
-
       resetZoneHighlights();
-      renderZoneLayer();
+
+      // Zone membership: auto-add when dropped inside a zone, confirm-remove when dragged out
+      if (S.mode === 'builder' && d.type !== 'zone' && d.type !== 'text_label') {
+        var sid       = String(item.id);
+        var finalX    = d.pos_x;
+        var finalY    = d.pos_y;
+        var didAdd    = false;
+        var hasPendingConfirm = false;
+
+        Object.values(S.tables).forEach(function (z) {
+          if (z.type !== 'zone') return;
+          if (!z.meta) z.meta = { color: '#EAF5EE', members: [] };
+          var members  = (z.meta.members || []).map(String);
+          var wasIn    = members.indexOf(sid) !== -1;
+          // bbox excludes the dragged table if it was a member, so the natural boundary is used
+          var checkBbox = wasIn ? getZoneBBoxRaw(z, sid) : getZoneBBoxRaw(z);
+          var isInNow   = checkBbox && (finalX > checkBbox.x1 && finalX < checkBbox.x2 && finalY > checkBbox.y1 && finalY < checkBbox.y2);
+
+          if (!wasIn && isInNow) {
+            z.meta.members = members.concat([sid]);
+            apiFetch('PATCH', 'furniture/' + z.id, { meta: z.meta });
+            showToast('Added to "' + (z.label || 'Zone') + '"', 'ok');
+            didAdd = true;
+            if (S.pendingZoneId === String(z.id) && S.pendingZoneMembers) {
+              S.pendingZoneMembers.add(sid);
+              showZoneFloatProps(String(z.id), z);
+            }
+          } else if (wasIn && !isInNow) {
+            hasPendingConfirm = true;
+            (function (zRef, membersSnap, preDragX, preDragY) {
+              fpModal({
+                type:   'confirm',
+                title:  'Remove from zone?',
+                body:   '<p>"' + escHtml(d.label || 'Table') + '" was dragged outside <strong>' + escHtml(zRef.label || 'Zone') + '</strong>. Remove it from this zone?</p>',
+                ok:     'Remove from zone',
+                cancel: 'Keep in zone',
+              }).then(function (confirmed) {
+                if (confirmed) {
+                  zRef.meta.members = membersSnap.filter(function (m) { return m !== sid; });
+                  apiFetch('PATCH', 'furniture/' + zRef.id, { meta: zRef.meta });
+                  if (S.pendingZoneId === String(zRef.id) && S.pendingZoneMembers) {
+                    S.pendingZoneMembers.delete(sid);
+                    showZoneFloatProps(String(zRef.id), zRef);
+                  }
+                } else {
+                  // Revert position back inside the zone
+                  if (preDragX !== undefined) {
+                    d.pos_x = preDragX;
+                    d.pos_y = preDragY;
+                    var tNode = stage.findOne('#tbl-' + item.id);
+                    if (tNode) tNode.position({ x: d.pos_x, y: d.pos_y });
+                    tableLayer.batchDraw();
+                  }
+                }
+                renderZoneLayer();
+              });
+            })(z, members, d._preDragX, d._preDragY);
+          }
+        });
+
+        // Render immediately if an add happened or no confirm is pending;
+        // the modal handler also calls renderZoneLayer after confirm resolves.
+        if (!hasPendingConfirm || didAdd) renderZoneLayer();
+      } else {
+        renderZoneLayer();
+      }
     });
 
     group.on('transformend', function () {
@@ -1048,8 +1114,12 @@
       var zw = bbox.x2 - bbox.x1;
       var zh = bbox.y2 - bbox.y1;
 
+      var rot = typeof (meta.rotation) === 'number' ? meta.rotation : (parseFloat(meta.rotation) || 0);
+      var cx  = zx + zw / 2;
+      var cy  = zy + zh / 2;
+
       var rect = new Konva.Rect({
-        x: zx, y: zy,
+        x: -zw / 2, y: -zh / 2,
         width: zw, height: zh,
         cornerRadius: 10,
         fill:        hexToRgba(color, 0.14),
@@ -1061,7 +1131,7 @@
       });
 
       var label = new Konva.Text({
-        x: zx + 9, y: zy + 6,
+        x: -zw / 2 + 9, y: -zh / 2 + 6,
         text: item.label || 'Zone',
         fontSize: 10,
         fontFamily: 'system-ui,-apple-system,sans-serif',
@@ -1070,13 +1140,17 @@
         listening: false,
       });
 
+      // Wrap rect + label in a sub-group so rotation pivots around the zone center
+      var visGroup = new Konva.Group({ x: cx, y: cy, rotation: rot });
+      visGroup.add(rect);
+      visGroup.add(label);
+
       var zGroup = new Konva.Group({
         id: 'zone-' + item.id,
         name: 'zone-group',
         draggable: S.mode === 'builder',
       });
-      zGroup.add(rect);
-      zGroup.add(label);
+      zGroup.add(visGroup);
 
       zGroup.on('click tap', function (e) {
         e.cancelBubble = true;
@@ -1721,6 +1795,18 @@
         '<label class="fp-prop-label">Colour</label>' +
         '<input class="fp-prop-input fp-prop-color" id="fp-fp-zone-color" type="color" value="' + escAttr(meta.color || '#EAF5EE') + '">' +
       '</div>' +
+      '<div class="fp-prop-row">' +
+        '<label class="fp-prop-label">Rotation</label>' +
+        '<div class="fp-zone-rot-ctrl">' +
+          '<input type="number" class="fp-prop-input fp-zone-rot-input" id="fp-fp-zone-rot" min="0" max="359" value="' + escAttr(String(meta.rotation || 0)) + '">°' +
+          '<div class="fp-zone-rot-presets">' +
+            '<button type="button" data-rot="0">0°</button>' +
+            '<button type="button" data-rot="60">60°</button>' +
+            '<button type="button" data-rot="90">90°</button>' +
+            '<button type="button" data-rot="180">180°</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
       '<div class="fp-prop-row fp-zone-section">' +
         '<span class="fp-prop-label">Members</span>' +
         '<div class="fp-zone-chips" id="fp-zone-chips">' + memberHtml +
@@ -1736,6 +1822,21 @@
     document.getElementById('fp-zone-chips').addEventListener('click', function (e) {
       var btn = e.target.closest('[data-toggle]');
       if (btn) toggleZoneMembership(btn.dataset.toggle);
+    });
+
+    var rotEl = document.getElementById('fp-fp-zone-rot');
+    if (rotEl) {
+      rotEl.addEventListener('input', function () {
+        var val = ((parseInt(this.value, 10) || 0) % 360 + 360) % 360;
+        applyZoneRotationPreview(id, val);
+      });
+    }
+    body.querySelectorAll('.fp-zone-rot-presets [data-rot]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var val = parseInt(btn.dataset.rot, 10);
+        if (rotEl) rotEl.value = val;
+        applyZoneRotationPreview(id, val);
+      });
     });
 
     document.getElementById('fp-fp-save-zone').addEventListener('click', function () {
@@ -1789,9 +1890,11 @@
     if (!zone) return;
     var labelEl = document.getElementById('fp-fp-label');
     var colorEl = document.getElementById('fp-fp-zone-color');
+    var rotEl   = document.getElementById('fp-fp-zone-rot');
     if (labelEl) zone.label = labelEl.value.trim() || zone.label;
     if (!zone.meta) zone.meta = {};
     if (colorEl) zone.meta.color = colorEl.value;
+    if (rotEl)  zone.meta.rotation = ((parseInt(rotEl.value, 10) || 0) % 360 + 360) % 360;
     zone.meta.members = Array.from(S.pendingZoneMembers || []);
     var saveBtn = document.getElementById('fp-fp-save-zone');
     if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
@@ -1806,6 +1909,13 @@
       console.warn('saveZone failed', err);
       if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Update Zone'; }
     });
+  }
+
+  function applyZoneRotationPreview(zoneId, rotation) {
+    var zGroup = zoneLayer.findOne('#zone-' + zoneId);
+    if (!zGroup) return;
+    var visG = zGroup.getChildren(function (n) { return n.getClassName() === 'Group'; })[0];
+    if (visG) { visG.rotation(rotation); zoneLayer.batchDraw(); }
   }
 
   /* ── Prop change handlers ────────────────────────────────────────── */
