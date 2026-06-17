@@ -73,6 +73,7 @@
     bindCanvasTools();
     bindFloatPanel();
     bindToolbar();
+    bindModal();
     bindKeyboard();
     bindBgControls();
     setDateLabel(S.date);
@@ -264,6 +265,72 @@
       if (excludeId !== undefined && String(other.id) === String(excludeId)) return false;
       if (other.type === 'text_label' || other.type === 'zone') return false;
       return aabbOverlap(test, tableAABB(other), 4);
+    });
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     CUSTOM MODAL (replaces window.prompt / confirm / alert)
+  ══════════════════════════════════════════════════════════════════ */
+  var _modalResolve = null;
+
+  function fpModal(opts) {
+    return new Promise(function (resolve) {
+      _modalResolve = resolve;
+      var overlay  = document.getElementById('fp-modal');
+      var titleEl  = document.getElementById('fp-modal-title');
+      var bodyEl   = document.getElementById('fp-modal-body');
+      var okBtn    = document.getElementById('fp-modal-ok');
+      var cancelBtn= document.getElementById('fp-modal-cancel');
+      if (!overlay) { resolve(opts.type === 'confirm' ? false : null); return; }
+
+      titleEl.textContent = opts.title || '';
+      bodyEl.innerHTML    = opts.body  || '';
+      okBtn.textContent   = opts.ok    || 'OK';
+      cancelBtn.textContent = opts.cancel || 'Cancel';
+      cancelBtn.hidden    = (opts.type === 'alert');
+      okBtn.className     = 'fp-btn ' + (opts.danger ? 'fp-btn-modal-danger' : 'fp-btn-primary');
+
+      overlay.hidden = false;
+
+      if (opts.type === 'prompt') {
+        var inp = bodyEl.querySelector('.fp-modal-input');
+        if (inp) setTimeout(function () { inp.focus(); inp.select(); }, 60);
+      } else {
+        setTimeout(function () { okBtn.focus(); }, 60);
+      }
+    });
+  }
+
+  function _closeModal(result) {
+    var overlay = document.getElementById('fp-modal');
+    if (overlay) overlay.hidden = true;
+    if (_modalResolve) { _modalResolve(result); _modalResolve = null; }
+  }
+
+  function bindModal() {
+    var okBtn    = document.getElementById('fp-modal-ok');
+    var cancelBtn= document.getElementById('fp-modal-cancel');
+    var overlay  = document.getElementById('fp-modal');
+    if (!overlay) return;
+
+    okBtn.addEventListener('click', function () {
+      var inp = document.querySelector('#fp-modal-body .fp-modal-input');
+      _closeModal(inp ? (inp.value.trim() || null) : true);
+    });
+    cancelBtn.addEventListener('click', function () { _closeModal(null); });
+
+    // Close on backdrop click
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) _closeModal(null);
+    });
+
+    // Enter/Esc keyboard shortcuts
+    overlay.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        okBtn.click();
+      }
+      if (e.key === 'Escape') { e.preventDefault(); _closeModal(null); }
     });
   }
 
@@ -1065,29 +1132,34 @@
 
   function createZone() {
     if (S.selectedIds.size < 2 || S.mode !== 'builder') return;
-    var name = window.prompt('Zone name (e.g. "VIP", "Outdoor"):');
-    if (!name || !name.trim()) return;
-
-    var payload = {
-      type:         'zone',
-      label:        name.trim(),
-      pos_x:        0,
-      pos_y:        0,
-      width:        0,
-      height:       0,
-      rotation_deg: 0,
-      capacity_min: 0,
-      capacity_max: 0,
-      meta:         { color: '#EAF5EE', members: Array.from(S.selectedIds) },
-    };
-
-    apiFetch('POST', 'floor-plans/' + S.floorId + '/furniture', payload).then(function (item) {
-      S.tables[item.id] = item;
-      renderZoneLayer();
-      deselect();
-      showToast('Zone "' + item.label + '" created', 'info');
-    }).catch(function (err) {
-      console.warn('Create zone failed', err);
+    fpModal({
+      type:  'prompt',
+      title: 'Create Zone',
+      body:  '<p>Name this zone to group the selected tables into a labelled area.</p>' +
+             '<input class="fp-modal-input" type="text" placeholder=\'e.g. VIP, Outdoor, Bar Area\' maxlength="40">',
+      ok:    'Create Zone',
+    }).then(function (name) {
+      if (!name) return;
+      var payload = {
+        type:         'zone',
+        label:        name,
+        pos_x:        0,
+        pos_y:        0,
+        width:        0,
+        height:       0,
+        rotation_deg: 0,
+        capacity_min: 0,
+        capacity_max: 0,
+        meta:         { color: '#EAF5EE', members: Array.from(S.selectedIds) },
+      };
+      apiFetch('POST', 'floor-plans/' + S.floorId + '/furniture', payload).then(function (item) {
+        S.tables[item.id] = item;
+        renderZoneLayer();
+        deselect();
+        showToast('Zone "' + item.label + '" created', 'info');
+      }).catch(function (err) {
+        console.warn('Create zone failed', err);
+      });
     });
   }
 
@@ -1848,7 +1920,20 @@
   }
 
   function exitBuilderMode() {
-    if (S.dirty && !confirm('You have unsaved changes. Exit without publishing?')) return;
+    if (!S.dirty) { _doExitBuilder(); return; }
+    fpModal({
+      type:   'confirm',
+      title:  'Exit without publishing?',
+      body:   '<p>You have unsaved layout changes. These will be lost if you exit now.</p>',
+      ok:     'Exit',
+      cancel: 'Stay',
+      danger: true,
+    }).then(function (ok) {
+      if (ok) _doExitBuilder();
+    });
+  }
+
+  function _doExitBuilder() {
     S.mode = 'live';
     document.getElementById('fp-app').dataset.mode = 'live';
     deselect();
@@ -1869,22 +1954,28 @@
      ADD FLOOR
   ══════════════════════════════════════════════════════════════════ */
   function addFloor() {
-    var name = prompt('Floor name (e.g. "Level 1", "Rooftop"):');
-    if (!name || !name.trim()) return;
-    apiFetch('POST', 'floor-plans', {
-      name:         name.trim(),
-      floor_number: S.floors.length + 1,
-      is_active:    1,
-      width_px:     1200,
-      height_px:    800,
-    }).then(function (floor) {
-      S.floors.push(floor);
-      renderFloorTabs();
-      selectFloor(floor.id);
-      loadFloorStats(floor.id);
-    }).catch(function (err) {
-      console.warn('Add floor failed', err);
-      alert('Could not add floor. You may not have permission.');
+    fpModal({
+      type:  'prompt',
+      title: 'Add Floor',
+      body:  '<input class="fp-modal-input" type="text" placeholder=\'e.g. Level 1, Rooftop, Garden\' maxlength="40">',
+      ok:    'Add Floor',
+    }).then(function (name) {
+      if (!name) return;
+      apiFetch('POST', 'floor-plans', {
+        name:         name,
+        floor_number: S.floors.length + 1,
+        is_active:    1,
+        width_px:     1200,
+        height_px:    800,
+      }).then(function (floor) {
+        S.floors.push(floor);
+        renderFloorTabs();
+        selectFloor(floor.id);
+        loadFloorStats(floor.id);
+      }).catch(function (err) {
+        console.warn('Add floor failed', err);
+        fpModal({ type: 'alert', title: 'Error', body: '<p>Could not add floor. You may not have permission.</p>', ok: 'OK' });
+      });
     });
   }
 

@@ -891,6 +891,20 @@ class THR_Admin {
           <!-- Toast notification -->
           <div class="fp-toast" id="fp-toast" role="status" aria-live="polite"></div>
 
+          <!-- ═══ CUSTOM MODAL (replaces window.prompt / confirm / alert) ══ -->
+          <div class="fp-modal-overlay" id="fp-modal" hidden role="dialog" aria-modal="true" aria-labelledby="fp-modal-title">
+            <div class="fp-modal-card" id="fp-modal-card">
+              <div class="fp-modal-hd">
+                <span class="fp-modal-title" id="fp-modal-title"></span>
+              </div>
+              <div class="fp-modal-body" id="fp-modal-body"></div>
+              <div class="fp-modal-foot">
+                <button class="fp-btn fp-btn-ghost" id="fp-modal-cancel" type="button">Cancel</button>
+                <button class="fp-btn fp-btn-primary" id="fp-modal-ok" type="button">OK</button>
+              </div>
+            </div>
+          </div>
+
         </div><!-- #fp-app -->
         </div><!-- .wrap -->
         <?php
