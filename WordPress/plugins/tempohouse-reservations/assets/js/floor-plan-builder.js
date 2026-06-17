@@ -2752,30 +2752,101 @@
   /* ══════════════════════════════════════════════════════════════════
      DUPLICATE
   ══════════════════════════════════════════════════════════════════ */
+  // Returns the next unused label for a given prefix, e.g. "T" → "T5" if T1-T4 exist
+  function nextLabel(prefix) {
+    var max = 0;
+    Object.values(S.tables).forEach(function (t) {
+      var lbl = String(t.label || '');
+      if (lbl.indexOf(prefix) === 0) {
+        var n = parseInt(lbl.slice(prefix.length));
+        if (!isNaN(n) && n > max) max = n;
+      }
+    });
+    return prefix + (max + 1);
+  }
+
+  // Extract the non-numeric prefix from a label, e.g. "T3" → "T", "Table 12" → "Table "
+  function labelPrefix(lbl) {
+    var m = String(lbl || '').match(/^(.*?)(\d+)\s*$/);
+    return m ? m[1] : String(lbl || '');
+  }
+
+  function duplicateZone(zone) {
+    var memberIds = ((zone.meta && zone.meta.members) || []).map(String);
+    if (!memberIds.length) {
+      showToast('Zone has no members to duplicate', 'info');
+      return;
+    }
+    var OFFSET = 40; // px offset for all copies
+    var endpoint = S.activeLayout
+      ? 'layouts/' + S.activeLayout.id + '/slots'
+      : 'floor-plans/' + S.floorId + '/furniture';
+
+    // Phase 1: duplicate each member table in parallel
+    // We need sequential label allocation so numbers don't collide, so chain them
+    var newMemberIds = [];
+
+    function dupNextMember(idx) {
+      if (idx >= memberIds.length) return Promise.resolve();
+      var src = S.tables[memberIds[idx]];
+      if (!src) return dupNextMember(idx + 1);
+
+      var prefix = labelPrefix(src.label);
+      var newLabel = nextLabel(prefix || 'T');
+
+      var payload = {
+        type:         src.type,
+        label:        newLabel,
+        pos_x:        toNum(src.pos_x, 0) + OFFSET,
+        pos_y:        toNum(src.pos_y, 0) + OFFSET,
+        width:        src.width,
+        height:       src.height,
+        rotation_deg: src.rotation_deg || 0,
+        capacity_min: src.capacity_min || 0,
+        capacity_max: src.capacity_max || 4,
+        shape:        src.shape || 'rect',
+      };
+      if (src.meta) payload.meta = JSON.parse(JSON.stringify(src.meta));
+      if (S.activeLayout) payload.furniture_id = src.furniture_id || null;
+
+      return apiFetch('POST', endpoint, payload).then(function (newItem) {
+        S.tables[newItem.id] = newItem;
+        addTableNode(newItem, false);
+        newMemberIds.push(String(newItem.id));
+        return dupNextMember(idx + 1);
+      });
+    }
+
+    dupNextMember(0).then(function () {
+      // Phase 2: create the new zone referencing the new member IDs
+      var newMeta = JSON.parse(JSON.stringify(zone.meta || {}));
+      newMeta.members = newMemberIds;
+      var zPayload = {
+        type: 'zone', label: (zone.label || 'Zone') + ' (copy)',
+        pos_x: 0, pos_y: 0, width: 0, height: 0,
+        rotation_deg: 0, capacity_min: 0, capacity_max: 0,
+        meta: newMeta,
+      };
+      if (S.activeLayout) zPayload.furniture_id = zone.furniture_id || null;
+      return apiFetch('POST', endpoint, zPayload);
+    }).then(function (newZone) {
+      S.tables[newZone.id] = newZone;
+      tableLayer.batchDraw();
+      renderZoneLayer();
+      updateStatusBar();
+      markDirty();
+      showToast('Zone "' + newZone.label + '" duplicated with ' + newMemberIds.length + ' tables', 'info');
+      selectZone(newZone.id);
+    }).catch(function (err) { console.warn('Duplicate zone failed', err); });
+  }
+
   function duplicateSelected() {
     if (!S.selected || !S.floorId) return;
     var item = S.tables[S.selected];
     if (!item) return;
 
     if (item.type === 'zone') {
-      // Duplicate zone: create a new zone with same members, offset slightly
-      var meta = Object.assign({}, item.meta || {});
-      meta = JSON.parse(JSON.stringify(meta)); // deep clone
-      var endpoint = S.activeLayout
-        ? 'layouts/' + S.activeLayout.id + '/slots'
-        : 'floor-plans/' + S.floorId + '/furniture';
-      var zPayload = {
-        type: 'zone', label: (item.label || 'Zone') + ' (copy)',
-        pos_x: 0, pos_y: 0, width: 0, height: 0,
-        rotation_deg: 0, capacity_min: 0, capacity_max: 0, meta: meta,
-      };
-      if (S.activeLayout) zPayload.furniture_id = item.furniture_id || null;
-      apiFetch('POST', endpoint, zPayload).then(function (newItem) {
-        S.tables[newItem.id] = newItem;
-        renderZoneLayer();
-        markDirty();
-        showToast('Zone duplicated', 'info');
-      }).catch(function (err) { console.warn('Duplicate zone failed', err); });
+      duplicateZone(item);
       return;
     }
 
