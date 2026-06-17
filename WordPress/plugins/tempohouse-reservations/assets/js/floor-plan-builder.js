@@ -1072,10 +1072,10 @@
         x: zx, y: zy,
         width: zw, height: zh,
         cornerRadius: 10,
-        fill:        hexToRgba(color, 0.12),
-        stroke:      'rgba(100,110,100,0.38)',
+        fill:        hexToRgba(color, 0.14),
+        stroke:      'rgba(60,80,60,0.55)',
         strokeWidth: 1.5,
-        dash:        [6, 4],
+        dash:        [5, 4],
         name: 'zone-rect',
         hitStrokeWidth: 12,
       });
@@ -1086,7 +1086,7 @@
         fontSize: 10,
         fontFamily: 'system-ui,-apple-system,sans-serif',
         fontStyle: '600',
-        fill: 'rgba(80,100,80,0.65)',
+        fill: 'rgba(50,75,50,0.70)',
         listening: false,
       });
 
@@ -1134,10 +1134,10 @@
       if (!zGroup) return;
       var zRect = zGroup.findOne('Rect');
       if (!zRect) return;
-      zRect.fill(hexToRgba((z.meta && z.meta.color) ? z.meta.color : '#EAF5EE', 0.12));
-      zRect.stroke('rgba(100,110,100,0.38)');
+      zRect.fill(hexToRgba((z.meta && z.meta.color) ? z.meta.color : '#EAF5EE', 0.14));
+      zRect.stroke('rgba(60,80,60,0.55)');
       zRect.strokeWidth(1.5);
-      zRect.dash([6, 4]);
+      zRect.dash([5, 4]);
     });
     zoneLayer.batchDraw();
   }
