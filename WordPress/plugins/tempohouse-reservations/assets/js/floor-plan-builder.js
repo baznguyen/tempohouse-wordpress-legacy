@@ -1522,45 +1522,57 @@
     var wrap  = document.getElementById('fp-canvas-wrap');
     if (!panel || !wrap) return;
 
-    var wrapRect = wrap.getBoundingClientRect();
-    var panelW   = panel.offsetWidth  || 240;
-    var panelH   = panel.offsetHeight || 300;
+    // rect coords are canvas-relative (Konva getClientRect is relative to the stage canvas)
+    var wrapW  = wrap.offsetWidth;
+    var wrapH  = wrap.offsetHeight;
+    var panelW = panel.offsetWidth  || 240;
+    var panelH = panel.offsetHeight || 340;
+    var GAP    = 24;
+    var MARGIN = 8;
 
-    var canvasLeft = rect.x - wrapRect.left;
-    var canvasTop  = rect.y - wrapRect.top;
+    var ix = rect.x;
+    var iy = rect.y;
+    var iw = rect.width;
+    var ih = rect.height;
 
-    // Try to place to the right; flip left if overflow
-    var left = canvasLeft + rect.width + 12;
-    var top  = canvasTop;
+    function clamp(v, lo, hi) { return Math.max(lo, Math.min(v, hi)); }
 
-    if (left + panelW > wrapRect.width - 4) {
-      left = canvasLeft - panelW - 12;
-    }
+    // Try placements: right → left → below → above → clamped fallback
+    var placements = [
+      function () { // right, vertically centred on item
+        var l = ix + iw + GAP;
+        if (l + panelW > wrapW - MARGIN) return null;
+        return { left: l, top: clamp(iy + ih / 2 - panelH / 2, MARGIN, wrapH - panelH - MARGIN) };
+      },
+      function () { // left, vertically centred on item
+        var l = ix - panelW - GAP;
+        if (l < MARGIN) return null;
+        return { left: l, top: clamp(iy + ih / 2 - panelH / 2, MARGIN, wrapH - panelH - MARGIN) };
+      },
+      function () { // below, horizontally centred on item
+        var t = iy + ih + GAP;
+        if (t + panelH > wrapH - MARGIN) return null;
+        return { left: clamp(ix + iw / 2 - panelW / 2, MARGIN, wrapW - panelW - MARGIN), top: t };
+      },
+      function () { // above, horizontally centred on item
+        var t = iy - panelH - GAP;
+        if (t < MARGIN) return null;
+        return { left: clamp(ix + iw / 2 - panelW / 2, MARGIN, wrapW - panelW - MARGIN), top: t };
+      },
+      function () { // fallback: clamp-right
+        return {
+          left: clamp(ix + iw + GAP, MARGIN, wrapW - panelW - MARGIN),
+          top:  clamp(iy + ih / 2 - panelH / 2, MARGIN, wrapH - panelH - MARGIN),
+        };
+      },
+    ];
 
-    // Clamp to canvas bounds
-    left = Math.max(4, Math.min(left, wrapRect.width  - panelW - 4));
-    top  = Math.max(4, Math.min(top,  wrapRect.height - panelH - 4));
-
-    // Avoid overlapping the selected item rect itself (push vertically if too close)
-    var panelRight  = left + panelW;
-    var panelBottom = top  + panelH;
-    var itemRight   = canvasLeft + rect.width;
-    var itemBottom  = canvasTop  + rect.height;
-    var overlapH = Math.min(panelRight, itemRight) - Math.max(left, canvasLeft);
-    var overlapV = Math.min(panelBottom, itemBottom) - Math.max(top, canvasTop);
-    if (overlapH > 0 && overlapV > 0) {
-      // Push panel below the item if there's room, else above
-      var belowTop = canvasTop + rect.height + 12;
-      if (belowTop + panelH < wrapRect.height - 4) {
-        top = belowTop;
-      } else {
-        top = Math.max(4, canvasTop - panelH - 12);
-      }
-    }
+    var chosen = null;
+    for (var i = 0; i < placements.length; i++) { chosen = placements[i](); if (chosen) break; }
 
     panel.style.position = 'absolute';
-    panel.style.left     = left + 'px';
-    panel.style.top      = top  + 'px';
+    panel.style.left     = chosen.left + 'px';
+    panel.style.top      = chosen.top  + 'px';
   }
 
   function showTableFloatProps(id, item) {
@@ -1641,7 +1653,30 @@
     var body = document.getElementById('fp-fp-body');
     if (!body) return;
     var meta    = item.meta || {};
-    var members = meta.members || [];
+    var members = (meta.members || []).map(String);
+
+    // Member chips (click × to remove)
+    var memberHtml = members.length === 0
+      ? '<span class="fp-zone-empty">No tables in this zone yet</span>'
+      : members.map(function (mid) {
+          var t   = S.tables[mid];
+          var lbl = t ? escHtml(t.label || mid) : escHtml(mid);
+          return '<button type="button" class="fp-zone-chip fp-zone-chip--member" data-remove="' + escAttr(mid) + '" title="Remove from zone">' +
+            lbl +
+            '<svg width="7" height="7" viewBox="0 0 7 7" fill="none" aria-hidden="true"><path d="M1 1l5 5M6 1L1 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
+            '</button>';
+        }).join('');
+
+    // Available table chips (click + to add)
+    var availHtml = Object.keys(S.tables).reduce(function (acc, tid) {
+      var t = S.tables[tid];
+      if (!t || t.type === 'zone' || t.type === 'text_label') return acc;
+      if (members.indexOf(String(tid)) !== -1) return acc;
+      return acc + '<button type="button" class="fp-zone-chip fp-zone-chip--add" data-add="' + escAttr(String(tid)) + '" title="Add to zone">' +
+        escHtml(t.label || 'Table') +
+        '<svg width="7" height="7" viewBox="0 0 7 7" fill="none" aria-hidden="true"><path d="M3.5 1v5M1 3.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
+        '</button>';
+    }, '');
 
     body.innerHTML =
       '<div class="fp-prop-row">' +
@@ -1652,11 +1687,18 @@
         '<label class="fp-prop-label">Colour</label>' +
         '<input class="fp-prop-input fp-prop-color" id="fp-fp-zone-color" type="color" value="' + escAttr(meta.color || '#EAF5EE') + '">' +
       '</div>' +
-      '<div class="fp-prop-row">' +
-        '<span style="font-size:12px;color:#6B7280;">' + members.length + ' table' + (members.length !== 1 ? 's' : '') + ' grouped</span>' +
+      '<div class="fp-prop-row fp-zone-section">' +
+        '<span class="fp-prop-label">Members</span>' +
+        '<div class="fp-zone-chips" id="fp-zone-member-chips">' + memberHtml + '</div>' +
       '</div>' +
-      '<div class="fp-prop-row">' +
-        '<button type="button" id="fp-fp-ungroup" class="fp-btn fp-btn-secondary" style="width:100%;margin-top:4px;">Ungroup</button>' +
+      (availHtml
+        ? '<div class="fp-prop-row fp-zone-section">' +
+            '<span class="fp-prop-label">Add tables</span>' +
+            '<div class="fp-zone-chips" id="fp-zone-avail-chips">' + availHtml + '</div>' +
+          '</div>'
+        : '') +
+      '<div class="fp-prop-row" style="margin-top:2px;">' +
+        '<button type="button" id="fp-fp-ungroup" class="fp-btn fp-btn-secondary" style="width:100%;">Ungroup zone</button>' +
       '</div>';
 
     var labelEl = document.getElementById('fp-fp-label');
@@ -1680,6 +1722,22 @@
       });
     }
 
+    var memberChipsEl = document.getElementById('fp-zone-member-chips');
+    if (memberChipsEl) {
+      memberChipsEl.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-remove]');
+        if (btn) removeFromZone(id, btn.dataset.remove);
+      });
+    }
+
+    var availChipsEl = document.getElementById('fp-zone-avail-chips');
+    if (availChipsEl) {
+      availChipsEl.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-add]');
+        if (btn) addToZone(id, btn.dataset.add);
+      });
+    }
+
     var ungroupBtn = document.getElementById('fp-fp-ungroup');
     if (ungroupBtn) {
       ungroupBtn.addEventListener('click', function () {
@@ -1695,6 +1753,28 @@
         });
       });
     }
+  }
+
+  function removeFromZone(zoneId, tableId) {
+    var zone = S.tables[zoneId];
+    if (!zone || !zone.meta) return;
+    zone.meta.members = (zone.meta.members || []).filter(function (m) { return String(m) !== String(tableId); });
+    apiFetch('PATCH', 'furniture/' + zoneId, { meta: zone.meta }).then(function () {
+      renderZoneLayer();
+      showZoneFloatProps(zoneId, zone);
+    }).catch(function (err) { console.warn('removeFromZone failed', err); });
+  }
+
+  function addToZone(zoneId, tableId) {
+    var zone = S.tables[zoneId];
+    if (!zone || !zone.meta) return;
+    var members = (zone.meta.members || []).map(String);
+    if (members.indexOf(String(tableId)) === -1) members.push(String(tableId));
+    zone.meta.members = members;
+    apiFetch('PATCH', 'furniture/' + zoneId, { meta: zone.meta }).then(function () {
+      renderZoneLayer();
+      showZoneFloatProps(zoneId, zone);
+    }).catch(function (err) { console.warn('addToZone failed', err); });
   }
 
   /* ── Prop change handlers ────────────────────────────────────────── */
