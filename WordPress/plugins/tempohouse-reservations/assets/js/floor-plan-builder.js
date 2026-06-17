@@ -672,9 +672,10 @@
         var c = (z.meta && z.meta.color) ? z.meta.color : '#EAF5EE';
         var bbox = getZoneBBoxRaw(z, d.id);
         var inside = bbox && (cx > bbox.x1 && cx < bbox.x2 && cy > bbox.y1 && cy < bbox.y2);
-        zRect.fill(hexToRgba(c, inside ? 0.30 : 0.18));
-        zRect.stroke(inside ? zoneBorderColor(c, 1.0) : zoneBorderColor(c));
-        zRect.strokeWidth(inside ? 3 : 2);
+        zRect.fill(hexToRgba(c, inside ? 0.22 : 0.12));
+        zRect.stroke(inside ? 'rgba(60,140,80,0.65)' : 'rgba(100,110,100,0.38)');
+        zRect.strokeWidth(inside ? 2 : 1.5);
+        zRect.dash(inside ? [] : [6, 4]);
       });
       zoneLayer.batchDraw();
     });
@@ -1071,20 +1072,21 @@
         x: zx, y: zy,
         width: zw, height: zh,
         cornerRadius: 10,
-        fill:        hexToRgba(color, 0.18),
-        stroke:      zoneBorderColor(color),
-        strokeWidth: 2,
+        fill:        hexToRgba(color, 0.12),
+        stroke:      'rgba(100,110,100,0.38)',
+        strokeWidth: 1.5,
+        dash:        [6, 4],
         name: 'zone-rect',
-        hitStrokeWidth: 10,
+        hitStrokeWidth: 12,
       });
 
       var label = new Konva.Text({
-        x: zx + 10, y: zy + 7,
+        x: zx + 9, y: zy + 6,
         text: item.label || 'Zone',
-        fontSize: 11,
+        fontSize: 10,
         fontFamily: 'system-ui,-apple-system,sans-serif',
         fontStyle: '600',
-        fill: zoneBorderColor(color, 0.9),
+        fill: 'rgba(80,100,80,0.65)',
         listening: false,
       });
 
@@ -1132,10 +1134,10 @@
       if (!zGroup) return;
       var zRect = zGroup.findOne('Rect');
       if (!zRect) return;
-      var c = (z.meta && z.meta.color) ? z.meta.color : '#EAF5EE';
-      zRect.fill(hexToRgba(c, 0.18));
-      zRect.stroke(zoneBorderColor(c));
-      zRect.strokeWidth(2);
+      zRect.fill(hexToRgba((z.meta && z.meta.color) ? z.meta.color : '#EAF5EE', 0.12));
+      zRect.stroke('rgba(100,110,100,0.38)');
+      zRect.strokeWidth(1.5);
+      zRect.dash([6, 4]);
     });
     zoneLayer.batchDraw();
   }
