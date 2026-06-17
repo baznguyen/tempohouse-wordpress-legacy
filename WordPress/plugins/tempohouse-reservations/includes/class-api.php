@@ -12,6 +12,7 @@ class THR_API {
         ( new THR_API_Reservations() )->register();
         ( new THR_API_Floors() )->register();
         ( new THR_API_Furniture() )->register();
+        ( new THR_API_Layouts() )->register();
         ( new THR_API_Tags() )->register();
         ( new THR_API_Availability() )->register();
         ( new THR_API_Blocks() )->register();

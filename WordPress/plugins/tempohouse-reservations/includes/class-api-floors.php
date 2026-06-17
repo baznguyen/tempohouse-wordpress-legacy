@@ -173,10 +173,11 @@ class THR_API_Floors {
             'bg_crop'        => $bg_crop,
             'width_px'       => (int)   $row->width_px,
             'height_px'      => (int)   $row->height_px,
-            'is_active'      => (bool)  $row->is_active,
-            'sort_order'     => (int)   $row->sort_order,
-            'created_at'     => $row->created_at,
-            'updated_at'     => $row->updated_at,
+            'is_active'        => (bool)  $row->is_active,
+            'sort_order'       => (int)   $row->sort_order,
+            'active_layout_id' => $row->active_layout_id ? (int) $row->active_layout_id : null,
+            'created_at'       => $row->created_at,
+            'updated_at'       => $row->updated_at,
         ];
     }
 }

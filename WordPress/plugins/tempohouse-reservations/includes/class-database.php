@@ -215,6 +215,61 @@ class THR_Database {
             $wpdb->query( "ALTER TABLE {$p}thr_furniture ADD COLUMN group_id BIGINT UNSIGNED DEFAULT NULL" );
         }
 
+        // v1.7 migration — layout versioning system
+        if ( ! $wpdb->get_var( "SHOW COLUMNS FROM {$p}thr_floor_plans LIKE 'active_layout_id'" ) ) {
+            $wpdb->query( "ALTER TABLE {$p}thr_floor_plans ADD COLUMN active_layout_id BIGINT UNSIGNED DEFAULT NULL" );
+        }
+        if ( ! $wpdb->get_var( "SHOW TABLE STATUS LIKE '{$p}thr_layouts'" ) ) {
+            $wpdb->query( "CREATE TABLE {$p}thr_layouts (
+                id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+                floor_plan_id   BIGINT UNSIGNED NOT NULL,
+                name            VARCHAR(100) NOT NULL,
+                is_default      TINYINT(1) NOT NULL DEFAULT 0,
+                sort_order      TINYINT NOT NULL DEFAULT 0,
+                note            TEXT DEFAULT NULL,
+                created_at      DATETIME NOT NULL,
+                updated_at      DATETIME NOT NULL,
+                PRIMARY KEY (id),
+                KEY floor_plan_id (floor_plan_id)
+            ) " . $wpdb->get_charset_collate() );
+        }
+        if ( ! $wpdb->get_var( "SHOW TABLE STATUS LIKE '{$p}thr_layout_periods'" ) ) {
+            $wpdb->query( "CREATE TABLE {$p}thr_layout_periods (
+                id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+                layout_id       BIGINT UNSIGNED NOT NULL,
+                name            VARCHAR(50) NOT NULL,
+                days_of_week    TINYINT UNSIGNED NOT NULL DEFAULT 127,
+                start_time      TIME NOT NULL,
+                end_time        TIME NOT NULL,
+                is_enabled      TINYINT(1) NOT NULL DEFAULT 1,
+                PRIMARY KEY (id),
+                KEY layout_id (layout_id)
+            ) " . $wpdb->get_charset_collate() );
+        }
+        if ( ! $wpdb->get_var( "SHOW TABLE STATUS LIKE '{$p}thr_layout_slots'" ) ) {
+            $wpdb->query( "CREATE TABLE {$p}thr_layout_slots (
+                id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+                layout_id       BIGINT UNSIGNED NOT NULL,
+                furniture_id    BIGINT UNSIGNED DEFAULT NULL,
+                type            VARCHAR(50) NOT NULL,
+                label           VARCHAR(100) NOT NULL,
+                pos_x           DECIMAL(8,2) NOT NULL DEFAULT 0,
+                pos_y           DECIMAL(8,2) NOT NULL DEFAULT 0,
+                width           DECIMAL(8,2) NOT NULL DEFAULT 80,
+                height          DECIMAL(8,2) NOT NULL DEFAULT 80,
+                rotation_deg    SMALLINT NOT NULL DEFAULT 0,
+                capacity_min    TINYINT UNSIGNED NOT NULL DEFAULT 1,
+                capacity_max    TINYINT UNSIGNED NOT NULL DEFAULT 4,
+                element_key     VARCHAR(20) DEFAULT NULL,
+                group_id        BIGINT UNSIGNED DEFAULT NULL,
+                is_visible      TINYINT(1) NOT NULL DEFAULT 1,
+                meta            TEXT DEFAULT NULL,
+                PRIMARY KEY (id),
+                KEY layout_id (layout_id),
+                KEY furniture_id (furniture_id)
+            ) " . $wpdb->get_charset_collate() );
+        }
+
         // Seed system tags
         self::seed_tags();
 
@@ -261,6 +316,9 @@ class THR_Database {
             'availability_blocks'=> "{$p}thr_availability_blocks",
             'waitlist'           => "{$p}thr_waitlist",
             'event_enquiries'    => "{$p}thr_event_enquiries",
+            'layouts'            => "{$p}thr_layouts",
+            'layout_periods'     => "{$p}thr_layout_periods",
+            'layout_slots'       => "{$p}thr_layout_slots",
         ];
     }
 

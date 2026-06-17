@@ -69,6 +69,9 @@
     snapEnabled: true,
     spaceDown:    false,
     panning:      null,    // { active, startX, startY, stageX, stageY, moved }
+    activeLayout: null,    // { id, name, is_default } or null = base
+    layouts:      [],      // all layouts for current floor plan
+    layoutPanel:  false,
   };
 
   /* ── Konva refs ─────────────────────────────────────────────────── */
@@ -400,6 +403,8 @@
 
   function selectFloor(id) {
     S.floorId = id;
+    S.activeLayout = null;
+    S.layouts = [];
     document.querySelectorAll('.fp-floor-tab').forEach(function (el) {
       el.classList.toggle('fp-floor-tab--active', String(el.dataset.floorId) === String(id));
     });
@@ -407,6 +412,7 @@
     loadBackground(floor || null);
     loadFurniture(id);
     deselect();
+    initLayoutSystem(floor);
   }
 
   /* ── Render floor tabs ──────────────────────────────────────────── */
@@ -2850,22 +2856,50 @@
 
   function saveLayout() {
     if (!S.floorId) return;
-    var promises = Object.values(S.tables).map(function (item) {
-      var patch = {
-        label:        item.label,
-        pos_x:        item.pos_x,
-        pos_y:        item.pos_y,
-        rotation_deg: item.rotation_deg || 0,
-        capacity_min: item.capacity_min,
-        capacity_max: item.capacity_max,
-        element_key:  item.element_key,
-      };
-      if (item.meta) patch.meta = item.meta;
-      return apiFetch('PATCH', 'furniture/' + item.id, patch);
-    });
     var btn = document.getElementById('fp-btn-publish');
     if (btn) btn.textContent = 'Saving…';
-    Promise.all(promises).then(function () {
+
+    var promise;
+    if (S.activeLayout) {
+      // Layout mode: bulk-save to slots endpoint
+      var items = Object.values(S.tables).map(function (item) {
+        return {
+          furniture_id: item.furniture_id || null,
+          type:         item.type,
+          label:        item.label,
+          pos_x:        item.pos_x,
+          pos_y:        item.pos_y,
+          width:        item.width,
+          height:       item.height,
+          rotation_deg: item.rotation_deg || 0,
+          capacity_min: item.capacity_min,
+          capacity_max: item.capacity_max,
+          element_key:  item.element_key || null,
+          group_id:     item.group_id || null,
+          is_visible:   item.is_visible !== undefined ? item.is_visible : 1,
+          meta:         item.meta || null,
+        };
+      });
+      promise = apiFetch('POST', 'layouts/' + S.activeLayout.id + '/slots/bulk', { items: items });
+    } else {
+      // Base mode: PATCH each furniture item individually (existing behaviour)
+      var promises = Object.values(S.tables).map(function (item) {
+        var patch = {
+          label:        item.label,
+          pos_x:        item.pos_x,
+          pos_y:        item.pos_y,
+          rotation_deg: item.rotation_deg || 0,
+          capacity_min: item.capacity_min,
+          capacity_max: item.capacity_max,
+          element_key:  item.element_key,
+        };
+        if (item.meta) patch.meta = item.meta;
+        return apiFetch('PATCH', 'furniture/' + item.id, patch);
+      });
+      promise = Promise.all(promises);
+    }
+
+    promise.then(function () {
       S.dirty = false;
       if (btn) {
         btn.textContent = 'Saved ✓';
@@ -3306,6 +3340,281 @@
     if (!isFinite(minX)) return null;
     var pad = 20;
     return { x1: minX - pad, y1: minY - pad, x2: maxX + pad, y2: maxY + pad };
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     LAYOUT SYSTEM
+  ══════════════════════════════════════════════════════════════════ */
+
+  function initLayoutSystem(floor) {
+    // Reset badge
+    var nameEl = document.getElementById('fp-layout-name');
+    if (nameEl) nameEl.textContent = 'Base layout';
+    var btn = document.getElementById('fp-layout-btn');
+    if (btn) btn.classList.remove('fp-layout-active');
+
+    // Hide panel and banner
+    var panel = document.getElementById('fp-layout-panel');
+    if (panel) panel.hidden = true;
+    S.layoutPanel = false;
+    hideLayoutBanner();
+
+    if (!S.floorId) return;
+
+    // Wire up toggle button (only once — use flag)
+    if (!initLayoutSystem._wired) {
+      initLayoutSystem._wired = true;
+
+      var layoutBtn = document.getElementById('fp-layout-btn');
+      if (layoutBtn) {
+        layoutBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          toggleLayoutPanel();
+        });
+      }
+
+      var closeBtn = document.getElementById('fp-layout-panel-close');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function () {
+          closeLayoutPanel();
+        });
+      }
+
+      var newBtn = document.getElementById('fp-layout-new-btn');
+      if (newBtn) {
+        newBtn.addEventListener('click', function () {
+          var name = window.prompt('Layout name:', 'Event layout');
+          if (!name || !name.trim()) return;
+          apiFetch('POST', 'layouts', {
+            floor_plan_id: S.floorId,
+            name: name.trim(),
+            copy_from_base: true,
+          }).then(function (layout) {
+            S.layouts.push(layout);
+            renderLayoutPanel();
+            showToast('Layout "' + layout.name + '" created', 'success');
+          }).catch(function () {
+            showToast('Failed to create layout', 'error');
+          });
+        });
+      }
+
+      var backBase = document.getElementById('fp-layout-back-base');
+      if (backBase) {
+        backBase.addEventListener('click', function () {
+          loadBaseLayout();
+        });
+      }
+
+      // Backdrop click closes panel
+      document.addEventListener('click', function (e) {
+        if (!S.layoutPanel) return;
+        var panel = document.getElementById('fp-layout-panel');
+        var btn   = document.getElementById('fp-layout-btn');
+        if (panel && !panel.contains(e.target) && btn && !btn.contains(e.target)) {
+          closeLayoutPanel();
+        }
+      });
+    }
+
+    // Load layouts for this floor plan
+    apiFetch('GET', 'layouts?floor_plan_id=' + S.floorId).then(function (data) {
+      S.layouts = Array.isArray(data) ? data : [];
+      renderLayoutPanel();
+
+      // If floor plan has an active_layout_id, load it
+      if (floor && floor.active_layout_id) {
+        var active = S.layouts.find(function (l) { return l.id === floor.active_layout_id; });
+        if (active) {
+          loadLayout(active.id);
+        }
+      }
+    }).catch(function () {
+      S.layouts = [];
+    });
+  }
+
+  function toggleLayoutPanel() {
+    if (S.layoutPanel) {
+      closeLayoutPanel();
+    } else {
+      openLayoutPanel();
+    }
+  }
+
+  function openLayoutPanel() {
+    var panel = document.getElementById('fp-layout-panel');
+    if (panel) panel.hidden = false;
+    S.layoutPanel = true;
+  }
+
+  function closeLayoutPanel() {
+    var panel = document.getElementById('fp-layout-panel');
+    if (panel) panel.hidden = true;
+    S.layoutPanel = false;
+  }
+
+  function renderLayoutPanel() {
+    var list = document.getElementById('fp-layout-list');
+    if (!list) return;
+    list.innerHTML = '';
+
+    // Base layout item
+    var baseEl = document.createElement('div');
+    baseEl.className = 'fp-layout-base-item' + (S.activeLayout === null ? ' active' : '');
+    baseEl.innerHTML =
+      '<div class="fp-layout-base-name">Base layout</div>' +
+      '<div class="fp-layout-base-meta">The default furniture arrangement</div>';
+    baseEl.addEventListener('click', function () {
+      loadBaseLayout();
+      closeLayoutPanel();
+    });
+    list.appendChild(baseEl);
+
+    // Layout items
+    S.layouts.forEach(function (layout) {
+      var isActive = S.activeLayout && S.activeLayout.id === layout.id;
+      var item = document.createElement('div');
+      item.className = 'fp-layout-item' + (isActive ? ' active' : '');
+
+      var nameHtml = '<span class="fp-layout-item-name">' + escHtml(layout.name);
+      if (layout.is_default) {
+        nameHtml += '<span class="fp-layout-default-badge">Default</span>';
+      }
+      nameHtml += '</span>';
+
+      item.innerHTML =
+        nameHtml +
+        '<div class="fp-layout-item-meta">Created ' + escHtml(layout.created_at ? layout.created_at.slice(0, 10) : '') + '</div>' +
+        '<div class="fp-layout-item-actions">' +
+          '<button class="fp-btn fp-btn-outline fp-btn-xs" data-action="load" data-id="' + layout.id + '" type="button">Load</button>' +
+          '<button class="fp-btn fp-btn-outline fp-btn-xs" data-action="snapshot" data-id="' + layout.id + '" type="button">Refresh from base</button>' +
+          '<button class="fp-btn fp-btn-ghost fp-btn-xs" data-action="delete" data-id="' + layout.id + '" type="button" style="color:var(--red);">Delete</button>' +
+        '</div>';
+
+      item.querySelector('[data-action="load"]').addEventListener('click', function (e) {
+        e.stopPropagation();
+        loadLayout(layout.id);
+        closeLayoutPanel();
+      });
+      item.querySelector('[data-action="snapshot"]').addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (!window.confirm('Replace all slots in "' + layout.name + '" with the current base furniture?')) return;
+        apiFetch('POST', 'layouts/' + layout.id + '/snapshot').then(function (res) {
+          showToast('Snapshot updated — ' + res.slots_created + ' slots copied', 'success');
+          // Reload if this is the active layout
+          if (S.activeLayout && S.activeLayout.id === layout.id) {
+            loadLayout(layout.id);
+          }
+        }).catch(function () {
+          showToast('Snapshot failed', 'error');
+        });
+      });
+      item.querySelector('[data-action="delete"]').addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (!window.confirm('Delete layout "' + layout.name + '"? This cannot be undone.')) return;
+        apiFetch('DELETE', 'layouts/' + layout.id).then(function () {
+          S.layouts = S.layouts.filter(function (l) { return l.id !== layout.id; });
+          if (S.activeLayout && S.activeLayout.id === layout.id) {
+            loadBaseLayout();
+          }
+          renderLayoutPanel();
+          showToast('Layout deleted', 'success');
+        }).catch(function () {
+          showToast('Delete failed', 'error');
+        });
+      });
+
+      item.addEventListener('click', function () {
+        loadLayout(layout.id);
+        closeLayoutPanel();
+      });
+
+      list.appendChild(item);
+    });
+  }
+
+  function loadLayout(layoutId) {
+    apiFetch('GET', 'layouts/' + layoutId + '/slots').then(function (data) {
+      var slots = Array.isArray(data) ? data : [];
+      S.tables = {};
+      slots.forEach(function (slot) {
+        // Map slot fields to the same structure addTableNode expects
+        S.tables[slot.id] = {
+          id:           slot.id,
+          furniture_id: slot.furniture_id,
+          type:         slot.type,
+          label:        slot.label,
+          pos_x:        slot.pos_x,
+          pos_y:        slot.pos_y,
+          width:        slot.width,
+          height:       slot.height,
+          rotation_deg: slot.rotation_deg,
+          capacity_min: slot.capacity_min,
+          capacity_max: slot.capacity_max,
+          element_key:  slot.element_key,
+          group_id:     slot.group_id,
+          is_visible:   slot.is_visible,
+          meta:         slot.meta,
+        };
+      });
+
+      S.activeLayout = S.layouts.find(function (l) { return l.id === layoutId; }) || { id: layoutId, name: 'Layout #' + layoutId };
+
+      renderAllTables();
+      renderZoneLayer();
+      updateStatusBar();
+
+      // Update header badge
+      var nameEl = document.getElementById('fp-layout-name');
+      if (nameEl) nameEl.textContent = S.activeLayout.name;
+      var layoutBtn = document.getElementById('fp-layout-btn');
+      if (layoutBtn) layoutBtn.classList.add('fp-layout-active');
+
+      // Show banner
+      showLayoutBanner(S.activeLayout.name);
+
+      // Re-render panel to update active state
+      renderLayoutPanel();
+    }).catch(function () {
+      showToast('Failed to load layout slots', 'error');
+    });
+  }
+
+  function loadBaseLayout() {
+    apiFetch('GET', 'floor-plans/' + S.floorId + '/furniture').then(function (data) {
+      var items = Array.isArray(data) ? data : (data.data || []);
+      S.tables = {};
+      items.forEach(function (item) { S.tables[item.id] = item; });
+      S.activeLayout = null;
+
+      renderAllTables();
+      renderZoneLayer();
+      updateStatusBar();
+
+      // Update header badge
+      var nameEl = document.getElementById('fp-layout-name');
+      if (nameEl) nameEl.textContent = 'Base layout';
+      var layoutBtn = document.getElementById('fp-layout-btn');
+      if (layoutBtn) layoutBtn.classList.remove('fp-layout-active');
+
+      hideLayoutBanner();
+      renderLayoutPanel();
+    }).catch(function () {
+      showToast('Failed to reload base layout', 'error');
+    });
+  }
+
+  function showLayoutBanner(name) {
+    var banner = document.getElementById('fp-layout-banner');
+    var nameEl = document.getElementById('fp-layout-banner-name');
+    if (banner) banner.hidden = false;
+    if (nameEl) nameEl.textContent = name;
+  }
+
+  function hideLayoutBanner() {
+    var banner = document.getElementById('fp-layout-banner');
+    if (banner) banner.hidden = true;
   }
 
   /* ══════════════════════════════════════════════════════════════════

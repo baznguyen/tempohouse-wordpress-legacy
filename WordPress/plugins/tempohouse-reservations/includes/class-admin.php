@@ -750,6 +750,15 @@ class THR_Admin {
                 <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M12 6.5H5.5a3.5 3.5 0 0 0 0 7H9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M12 6.5L9.5 4M12 6.5L9.5 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
               <span class="fp-h-sep fp-builder-only"></span>
+              <!-- Layout version picker -->
+              <div class="fp-layout-ctrl fp-builder-only" id="fp-layout-ctrl">
+                <button class="fp-btn fp-btn-outline fp-layout-badge" id="fp-layout-btn" type="button">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="5" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="9" width="12" height="5" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg>
+                  <span id="fp-layout-name">Base layout</span>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+              <span class="fp-h-sep fp-builder-only"></span>
               <button class="fp-btn fp-btn-outline fp-builder-only" id="fp-btn-exit-builder">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7 1L2 6l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Live view
@@ -875,6 +884,11 @@ class THR_Admin {
                 <button class="fp-bg-edit-done" id="fp-bg-crop-reset" type="button">Reset</button>
                 <button class="fp-bg-edit-done fp-bg-edit-done--apply" id="fp-bg-crop-apply" type="button">Apply crop</button>
               </div>
+              <!-- Layout mode banner -->
+              <div class="fp-layout-banner" id="fp-layout-banner" hidden>
+                Viewing layout: <strong id="fp-layout-banner-name"></strong>
+                <button class="fp-layout-banner-base" id="fp-layout-back-base" type="button">Return to base</button>
+              </div>
               <!-- Floating properties panel (desktop: near item; mobile: bottom sheet) -->
               <div class="fp-float-panel" id="fp-float-panel" hidden>
                 <div class="fp-fp-handle"></div>
@@ -922,6 +936,24 @@ class THR_Admin {
 
           <!-- Toast notification -->
           <div class="fp-toast" id="fp-toast" role="status" aria-live="polite"></div>
+
+          <!-- Layout Manager Panel -->
+          <div class="fp-layout-panel" id="fp-layout-panel" hidden>
+            <div class="fp-layout-panel-inner">
+              <div class="fp-layout-panel-hdr">
+                <span class="fp-layout-panel-title">Layout versions</span>
+                <button class="fp-btn fp-btn-ghost" id="fp-layout-panel-close" type="button" aria-label="Close">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </button>
+              </div>
+              <div id="fp-layout-list" class="fp-layout-list"></div>
+              <div class="fp-layout-panel-foot">
+                <button class="fp-btn fp-btn-outline" id="fp-layout-new-btn" type="button" style="width:100%;">
+                  + Save current as new layout
+                </button>
+              </div>
+            </div>
+          </div>
 
         </div><!-- #fp-app -->
         </div><!-- .wrap -->

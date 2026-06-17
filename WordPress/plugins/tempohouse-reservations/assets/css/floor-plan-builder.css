@@ -56,6 +56,7 @@
 
 /* ── Root shell ──────────────────────────────────────────────────────── */
 #fp-app {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: calc(100vh - 32px);
@@ -1729,3 +1730,75 @@
 .fp-group-leave-btn { font-size: 11px !important; padding: 2px 8px !important; }
 .fp-prop-row--group { align-items: center; gap: 6px; flex-wrap: wrap; }
 .fp-btn-xs { height: 22px; padding: 0 8px; font-size: 11px; border-radius: 4px; }
+
+/* ── Layout switcher & panel ─────────────────────────────────────────── */
+.fp-layout-ctrl { display: flex; align-items: center; }
+.fp-layout-badge { gap: 6px; font-size: 12px !important; height: 30px !important; padding: 0 10px !important; }
+.fp-layout-badge.fp-layout-active { border-color: var(--accent-bd); background: var(--accent-lt); color: var(--accent); }
+
+.fp-layout-panel {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: 300px; background: var(--panel);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  z-index: 400; box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+}
+.fp-layout-panel-inner { display: flex; flex-direction: column; height: 100%; }
+.fp-layout-panel-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.fp-layout-panel-title { font-weight: 700; font-size: 14px; }
+.fp-layout-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+.fp-layout-panel-foot { padding: 12px; border-top: 1px solid var(--border); flex-shrink: 0; }
+
+.fp-layout-item {
+  border: 1.5px solid var(--border); border-radius: 10px;
+  padding: 12px 14px; cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+  display: flex; flex-direction: column; gap: 4px;
+  position: relative;
+}
+.fp-layout-item:hover { border-color: #B0B8C4; background: var(--bg); }
+.fp-layout-item.active { border-color: var(--accent-bd); background: var(--accent-lt); }
+.fp-layout-item-name { font-weight: 600; font-size: 13px; color: var(--text-1); display: flex; align-items: center; gap: 6px; }
+.fp-layout-item-meta { font-size: 11px; color: var(--text-3); }
+.fp-layout-item-actions { display: flex; gap: 4px; margin-top: 4px; }
+.fp-layout-default-badge {
+  display: inline-flex; align-items: center; height: 16px; padding: 0 6px;
+  background: var(--accent); color: #fff; border-radius: 4px; font-size: 9px; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.fp-layout-base-item {
+  border: 1.5px dashed var(--border); border-radius: 10px;
+  padding: 12px 14px; cursor: pointer;
+  transition: border-color 0.12s;
+}
+.fp-layout-base-item:hover { border-color: #B0B8C4; }
+.fp-layout-base-item.active { border-color: var(--accent); }
+.fp-layout-base-name { font-weight: 600; font-size: 13px; color: var(--text-2); }
+.fp-layout-base-meta { font-size: 11px; color: var(--text-3); }
+
+/* Period chips */
+.fp-period-list { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; }
+.fp-period-chip {
+  font-size: 10px; color: var(--text-2);
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 4px; padding: 1px 6px;
+}
+
+/* Layout mode banner */
+.fp-layout-banner {
+  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: rgba(59,125,216,0.93); color: #EFF6FF;
+  font-size: 12px; font-weight: 500; padding: 8px 14px 8px 18px;
+  border-radius: 24px; z-index: 30; white-space: nowrap;
+  display: flex; align-items: center; gap: 10px; pointer-events: auto;
+  backdrop-filter: blur(4px);
+}
+.fp-layout-banner-base {
+  background: rgba(255,255,255,0.2); border: none; color: inherit;
+  border-radius: 12px; padding: 2px 10px; font-size: 11.5px; cursor: pointer;
+}
+.fp-layout-banner-base:hover { background: rgba(255,255,255,0.35); }
