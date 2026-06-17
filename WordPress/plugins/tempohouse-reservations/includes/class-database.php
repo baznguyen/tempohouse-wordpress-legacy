@@ -25,6 +25,7 @@ class THR_Database {
             diner_name          VARCHAR(200) NOT NULL,
             diner_email         VARCHAR(200) NOT NULL,
             diner_phone         VARCHAR(50)  DEFAULT NULL,
+            diner_zalo          VARCHAR(50)  DEFAULT NULL,
             diner_lang          VARCHAR(5)   NOT NULL DEFAULT 'en',
             occasion            VARCHAR(50)  NOT NULL DEFAULT 'dinner',
             notes_diner         TEXT         DEFAULT NULL,
@@ -122,6 +123,32 @@ class THR_Database {
             KEY blocked_from (blocked_from)
         ) $charset;" );
 
+        // ── Event enquiries ───────────────────────────────────────────────────
+        dbDelta( "CREATE TABLE {$p}thr_event_enquiries (
+            id                 BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            reference_code     VARCHAR(12) NOT NULL,
+            status             VARCHAR(20) NOT NULL DEFAULT 'new',
+            event_type         VARCHAR(50) NOT NULL DEFAULT 'corporate',
+            preferred_date     DATE DEFAULT NULL,
+            guest_count        SMALLINT UNSIGNED NOT NULL DEFAULT 50,
+            budget_range       VARCHAR(50) DEFAULT NULL,
+            catering_needed    TINYINT(1) NOT NULL DEFAULT 0,
+            contact_name       VARCHAR(200) NOT NULL,
+            contact_email      VARCHAR(200) NOT NULL,
+            contact_phone      VARCHAR(50) DEFAULT NULL,
+            contact_zalo       VARCHAR(50) DEFAULT NULL,
+            company_name       VARCHAR(200) DEFAULT NULL,
+            notes              TEXT DEFAULT NULL,
+            auto_reply_sent_at DATETIME DEFAULT NULL,
+            created_at         DATETIME NOT NULL,
+            updated_at         DATETIME NOT NULL,
+            PRIMARY KEY (id),
+            UNIQUE KEY reference_code (reference_code),
+            KEY status (status),
+            KEY preferred_date (preferred_date),
+            KEY contact_email (contact_email(100))
+        ) $charset;" );
+
         // ── Waitlist ──────────────────────────────────────────────────────────
         dbDelta( "CREATE TABLE {$p}thr_waitlist (
             id                   BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -146,6 +173,30 @@ class THR_Database {
             KEY          requested_date (requested_date),
             KEY          diner_email (diner_email(100))
         ) $charset;" );
+
+        // v1.2 migration — add diner_zalo column to existing installs
+        $col = $wpdb->get_var( "SHOW COLUMNS FROM {$p}thr_reservations LIKE 'diner_zalo'" );
+        if ( ! $col ) {
+            $wpdb->query( "ALTER TABLE {$p}thr_reservations ADD COLUMN diner_zalo VARCHAR(50) DEFAULT NULL AFTER diner_phone" );
+        }
+
+        // v1.3 migration — floor plan background positioning fields
+        $bg_migrations = [
+            'bg_scale'    => "FLOAT NOT NULL DEFAULT 1.0",
+            'bg_opacity'  => "FLOAT NOT NULL DEFAULT 0.5",
+            'bg_offset_x' => "FLOAT NOT NULL DEFAULT 0.0",
+            'bg_offset_y' => "FLOAT NOT NULL DEFAULT 0.0",
+        ];
+        foreach ( $bg_migrations as $col => $definition ) {
+            if ( ! $wpdb->get_var( "SHOW COLUMNS FROM {$p}thr_floor_plans LIKE '$col'" ) ) {
+                $wpdb->query( "ALTER TABLE {$p}thr_floor_plans ADD COLUMN $col $definition" );
+            }
+        }
+
+        // v1.4 migration — bg_scale_y for non-uniform background scaling
+        if ( ! $wpdb->get_var( "SHOW COLUMNS FROM {$p}thr_floor_plans LIKE 'bg_scale_y'" ) ) {
+            $wpdb->query( "ALTER TABLE {$p}thr_floor_plans ADD COLUMN bg_scale_y FLOAT NOT NULL DEFAULT 0.0" );
+        }
 
         // Seed system tags
         self::seed_tags();
@@ -192,6 +243,7 @@ class THR_Database {
             'reservation_tags'   => "{$p}thr_reservation_tags",
             'availability_blocks'=> "{$p}thr_availability_blocks",
             'waitlist'           => "{$p}thr_waitlist",
+            'event_enquiries'    => "{$p}thr_event_enquiries",
         ];
     }
 

@@ -55,7 +55,9 @@
     liveTimer:   null,
     undoStack:   [],
     redoStack:   [],
-    bgConfig:    { url: null, scale: 1, opacity: 0.5, offsetX: 0, offsetY: 0 },
+    bgConfig:    { url: null, scale: 1, scaleY: 0, opacity: 0.5, offsetX: 0, offsetY: 0 },
+    bgEditMode:  false,
+    bgTransformer: null,
     snapEnabled: true,
   };
 
@@ -398,12 +400,14 @@
   /* ══════════════════════════════════════════════════════════════════
      BACKGROUND IMAGE LAYER
   ══════════════════════════════════════════════════════════════════ */
-  function loadBackground(floor) {
+  function loadBackground(floor, autoFit) {
+    if (S.bgEditMode) exitBgEditMode(false);
     bgLayer.destroyChildren();
     bgLayer.batchDraw();
+    S.bgKonvaImg = null;
 
     if (!floor || !floor.background_url) {
-      S.bgConfig = { url: null, scale: 1, opacity: 0.5, offsetX: 0, offsetY: 0 };
+      S.bgConfig = { url: null, scale: 1, scaleY: 0, opacity: 0.5, offsetX: 0, offsetY: 0 };
       updateBgControls();
       return;
     }
@@ -411,6 +415,7 @@
     S.bgConfig = {
       url:     floor.background_url,
       scale:   toNum(floor.bg_scale,    1),
+      scaleY:  toNum(floor.bg_scale_y,  0),
       opacity: toNum(floor.bg_opacity,  0.5),
       offsetX: toNum(floor.bg_offset_x, 0),
       offsetY: toNum(floor.bg_offset_y, 0),
@@ -419,20 +424,46 @@
     var img = new window.Image();
     img.crossOrigin = 'anonymous';
     img.onload = function () {
+      var sx = S.bgConfig.scale;
+      var sy = S.bgConfig.scaleY || sx;
+
+      // Auto-fit to canvas on first upload (autoFit=true) or when scale/offset are at defaults
+      if (autoFit || (S.bgConfig.scale === 1 && !S.bgConfig.scaleY && !S.bgConfig.offsetX && !S.bgConfig.offsetY)) {
+        var stageW = stage.width();
+        var stageH = stage.height();
+        var fitSx  = stageW / img.naturalWidth;
+        var fitSy  = stageH / img.naturalHeight;
+        var fit    = Math.min(fitSx, fitSy, 1); // contain, don't upscale past 1
+        sx = fit;
+        sy = fit;
+        S.bgConfig.scale   = sx;
+        S.bgConfig.scaleY  = 0; // uniform
+        S.bgConfig.offsetX = Math.round((stageW - img.naturalWidth  * sx) / 2);
+        S.bgConfig.offsetY = Math.round((stageH - img.naturalHeight * sy) / 2);
+        // Persist auto-fit values so they survive page reload
+        if (S.floorId) {
+          apiFetch('PATCH', 'floor-plans/' + S.floorId, {
+            bg_scale: S.bgConfig.scale, bg_scale_y: 0,
+            bg_offset_x: S.bgConfig.offsetX, bg_offset_y: S.bgConfig.offsetY,
+          }).catch(function () {});
+        }
+      }
+
       var konvaImg = new Konva.Image({
-        image:   img,
-        x:       S.bgConfig.offsetX,
-        y:       S.bgConfig.offsetY,
-        scaleX:  S.bgConfig.scale,
-        scaleY:  S.bgConfig.scale,
-        opacity: S.bgConfig.opacity,
+        image:     img,
+        x:         S.bgConfig.offsetX,
+        y:         S.bgConfig.offsetY,
+        scaleX:    sx,
+        scaleY:    sy,
+        opacity:   S.bgConfig.opacity,
         listening: false,
         draggable: false,
-        name: 'bg-image',
+        name:      'bg-image',
       });
       S.bgKonvaImg = konvaImg;
       bgLayer.add(konvaImg);
       bgLayer.batchDraw();
+      updateBgControls();
     };
     img.onerror = function () { showToast('Background image failed to load', 'warn'); };
     img.src = floor.background_url;
@@ -449,6 +480,7 @@
     var scSlider  = document.getElementById('fp-bg-scale');
     var dot       = document.getElementById('fp-bg-nav-dot');
     var navBtn    = document.getElementById('fp-bg-nav-btn');
+    var moveBtn   = document.getElementById('fp-bg-move-btn');
 
     if (sliders)  sliders.hidden  = !hasUrl;
     if (noThumb)  noThumb.hidden  = hasUrl;
@@ -458,15 +490,21 @@
     }
     if (opSlider) opSlider.value = String(S.bgConfig.opacity);
     if (scSlider) scSlider.value = String(S.bgConfig.scale);
-    if (dot) dot.hidden = !hasUrl;
-    if (navBtn) navBtn.classList.toggle('fp-bg-nav-btn--has-bg', hasUrl);
+    if (dot)      dot.hidden     = !hasUrl;
+    if (navBtn)   navBtn.classList.toggle('fp-bg-nav-btn--has-bg', hasUrl);
+    if (moveBtn)  moveBtn.hidden = !hasUrl;
   }
 
   function applyBgUpdate(patch) {
     Object.assign(S.bgConfig, patch);
     if (S.bgKonvaImg) {
       if (patch.opacity  !== undefined) S.bgKonvaImg.opacity(patch.opacity);
-      if (patch.scale    !== undefined) { S.bgKonvaImg.scaleX(patch.scale); S.bgKonvaImg.scaleY(patch.scale); }
+      if (patch.scale    !== undefined) {
+        S.bgKonvaImg.scaleX(patch.scale);
+        // When slider sets uniform scale, reset Y to match and clear scaleY
+        S.bgConfig.scaleY = 0;
+        S.bgKonvaImg.scaleY(patch.scale);
+      }
       if (patch.offsetX  !== undefined) S.bgKonvaImg.x(patch.offsetX);
       if (patch.offsetY  !== undefined) S.bgKonvaImg.y(patch.offsetY);
       bgLayer.batchDraw();
@@ -476,6 +514,7 @@
       if (!S.floorId || !S.bgConfig.url) return;
       apiFetch('PATCH', 'floor-plans/' + S.floorId, {
         bg_scale:    S.bgConfig.scale,
+        bg_scale_y:  S.bgConfig.scaleY || 0,
         bg_opacity:  S.bgConfig.opacity,
         bg_offset_x: S.bgConfig.offsetX,
         bg_offset_y: S.bgConfig.offsetY,
@@ -485,17 +524,117 @@
 
   function removeBg() {
     if (!S.floorId) return;
+    if (S.bgEditMode) exitBgEditMode(false);
     apiFetch('PATCH', 'floor-plans/' + S.floorId, {
-      bg_scale: 1, bg_opacity: 0.5, bg_offset_x: 0, bg_offset_y: 0,
+      bg_scale: 1, bg_scale_y: 0, bg_opacity: 0.5, bg_offset_x: 0, bg_offset_y: 0,
     }).catch(function () {});
     bgLayer.destroyChildren();
     bgLayer.batchDraw();
-    S.bgConfig = { url: null, scale: 1, opacity: 0.5, offsetX: 0, offsetY: 0 };
+    S.bgConfig = { url: null, scale: 1, scaleY: 0, opacity: 0.5, offsetX: 0, offsetY: 0 };
     S.bgKonvaImg = null;
     var floor = S.floors.find(function (f) { return String(f.id) === String(S.floorId); });
     if (floor) floor.background_url = null;
     updateBgControls();
     showToast('Background removed', 'info');
+  }
+
+  function enterBgEditMode() {
+    if (!S.bgKonvaImg || S.bgEditMode) return;
+    S.bgEditMode = true;
+
+    // Bring bgLayer above tables so transformer handles are visible
+    bgLayer.moveToTop();
+    bgLayer.listening(true);
+    S.bgKonvaImg.listening(true);
+    S.bgKonvaImg.draggable(true);
+
+    // Clear any table selection — can't select tables while editing bg
+    deselect();
+
+    var bgTr = new Konva.Transformer({
+      nodes:          [S.bgKonvaImg],
+      keepRatio:      false,
+      rotateEnabled:  false,
+      borderStroke:        '#3B82F6',
+      borderStrokeWidth:   1.5,
+      borderDash:          [4, 3],
+      anchorStroke:        '#3B82F6',
+      anchorFill:          '#ffffff',
+      anchorSize:          10,
+      anchorCornerRadius:  2,
+      anchorStrokeWidth:   1.5,
+    });
+    S.bgTransformer = bgTr;
+    bgLayer.add(bgTr);
+    bgLayer.batchDraw();
+
+    // Save on transform / drag end
+    S.bgKonvaImg.on('transformend.bgedit', function () {
+      S.bgConfig.scale   = S.bgKonvaImg.scaleX();
+      S.bgConfig.scaleY  = S.bgKonvaImg.scaleY();
+      S.bgConfig.offsetX = Math.round(S.bgKonvaImg.x());
+      S.bgConfig.offsetY = Math.round(S.bgKonvaImg.y());
+      saveBgTransform();
+    });
+    S.bgKonvaImg.on('dragend.bgedit', function () {
+      S.bgConfig.offsetX = Math.round(S.bgKonvaImg.x());
+      S.bgConfig.offsetY = Math.round(S.bgKonvaImg.y());
+      saveBgTransform();
+    });
+
+    var bar = document.getElementById('fp-bg-edit-bar');
+    if (bar) bar.hidden = false;
+
+    // Close the bg popover so it doesn't overlap
+    var popover = document.getElementById('fp-bg-popover');
+    var navBtn  = document.getElementById('fp-bg-nav-btn');
+    if (popover) { popover.hidden = true; }
+    if (navBtn)  { navBtn.classList.remove('fp-bg-nav-btn--open'); }
+  }
+
+  function exitBgEditMode(save) {
+    if (!S.bgEditMode) return;
+    S.bgEditMode = false;
+
+    if (S.bgTransformer) {
+      S.bgTransformer.destroy();
+      S.bgTransformer = null;
+    }
+    if (S.bgKonvaImg) {
+      S.bgKonvaImg.off('.bgedit');
+      S.bgKonvaImg.draggable(false);
+      S.bgKonvaImg.listening(false);
+      if (save !== false) {
+        S.bgConfig.scale   = S.bgKonvaImg.scaleX();
+        S.bgConfig.scaleY  = S.bgKonvaImg.scaleY();
+        S.bgConfig.offsetX = Math.round(S.bgKonvaImg.x());
+        S.bgConfig.offsetY = Math.round(S.bgKonvaImg.y());
+        saveBgTransform();
+      }
+    }
+
+    bgLayer.listening(false);
+    bgLayer.moveToBottom(); // restore z-order: bg below zones below tables
+    // zoneLayer sits in middle — move it back above bgLayer
+    zoneLayer.moveToTop();
+    tableLayer.moveToTop();
+    bgLayer.batchDraw();
+
+    var bar = document.getElementById('fp-bg-edit-bar');
+    if (bar) bar.hidden = true;
+  }
+
+  function saveBgTransform() {
+    if (!S.floorId || !S.bgConfig.url) return;
+    clearTimeout(saveBgTransform._t);
+    saveBgTransform._t = setTimeout(function () {
+      apiFetch('PATCH', 'floor-plans/' + S.floorId, {
+        bg_scale:    S.bgConfig.scale,
+        bg_scale_y:  S.bgConfig.scaleY || 0,
+        bg_offset_x: S.bgConfig.offsetX,
+        bg_offset_y: S.bgConfig.offsetY,
+      }).catch(function () {});
+    }, 600);
   }
 
   function bindBgControls() {
@@ -553,7 +692,7 @@
         }).then(function (floor) {
           var idx = S.floors.findIndex(function (f) { return String(f.id) === String(S.floorId); });
           if (idx >= 0) S.floors[idx] = floor;
-          loadBackground(floor);
+          loadBackground(floor, true); // autoFit=true on fresh upload
           showToast('Background uploaded', 'info');
         }).catch(function (e) {
           showToast((e && e.message) ? e.message : 'Upload failed', 'warn');
@@ -584,6 +723,28 @@
         if (navBtn) navBtn.classList.remove('fp-bg-nav-btn--open');
       });
     }
+
+    var moveBtn  = document.getElementById('fp-bg-move-btn');
+    var doneBtn  = document.getElementById('fp-bg-edit-done');
+
+    if (moveBtn) {
+      moveBtn.addEventListener('click', function () {
+        enterBgEditMode();
+      });
+    }
+
+    if (doneBtn) {
+      doneBtn.addEventListener('click', function () {
+        exitBgEditMode(true);
+      });
+    }
+
+    // Esc key exits bg edit mode
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && S.bgEditMode) {
+        exitBgEditMode(true);
+      }
+    });
   }
 
   /* ══════════════════════════════════════════════════════════════════
