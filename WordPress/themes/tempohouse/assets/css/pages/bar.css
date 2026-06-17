@@ -142,20 +142,32 @@
   line-height: var(--leading-normal);
 }
 
-/* ── 1c. Cocktail strip ──────────────────────────── */
+/* ── 1c. Cocktail strip — animated marquee ──────────
+   Continuous horizontal scroll gives the bar page
+   kinetic energy absent from the café. Pauses on hover. */
 
 .page-bar__cocktail-strip {
-  padding-block: var(--space-10);
+  padding-block: var(--space-8);
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
+  overflow: hidden;
 }
 
 .page-bar__cocktail-track {
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: var(--space-3) var(--space-5);
+  width: max-content;
+  animation: bar-ticker 36s linear infinite;
+}
+
+.page-bar__cocktail-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes bar-ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 .page-bar__cocktail-item {
@@ -166,6 +178,7 @@
   letter-spacing: var(--tracking-tight);
   color: var(--color-text-primary);
   white-space: nowrap;
+  padding-inline: var(--space-5);
 }
 
 .page-bar__cocktail-sep {
@@ -339,15 +352,20 @@
    A short bold line of copy, nothing else.
    Reads like a printed bar card slipped between pages. */
 
+/* ── 2c. Manifesto strip — gallery wall statement ───
+   This is the visual peak of the page. Typography at
+   a scale that fills space rather than fitting into it.
+   Treat it as a printed line on a gallery wall. */
+
 .page-bar__manifesto {
-  padding-block: var(--space-16);
+  padding-block: clamp(var(--space-20), 10vw, var(--space-24));
   text-align: center;
   border-top: 1px solid var(--color-border-strong);
   border-bottom: 1px solid var(--color-border-strong);
   background: var(--color-bg-alt);
+  overflow: hidden;
 }
 
-/* Short amber rule — editorial accent above the quote */
 .page-bar__manifesto::before {
   content: '';
   display: block;
@@ -355,19 +373,20 @@
   height: 1px;
   background: var(--tempo-amber);
   opacity: 0.6;
-  margin: 0 auto var(--space-8);
+  margin: 0 auto var(--space-10);
 }
 
 .page-bar__manifesto-text {
   font-family: var(--font-accent);
-  font-size: clamp(2.2rem, 5vw, 4rem);
+  font-size: clamp(3rem, 8vw, 8rem);
   font-weight: 300;
   font-style: italic;
   color: var(--color-text-primary);
-  line-height: 1.3;
-  letter-spacing: var(--tracking-tight);
-  max-width: 22ch;
-  margin: 0 auto var(--space-6);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  max-width: none;
+  margin: 0 auto var(--space-8);
+  padding-inline: var(--gutter);
 }
 
 .page-bar__manifesto-attr {
@@ -524,20 +543,22 @@
   border-bottom: 1px solid var(--color-border-strong);
 }
 
-/* Poster-scale title */
+/* Poster-scale title — this IS the section's visual statement */
 .page-bar__night .page-inner__section-title {
-  font-size: clamp(2rem, 5vw, 4.5rem);
-  line-height: 1.1;
+  font-size: clamp(2.8rem, 8vw, 8rem);
+  line-height: 1.0;
   margin-top: var(--space-3);
   color: var(--color-text-primary);
+  letter-spacing: -0.03em;
 }
 
-/* Concert bill — programme entries as horizontal rows */
+/* Concert bill — left amber rule gives "printed programme" feel */
 .page-bar__night-bill {
   list-style: none;
-  padding: 0;
+  padding: 0 0 0 var(--space-8);
   margin: 0 0 var(--space-12);
   border-top: 1px solid var(--color-border-strong);
+  border-left: 2px solid rgba(221, 170, 98, 0.35);
 }
 
 .page-bar__night-bill-item {
@@ -677,7 +698,12 @@
   }
 
   .page-bar__night .page-inner__section-title {
-    font-size: clamp(1.8rem, 5vw, 4rem);
+    font-size: clamp(2.2rem, 7vw, 5rem);
+    letter-spacing: -0.02em;
+  }
+
+  .page-bar__night-bill {
+    padding-left: var(--space-5);
   }
 
   .page-bar__night-footer {
@@ -751,7 +777,7 @@
   }
 
   .page-bar__manifesto-text {
-    font-size: clamp(1.7rem, 6vw, 2.8rem);
+    font-size: clamp(2.4rem, 9vw, 5rem);
   }
 }
 

@@ -40,9 +40,10 @@ get_header();
     </div>
   </div>
 
-  <!-- ── 1c. Cocktail strip ──────────────────────────── -->
-  <div class="page-bar__cocktail-strip" aria-hidden="true">
-    <div class="page-bar__cocktail-track">
+  <!-- ── 1c. Cocktail strip — animated marquee ────────
+       Items duplicated for seamless loop (translateX -50%). -->
+  <div class="page-bar__cocktail-strip" aria-label="Cocktail list">
+    <div class="page-bar__cocktail-track" aria-hidden="true">
       <span class="page-bar__cocktail-item">Lychee Martini</span>
       <span class="page-bar__cocktail-sep">&middot;</span>
       <span class="page-bar__cocktail-item">Panpan Spritz</span>
@@ -54,6 +55,28 @@ get_header();
       <span class="page-bar__cocktail-item">Manhattan</span>
       <span class="page-bar__cocktail-sep">&middot;</span>
       <span class="page-bar__cocktail-item">Old Fashioned</span>
+      <span class="page-bar__cocktail-sep">&middot;</span>
+      <span class="page-bar__cocktail-item">Pornstar Martini</span>
+      <span class="page-bar__cocktail-sep">&middot;</span>
+      <span class="page-bar__cocktail-item">Yuzu Spritz</span>
+      <span class="page-bar__cocktail-sep">&middot;</span>
+      <!-- Duplicate set for seamless loop -->
+      <span class="page-bar__cocktail-item">Lychee Martini</span>
+      <span class="page-bar__cocktail-sep">&middot;</span>
+      <span class="page-bar__cocktail-item">Panpan Spritz</span>
+      <span class="page-bar__cocktail-sep">&middot;</span>
+      <span class="page-bar__cocktail-item">Negroni</span>
+      <span class="page-bar__cocktail-sep">&middot;</span>
+      <span class="page-bar__cocktail-item">Espresso Martini</span>
+      <span class="page-bar__cocktail-sep">&middot;</span>
+      <span class="page-bar__cocktail-item">Manhattan</span>
+      <span class="page-bar__cocktail-sep">&middot;</span>
+      <span class="page-bar__cocktail-item">Old Fashioned</span>
+      <span class="page-bar__cocktail-sep">&middot;</span>
+      <span class="page-bar__cocktail-item">Pornstar Martini</span>
+      <span class="page-bar__cocktail-sep">&middot;</span>
+      <span class="page-bar__cocktail-item">Yuzu Spritz</span>
+      <span class="page-bar__cocktail-sep">&middot;</span>
     </div>
     <p class="page-bar__cocktail-source">218c Pasteur, District 3, Ho Chi Minh City &mdash; Nightly from 18:00</p>
   </div>
@@ -279,24 +302,24 @@ get_header();
 
       <ul class="page-bar__night-bill" aria-label="Night programme">
         <li class="page-bar__night-bill-item">
-          <span class="page-bar__bill-label">Live Jazz &amp; Soul</span>
-          <span class="page-bar__bill-note">Resident and guest performers</span>
+          <span class="page-bar__bill-label">Late Jazz &amp; Soul</span>
+          <span class="page-bar__bill-note">Rotating residency &mdash; resident and guest performers</span>
         </li>
         <li class="page-bar__night-bill-item">
           <span class="page-bar__bill-label">DJ Nights</span>
-          <span class="page-bar__bill-note">Selective &mdash; not every weekend</span>
+          <span class="page-bar__bill-note">Selective &mdash; not every weekend, every one worth it</span>
         </li>
         <li class="page-bar__night-bill-item">
           <span class="page-bar__bill-label">Comedy &amp; Spoken Word</span>
-          <span class="page-bar__bill-note">Evening sessions, bar floor</span>
+          <span class="page-bar__bill-note">Bar floor sessions &mdash; evenings when the room changes</span>
         </li>
         <li class="page-bar__night-bill-item">
-          <span class="page-bar__bill-label">Cocktail Launches</span>
-          <span class="page-bar__bill-note">Seasonal tastings &amp; listening events</span>
+          <span class="page-bar__bill-label">Cocktail Openings</span>
+          <span class="page-bar__bill-note">Seasonal debuts &mdash; tastings, listening, first pours</span>
         </li>
         <li class="page-bar__night-bill-item">
-          <span class="page-bar__bill-label">Gallery Access</span>
-          <span class="page-bar__bill-note">Level&nbsp;1 open during events</span>
+          <span class="page-bar__bill-label">Gallery After Dark</span>
+          <span class="page-bar__bill-note">Level&nbsp;1 open during events &mdash; the show stays up</span>
         </li>
       </ul>
 
