@@ -1888,6 +1888,16 @@
   }
 
   /* ── Group / Join helpers ────────────────────────────────────────── */
+  function canItemJoin(item) {
+    var typeDef = TYPES[item.type] || {};
+    if (!typeDef.joinable) return false;
+    // Check per-item override: in layout mode stored in meta.joinable_override, in base mode in is_combinable
+    var meta = item.meta || {};
+    if (typeof meta.joinable_override === 'boolean') return meta.joinable_override;
+    if (item.is_combinable === 0 || item.is_combinable === '0' || item.is_combinable === false) return false;
+    return true;
+  }
+
   function getGroupLabel(groupId) {
     var members = Object.values(S.tables).filter(function (t) { return t.group_id === groupId; });
     if (!members.length) return 'Group';
@@ -2054,7 +2064,7 @@
     var selArr = Array.from(S.selectedIds);
     var allJoinable = selArr.every(function (sid) {
       var it = S.tables[sid];
-      return it && (TYPES[it.type] || {}).joinable;
+      return it && canItemJoin(it);
     });
     // Check if all selected are in the same group (and that group is non-null)
     var groupIds = selArr.map(function (sid) { return (S.tables[sid] || {}).group_id; }).filter(Boolean);
@@ -2299,7 +2309,7 @@
 
     // Enable dup button (non-zone)
     var dupBtn = document.getElementById('fp-tb-dup');
-    if (dupBtn) dupBtn.disabled = (item.type === 'zone');
+    if (dupBtn) dupBtn.disabled = false;
 
     // Position on desktop
     if (item.type !== 'zone') {
@@ -2403,16 +2413,15 @@
         '<label class="fp-prop-label">Label</label>' +
         '<input class="fp-prop-input" id="fp-fp-label" value="' + escAttr(item.label || '') + '" ' + readonly + '>' +
       '</div>' +
-      '<div class="fp-prop-row">' +
-        '<label class="fp-prop-label">Min seats</label>' +
-        '<input class="fp-prop-input fp-prop-input--sm" id="fp-fp-cap-min" type="number" min="0" max="20" value="' + (parseInt(item.capacity_min) || 0) + '"' +
-          (isBarSeatItem ? ' readonly' : ' ' + readonly) + '>' +
-      '</div>' +
-      '<div class="fp-prop-row">' +
-        '<label class="fp-prop-label">Max seats</label>' +
-        '<input class="fp-prop-input fp-prop-input--sm" id="fp-fp-cap" type="number" min="1" max="40" value="' + (parseInt(item.capacity_max) || 4) + '"' +
-          (isBarSeatItem ? ' readonly' : ' ' + readonly) + '>' +
-      '</div>' +
+      (!isBarSeatItem ?
+        '<div class="fp-prop-row">' +
+          '<label class="fp-prop-label">Min seats</label>' +
+          '<input class="fp-prop-input fp-prop-input--sm" id="fp-fp-cap-min" type="number" min="0" max="20" value="' + (parseInt(item.capacity_min) || 0) + '" ' + readonly + '>' +
+        '</div>' +
+        '<div class="fp-prop-row">' +
+          '<label class="fp-prop-label">Max seats</label>' +
+          '<input class="fp-prop-input fp-prop-input--sm" id="fp-fp-cap" type="number" min="1" max="40" value="' + (parseInt(item.capacity_max) || 4) + '" ' + readonly + '>' +
+        '</div>' : '') +
       (S.mode === 'builder' ?
         '<div class="fp-prop-row">' +
           '<label class="fp-prop-label">Ref. ID</label>' +
@@ -2426,12 +2435,17 @@
       '<div class="fp-prop-row">' +
         '<label class="fp-prop-label" style="font-size:11px;color:#9CA3AF;">' + escHtml(typeDef.label || item.type) + '</label>' +
       '</div>' +
-      (S.mode === 'builder' && (typeDef.joinable || item.group_id) ?
+      (S.mode === 'builder' && typeDef.joinable ?
+        '<div class="fp-prop-row">' +
+          '<label class="fp-prop-label">Joinable</label>' +
+          '<label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-2);">' +
+            '<input type="checkbox" id="fp-fp-joinable"' + (canItemJoin(item) ? ' checked' : '') + '> allow joining' +
+          '</label>' +
+        '</div>' : '') +
+      (S.mode === 'builder' && item.group_id ?
         '<div class="fp-prop-row fp-prop-row--group" id="fp-group-row">' +
-          (item.group_id ?
-            '<span class="fp-group-badge">Joined \xB7 ' + escHtml(getGroupLabel(item.group_id)) + '</span>' +
-            '<button class="fp-btn fp-btn-xs fp-btn-ghost fp-group-leave-btn" id="fp-group-leave" type="button">Leave group</button>' :
-            '<span style="font-size:11px;color:#9CA3AF;">Joinable</span>') +
+          '<span class="fp-group-badge">Joined \xB7 ' + escHtml(getGroupLabel(item.group_id)) + '</span>' +
+          '<button class="fp-btn fp-btn-xs fp-btn-ghost fp-group-leave-btn" id="fp-group-leave" type="button">Leave group</button>' +
         '</div>' : '');
 
     if (S.mode === 'builder') {
@@ -2454,6 +2468,24 @@
       var leaveBtn = document.getElementById('fp-group-leave');
       if (leaveBtn) {
         leaveBtn.addEventListener('click', function () { leaveGroup(id); });
+      }
+      var joinableEl = document.getElementById('fp-fp-joinable');
+      if (joinableEl) {
+        joinableEl.addEventListener('change', function () {
+          var enabled = joinableEl.checked;
+          if (S.activeLayout) {
+            // Layout mode: store override in slot meta
+            var m = Object.assign({}, item.meta || {});
+            m.joinable_override = enabled;
+            item.meta = m;
+            apiFetch('PATCH', 'slots/' + id, { meta: m }).catch(function (e) { console.warn('joinable patch failed', e); });
+          } else {
+            // Base mode: patch is_combinable on furniture
+            item.is_combinable = enabled ? 1 : 0;
+            apiFetch('PATCH', 'furniture/' + id, { is_combinable: item.is_combinable }).catch(function (e) { console.warn('joinable patch failed', e); });
+          }
+          markDirty();
+        });
       }
     }
   }
@@ -2723,7 +2755,29 @@
   function duplicateSelected() {
     if (!S.selected || !S.floorId) return;
     var item = S.tables[S.selected];
-    if (!item || item.type === 'zone') return;
+    if (!item) return;
+
+    if (item.type === 'zone') {
+      // Duplicate zone: create a new zone with same members, offset slightly
+      var meta = Object.assign({}, item.meta || {});
+      meta = JSON.parse(JSON.stringify(meta)); // deep clone
+      var endpoint = S.activeLayout
+        ? 'layouts/' + S.activeLayout.id + '/slots'
+        : 'floor-plans/' + S.floorId + '/furniture';
+      var zPayload = {
+        type: 'zone', label: (item.label || 'Zone') + ' (copy)',
+        pos_x: 0, pos_y: 0, width: 0, height: 0,
+        rotation_deg: 0, capacity_min: 0, capacity_max: 0, meta: meta,
+      };
+      if (S.activeLayout) zPayload.furniture_id = item.furniture_id || null;
+      apiFetch('POST', endpoint, zPayload).then(function (newItem) {
+        S.tables[newItem.id] = newItem;
+        renderZoneLayer();
+        markDirty();
+        showToast('Zone duplicated', 'info');
+      }).catch(function (err) { console.warn('Duplicate zone failed', err); });
+      return;
+    }
 
     var payload = {
       type:         item.type,
@@ -2739,16 +2793,27 @@
     };
     if (item.meta) payload.meta = JSON.parse(JSON.stringify(item.meta));
 
-    apiFetch('POST', 'floor-plans/' + S.floorId + '/furniture', payload).then(function (newItem) {
-      S.tables[newItem.id] = newItem;
-      addTableNode(newItem, false);
-      tableLayer.batchDraw();
-      updateStatusBar();
-      markDirty();
-      selectTable(newItem.id);
-    }).catch(function (err) {
-      console.warn('Duplicate failed', err);
-    });
+    if (S.activeLayout) {
+      // Layout mode: create a new slot
+      payload.furniture_id = item.furniture_id || null;
+      apiFetch('POST', 'layouts/' + S.activeLayout.id + '/slots', payload).then(function (newItem) {
+        S.tables[newItem.id] = newItem;
+        addTableNode(newItem, false);
+        tableLayer.batchDraw();
+        updateStatusBar();
+        markDirty();
+        selectTable(newItem.id);
+      }).catch(function (err) { console.warn('Duplicate failed', err); });
+    } else {
+      apiFetch('POST', 'floor-plans/' + S.floorId + '/furniture', payload).then(function (newItem) {
+        S.tables[newItem.id] = newItem;
+        addTableNode(newItem, false);
+        tableLayer.batchDraw();
+        updateStatusBar();
+        markDirty();
+        selectTable(newItem.id);
+      }).catch(function (err) { console.warn('Duplicate failed', err); });
+    }
   }
 
   /* ══════════════════════════════════════════════════════════════════
@@ -3493,15 +3558,40 @@
         nameHtml +
         '<div class="fp-layout-item-meta">Created ' + escHtml(layout.created_at ? layout.created_at.slice(0, 10) : '') + '</div>' +
         '<div class="fp-layout-item-actions">' +
-          '<button class="fp-btn fp-btn-outline fp-btn-xs" data-action="load" data-id="' + layout.id + '" type="button">Load</button>' +
-          '<button class="fp-btn fp-btn-outline fp-btn-xs" data-action="snapshot" data-id="' + layout.id + '" type="button">Refresh from base</button>' +
-          '<button class="fp-btn fp-btn-ghost fp-btn-xs" data-action="delete" data-id="' + layout.id + '" type="button" style="color:var(--red);">Delete</button>' +
-        '</div>';
+          '<button class="fp-btn fp-btn-outline fp-btn-xs" data-action="load" type="button">Load</button>' +
+          '<button class="fp-btn fp-btn-outline fp-btn-xs" data-action="periods" type="button">⏱ Periods</button>' +
+          '<button class="fp-btn fp-btn-outline fp-btn-xs" data-action="duplicate" type="button">Duplicate</button>' +
+          '<button class="fp-btn fp-btn-outline fp-btn-xs" data-action="snapshot" type="button">↺ Refresh</button>' +
+          '<button class="fp-btn fp-btn-ghost fp-btn-xs" data-action="delete" type="button" style="color:var(--red);">Delete</button>' +
+        '</div>' +
+        '<div class="fp-layout-periods-panel" data-periods-for="' + layout.id + '" hidden></div>';
 
       item.querySelector('[data-action="load"]').addEventListener('click', function (e) {
         e.stopPropagation();
         loadLayout(layout.id);
         closeLayoutPanel();
+      });
+      item.querySelector('[data-action="duplicate"]').addEventListener('click', function (e) {
+        e.stopPropagation();
+        apiFetch('POST', 'layouts/' + layout.id + '/duplicate').then(function (newLayout) {
+          S.layouts.push(newLayout);
+          renderLayoutPanel();
+          showToast('Layout duplicated as "' + newLayout.name + '"', 'info');
+        }).catch(function () { showToast('Duplicate failed', 'error'); });
+      });
+      item.querySelector('[data-action="periods"]').addEventListener('click', function (e) {
+        e.stopPropagation();
+        var panel = item.querySelector('.fp-layout-periods-panel');
+        if (!panel) return;
+        var isOpen = !panel.hidden;
+        if (isOpen) { panel.hidden = true; return; }
+        panel.hidden = false;
+        panel.innerHTML = '<div style="padding:6px 0;font-size:11px;color:#9CA3AF;">Loading…</div>';
+        apiFetch('GET', 'layouts/' + layout.id + '/periods').then(function (periods) {
+          renderPeriodsPanel(panel, layout.id, periods);
+        }).catch(function () {
+          panel.innerHTML = '<div style="font-size:11px;color:var(--red);">Failed to load periods</div>';
+        });
       });
       item.querySelector('[data-action="snapshot"]').addEventListener('click', function (e) {
         e.stopPropagation();
@@ -3537,6 +3627,91 @@
       });
 
       list.appendChild(item);
+    });
+  }
+
+  var DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+  function renderPeriodsPanel(panel, layoutId, periods) {
+    var html = '<div class="fp-periods-wrap">';
+    if (!periods.length) {
+      html += '<p class="fp-periods-empty">No periods yet. Add one to enable time-based auto-switching.</p>';
+    }
+    periods.forEach(function (p) {
+      var dayBits = parseInt(p.days_of_week) || 127;
+      var dayStr = DAYS.filter(function (d, i) { return dayBits & (1 << i); }).join(', ') || 'None';
+      html += '<div class="fp-period-row" data-pid="' + p.id + '">' +
+        '<div class="fp-period-info">' +
+          '<span class="fp-period-name">' + escHtml(p.name) + '</span>' +
+          '<span class="fp-period-times">' + escHtml(p.start_time.slice(0,5)) + ' – ' + escHtml(p.end_time.slice(0,5)) + '</span>' +
+          '<span class="fp-period-days">' + escHtml(dayStr) + '</span>' +
+        '</div>' +
+        '<button class="fp-btn fp-btn-ghost fp-btn-xs fp-period-del" type="button" style="color:var(--red);" data-pid="' + p.id + '">✕</button>' +
+      '</div>';
+    });
+    html += '<button class="fp-btn fp-btn-outline fp-btn-xs fp-period-add" type="button" style="margin-top:6px;width:100%;">+ Add period</button></div>';
+    panel.innerHTML = html;
+
+    panel.querySelectorAll('.fp-period-del').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var pid = btn.dataset.pid;
+        if (!window.confirm('Remove this period?')) return;
+        apiFetch('DELETE', 'periods/' + pid).then(function () {
+          periods = periods.filter(function (p) { return String(p.id) !== pid; });
+          renderPeriodsPanel(panel, layoutId, periods);
+        }).catch(function () { showToast('Delete failed', 'error'); });
+      });
+    });
+
+    panel.querySelector('.fp-period-add').addEventListener('click', function (e) {
+      e.stopPropagation();
+      showAddPeriodForm(panel, layoutId, periods);
+    });
+  }
+
+  function showAddPeriodForm(panel, layoutId, periods) {
+    var formHtml =
+      '<div class="fp-period-form">' +
+        '<input class="fp-prop-input fp-prop-input--sm" id="fp-pf-name" placeholder="e.g. Dinner" style="margin-bottom:4px;">' +
+        '<div style="display:flex;gap:6px;margin-bottom:4px;">' +
+          '<input class="fp-prop-input fp-prop-input--sm" id="fp-pf-start" type="time" value="18:00" style="flex:1;">' +
+          '<span style="align-self:center;color:#9CA3AF;">–</span>' +
+          '<input class="fp-prop-input fp-prop-input--sm" id="fp-pf-end" type="time" value="23:00" style="flex:1;">' +
+        '</div>' +
+        '<div class="fp-period-days-row">' +
+          DAYS.map(function (d, i) {
+            return '<label class="fp-day-chip"><input type="checkbox" value="' + (1 << i) + '" checked> ' + d + '</label>';
+          }).join('') +
+        '</div>' +
+        '<div style="display:flex;gap:6px;margin-top:6px;">' +
+          '<button class="fp-btn fp-btn-primary fp-btn-xs fp-pf-save" type="button" style="flex:1;">Save</button>' +
+          '<button class="fp-btn fp-btn-ghost fp-btn-xs fp-pf-cancel" type="button">Cancel</button>' +
+        '</div>' +
+      '</div>';
+
+    var existing = panel.querySelector('.fp-period-form');
+    if (existing) { existing.remove(); return; }
+    panel.insertAdjacentHTML('beforeend', formHtml);
+
+    var form = panel.querySelector('.fp-period-form');
+    form.querySelector('.fp-pf-cancel').addEventListener('click', function (e) { e.stopPropagation(); form.remove(); });
+    form.querySelector('.fp-pf-save').addEventListener('click', function (e) {
+      e.stopPropagation();
+      var name  = form.querySelector('#fp-pf-name').value.trim();
+      var start = form.querySelector('#fp-pf-start').value;
+      var end   = form.querySelector('#fp-pf-end').value;
+      if (!name) { form.querySelector('#fp-pf-name').focus(); return; }
+      var bits = 0;
+      form.querySelectorAll('.fp-period-days-row input[type=checkbox]').forEach(function (cb) {
+        if (cb.checked) bits |= parseInt(cb.value);
+      });
+      apiFetch('POST', 'layouts/' + layoutId + '/periods', {
+        name: name, start_time: start + ':00', end_time: end + ':00', days_of_week: bits,
+      }).then(function (p) {
+        periods.push(p);
+        renderPeriodsPanel(panel, layoutId, periods);
+      }).catch(function () { showToast('Failed to add period', 'error'); });
     });
   }
 
@@ -3634,6 +3809,7 @@
     if (body !== undefined) opts.body = JSON.stringify(body);
     return fetch(API + path, opts).then(function (r) {
       if (!r.ok) return r.json().then(function (e) { throw e; }, function () { throw new Error(r.status); });
+      if (r.status === 204) return null;
       return r.json();
     });
   }

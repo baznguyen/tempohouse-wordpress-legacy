@@ -32,6 +32,13 @@ class THR_API_Layouts {
             [ 'methods' => 'DELETE', 'callback' => [ $this, 'delete' ],  'permission_callback' => fn() => current_user_can( $cap ) ],
         ] );
 
+        // Duplicate layout (copy with all slots + periods)
+        register_rest_route( $ns, '/layouts/(?P<id>\d+)/duplicate', [
+            'methods'             => 'POST',
+            'callback'            => [ $this, 'duplicate' ],
+            'permission_callback' => fn() => current_user_can( $cap ),
+        ] );
+
         // Copy base furniture into a layout (snapshot)
         register_rest_route( $ns, '/layouts/(?P<id>\d+)/snapshot', [
             'methods'             => 'POST',
@@ -173,6 +180,63 @@ class THR_API_Layouts {
             "UPDATE {$this->tFloors} SET active_layout_id = NULL WHERE active_layout_id = %d", $id
         ) );
         return new WP_REST_Response( null, 204 );
+    }
+
+    public function duplicate( WP_REST_Request $req ): WP_REST_Response|WP_Error {
+        global $wpdb;
+        $id  = (int) $req->get_param( 'id' );
+        $src = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->tLayouts} WHERE id = %d", $id ) );
+        if ( ! $src ) return THR_API::error( 'thr_not_found', 'Layout not found.', 404 );
+
+        $now = THR_API::now_utc();
+        $wpdb->insert( $this->tLayouts, [
+            'floor_plan_id' => (int) $src->floor_plan_id,
+            'name'          => $src->name . ' (copy)',
+            'is_default'    => 0,
+            'sort_order'    => (int) $src->sort_order + 1,
+            'note'          => $src->note,
+            'created_at'    => $now,
+            'updated_at'    => $now,
+        ] );
+        $new_id = $wpdb->insert_id;
+
+        // Copy slots
+        $slots = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$this->tSlots} WHERE layout_id = %d", $id ) );
+        foreach ( $slots as $s ) {
+            $wpdb->insert( $this->tSlots, [
+                'layout_id'    => $new_id,
+                'furniture_id' => $s->furniture_id,
+                'type'         => $s->type,
+                'label'        => $s->label,
+                'pos_x'        => $s->pos_x,
+                'pos_y'        => $s->pos_y,
+                'width'        => $s->width,
+                'height'       => $s->height,
+                'rotation_deg' => $s->rotation_deg,
+                'capacity_min' => $s->capacity_min,
+                'capacity_max' => $s->capacity_max,
+                'element_key'  => $s->element_key,
+                'group_id'     => $s->group_id,
+                'is_visible'   => $s->is_visible,
+                'meta'         => $s->meta,
+            ] );
+        }
+
+        // Copy periods
+        $periods = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$this->tPeriods} WHERE layout_id = %d", $id ) );
+        foreach ( $periods as $p ) {
+            $wpdb->insert( $this->tPeriods, [
+                'layout_id'    => $new_id,
+                'name'         => $p->name,
+                'days_of_week' => $p->days_of_week,
+                'start_time'   => $p->start_time,
+                'end_time'     => $p->end_time,
+                'is_enabled'   => $p->is_enabled,
+            ] );
+        }
+
+        $new_row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->tLayouts} WHERE id = %d", $new_id ) );
+        return new WP_REST_Response( $this->format_layout( $new_row ), 201 );
     }
 
     public function snapshot( WP_REST_Request $req ): WP_REST_Response|WP_Error {
