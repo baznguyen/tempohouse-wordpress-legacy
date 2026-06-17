@@ -780,6 +780,10 @@ class THR_Admin {
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v10M1 6h10M6 1L4 3M6 1l2 2M6 11l-2-2M6 11l2-2M1 6l2-2M1 6l2 2M11 6l-2-2M11 6l-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     Move / resize
                   </button>
+                  <button class="fp-btn fp-btn-outline fp-bg-crop-btn" id="fp-bg-crop-btn" type="button" hidden>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 1v7a1 1 0 0 0 1 1h7M1 3h7a1 1 0 0 1 1 1v7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Crop
+                  </button>
                   <div class="fp-bg-sliders" id="fp-bg-sliders" hidden>
                     <div class="fp-bg-ratio-row">
                       <span>Resize</span>
@@ -860,6 +864,11 @@ class THR_Admin {
               <div class="fp-bg-edit-bar" id="fp-bg-edit-bar" hidden>
                 Drag to move &nbsp;·&nbsp; Drag handles to resize &nbsp;·&nbsp; <kbd>Esc</kbd> to finish
                 <button class="fp-bg-edit-done" id="fp-bg-edit-done" type="button">Done</button>
+              </div>
+              <div class="fp-bg-crop-bar" id="fp-bg-crop-bar" hidden>
+                Drag handles to crop &nbsp;·&nbsp; <kbd>Esc</kbd> to cancel
+                <button class="fp-bg-edit-done" id="fp-bg-crop-reset" type="button">Reset</button>
+                <button class="fp-bg-edit-done fp-bg-edit-done--apply" id="fp-bg-crop-apply" type="button">Apply crop</button>
               </div>
               <!-- Floating properties panel (desktop: near item; mobile: bottom sheet) -->
               <div class="fp-float-panel" id="fp-float-panel" hidden>

@@ -55,10 +55,17 @@
     liveTimer:   null,
     undoStack:   [],
     redoStack:   [],
-    bgConfig:    { url: null, scale: 1, scaleY: 0, opacity: 0.5, offsetX: 0, offsetY: 0 },
+    bgConfig:    { url: null, scale: 1, scaleY: 0, opacity: 0.5, offsetX: 0, offsetY: 0, crop: null },
     bgEditMode:   false,
     bgKeepRatio:  true,
     bgTransformer: null,
+    bgCropMode:   false,
+    bgCropRect:   null,
+    bgCropTr:     null,
+    bgCropOverlays: null,
+    bgCropBorder: null,
+    bgCropOrigX:  0,
+    bgCropOrigY:  0,
     snapEnabled: true,
   };
 
@@ -403,12 +410,13 @@
   ══════════════════════════════════════════════════════════════════ */
   function loadBackground(floor, autoFit) {
     if (S.bgEditMode) exitBgEditMode(false);
+    if (S.bgCropMode) exitBgCropMode(false);
     bgLayer.destroyChildren();
     bgLayer.batchDraw();
     S.bgKonvaImg = null;
 
     if (!floor || !floor.background_url) {
-      S.bgConfig = { url: null, scale: 1, scaleY: 0, opacity: 0.5, offsetX: 0, offsetY: 0 };
+      S.bgConfig = { url: null, scale: 1, scaleY: 0, opacity: 0.5, offsetX: 0, offsetY: 0, crop: null };
       updateBgControls();
       return;
     }
@@ -420,6 +428,7 @@
       opacity: toNum(floor.bg_opacity,  0.5),
       offsetX: toNum(floor.bg_offset_x, 0),
       offsetY: toNum(floor.bg_offset_y, 0),
+      crop:    (floor.bg_crop && floor.bg_crop.w > 0) ? floor.bg_crop : null,
     };
 
     var img = new window.Image();
@@ -428,20 +437,17 @@
       var sx = S.bgConfig.scale;
       var sy = S.bgConfig.scaleY || sx;
 
-      // Auto-fit to canvas on first upload (autoFit=true) or when scale/offset are at defaults
-      if (autoFit || (S.bgConfig.scale === 1 && !S.bgConfig.scaleY && !S.bgConfig.offsetX && !S.bgConfig.offsetY)) {
+      // Auto-fit on first upload or default state — skip if a crop is already stored
+      if (!S.bgConfig.crop && (autoFit || (S.bgConfig.scale === 1 && !S.bgConfig.scaleY && !S.bgConfig.offsetX && !S.bgConfig.offsetY))) {
         var stageW = stage.width();
         var stageH = stage.height();
-        var fitSx  = stageW / img.naturalWidth;
-        var fitSy  = stageH / img.naturalHeight;
-        var fit    = Math.min(fitSx, fitSy, 1); // contain, don't upscale past 1
+        var fit    = Math.min(stageW / img.naturalWidth, stageH / img.naturalHeight, 1);
         sx = fit;
         sy = fit;
         S.bgConfig.scale   = sx;
-        S.bgConfig.scaleY  = 0; // uniform
+        S.bgConfig.scaleY  = 0;
         S.bgConfig.offsetX = Math.round((stageW - img.naturalWidth  * sx) / 2);
         S.bgConfig.offsetY = Math.round((stageH - img.naturalHeight * sy) / 2);
-        // Persist auto-fit values so they survive page reload
         if (S.floorId) {
           apiFetch('PATCH', 'floor-plans/' + S.floorId, {
             bg_scale: S.bgConfig.scale, bg_scale_y: 0,
@@ -461,6 +467,17 @@
         draggable: false,
         name:      'bg-image',
       });
+
+      // Apply stored crop if present
+      var c = S.bgConfig.crop;
+      if (c && c.w > 0) {
+        konvaImg.setAttrs({
+          width:  c.w,
+          height: c.h,
+          crop:   { x: c.x, y: c.y, width: c.w, height: c.h },
+        });
+      }
+
       S.bgKonvaImg = konvaImg;
       bgLayer.add(konvaImg);
       bgLayer.batchDraw();
@@ -482,6 +499,7 @@
     var dot       = document.getElementById('fp-bg-nav-dot');
     var navBtn    = document.getElementById('fp-bg-nav-btn');
     var moveBtn   = document.getElementById('fp-bg-move-btn');
+    var cropBtn   = document.getElementById('fp-bg-crop-btn');
 
     if (sliders)  sliders.hidden  = !hasUrl;
     if (noThumb)  noThumb.hidden  = hasUrl;
@@ -494,6 +512,7 @@
     if (dot)      dot.hidden     = !hasUrl;
     if (navBtn)   navBtn.classList.toggle('fp-bg-nav-btn--has-bg', hasUrl);
     if (moveBtn)  moveBtn.hidden = !hasUrl;
+    if (cropBtn)  cropBtn.hidden = !hasUrl;
   }
 
   function applyBgUpdate(patch) {
@@ -526,12 +545,13 @@
   function removeBg() {
     if (!S.floorId) return;
     if (S.bgEditMode) exitBgEditMode(false);
+    if (S.bgCropMode) exitBgCropMode(false);
     apiFetch('PATCH', 'floor-plans/' + S.floorId, {
-      bg_scale: 1, bg_scale_y: 0, bg_opacity: 0.5, bg_offset_x: 0, bg_offset_y: 0,
+      bg_scale: 1, bg_scale_y: 0, bg_opacity: 0.5, bg_offset_x: 0, bg_offset_y: 0, bg_crop: null,
     }).catch(function () {});
     bgLayer.destroyChildren();
     bgLayer.batchDraw();
-    S.bgConfig = { url: null, scale: 1, scaleY: 0, opacity: 0.5, offsetX: 0, offsetY: 0 };
+    S.bgConfig = { url: null, scale: 1, scaleY: 0, opacity: 0.5, offsetX: 0, offsetY: 0, crop: null };
     S.bgKonvaImg = null;
     var floor = S.floors.find(function (f) { return String(f.id) === String(S.floorId); });
     if (floor) floor.background_url = null;
@@ -636,6 +656,263 @@
         bg_offset_y: S.bgConfig.offsetY,
       }).catch(function () {});
     }, 600);
+  }
+
+  /* ── Crop mode ──────────────────────────────────────────────────────── */
+
+  function enterBgCropMode() {
+    if (!S.bgKonvaImg) return;
+    if (S.bgEditMode) exitBgEditMode(false);
+    if (S.bgCropMode) return;
+    S.bgCropMode = true;
+
+    bgLayer.moveToTop();
+    bgLayer.listening(true);
+    deselect();
+
+    var img   = S.bgKonvaImg;
+    var imgEl = img.getAttr('image');
+    var natW  = imgEl ? imgEl.naturalWidth  : 1;
+    var natH  = imgEl ? imgEl.naturalHeight : 1;
+    var sx    = img.scaleX();
+    var sy    = img.scaleY();
+
+    // If a crop is already applied, restore the full image temporarily so user can adjust
+    var existingCrop = S.bgConfig.crop;
+    var origImgX, origImgY;
+    if (existingCrop && existingCrop.w > 0) {
+      origImgX = img.x() - existingCrop.x * sx;
+      origImgY = img.y() - existingCrop.y * sy;
+      img.setAttrs({ x: origImgX, y: origImgY, width: natW, height: natH, crop: null });
+    } else {
+      origImgX = img.x();
+      origImgY = img.y();
+      // Clear any explicit width/height to ensure we're using natural dimensions
+      img.setAttrs({ width: natW, height: natH, crop: null });
+    }
+    bgLayer.batchDraw();
+
+    S.bgCropOrigX = origImgX;
+    S.bgCropOrigY = origImgY;
+
+    var imgCanvasW = natW * sx;
+    var imgCanvasH = natH * sy;
+
+    // Initial crop rect: matches existing crop (or full image)
+    var initX = existingCrop ? (origImgX + existingCrop.x * sx) : origImgX;
+    var initY = existingCrop ? (origImgY + existingCrop.y * sy) : origImgY;
+    var initW = existingCrop ? (existingCrop.w * sx) : imgCanvasW;
+    var initH = existingCrop ? (existingCrop.h * sy) : imgCanvasH;
+
+    // Dark overlay (4 rects covering outside the crop area)
+    var DARK = 'rgba(0,0,0,0.6)';
+    var topOvl    = new Konva.Rect({ fill: DARK, listening: false, name: 'crop-ovl' });
+    var bottomOvl = new Konva.Rect({ fill: DARK, listening: false, name: 'crop-ovl' });
+    var leftOvl   = new Konva.Rect({ fill: DARK, listening: false, name: 'crop-ovl' });
+    var rightOvl  = new Konva.Rect({ fill: DARK, listening: false, name: 'crop-ovl' });
+    bgLayer.add(topOvl); bgLayer.add(bottomOvl);
+    bgLayer.add(leftOvl); bgLayer.add(rightOvl);
+    S.bgCropOverlays = { top: topOvl, bottom: bottomOvl, left: leftOvl, right: rightOvl,
+                         ix: origImgX, iy: origImgY, iw: imgCanvasW, ih: imgCanvasH };
+
+    // Visual crop border
+    var cropBorder = new Konva.Rect({
+      fill: 'transparent',
+      stroke: 'rgba(255,255,255,0.9)',
+      strokeWidth: 1.5,
+      dash: [6, 3],
+      listening: false,
+      name: 'crop-border',
+    });
+    S.bgCropBorder = cropBorder;
+    bgLayer.add(cropBorder);
+
+    // Transparent drag target (the crop rect itself)
+    var cropHelper = new Konva.Rect({
+      x: initX, y: initY,
+      width: initW, height: initH,
+      fill: 'transparent',
+      draggable: true,
+      name: 'crop-helper',
+    });
+    S.bgCropRect = cropHelper;
+    bgLayer.add(cropHelper);
+
+    // Transformer for resize handles
+    var cropTr = new Konva.Transformer({
+      nodes: [cropHelper],
+      keepRatio: false,
+      rotateEnabled: false,
+      borderStroke: 'rgba(255,255,255,0.7)',
+      borderStrokeWidth: 1,
+      anchorStroke: '#ffffff',
+      anchorFill: 'rgba(255,255,255,0.9)',
+      anchorSize: 9,
+      anchorCornerRadius: 2,
+      anchorStrokeWidth: 1.5,
+    });
+    S.bgCropTr = cropTr;
+    bgLayer.add(cropTr);
+
+    // Constrain drag to image bounds
+    cropHelper.dragBoundFunc(function (pos) {
+      var cw = this.width()  * (this.scaleX() || 1);
+      var ch = this.height() * (this.scaleY() || 1);
+      var o  = S.bgCropOverlays;
+      return {
+        x: Math.max(o.ix, Math.min(o.ix + o.iw - cw, pos.x)),
+        y: Math.max(o.iy, Math.min(o.iy + o.ih - ch, pos.y)),
+      };
+    });
+
+    // Constrain resize to image bounds, minimum 20px
+    cropTr.boundBoxFunc(function (oldBox, newBox) {
+      var o = S.bgCropOverlays;
+      var x = Math.max(o.ix, newBox.x);
+      var y = Math.max(o.iy, newBox.y);
+      var w = Math.min(o.ix + o.iw - x, Math.max(20, newBox.width));
+      var h = Math.min(o.iy + o.ih - y, Math.max(20, newBox.height));
+      return { x: x, y: y, width: w, height: h };
+    });
+
+    // Bake transformer scale into width/height on every tick (keeps scaleX/Y = 1)
+    cropHelper.on('transform', function () {
+      this.setAttrs({
+        width:  Math.max(20, this.width()  * (this.scaleX() || 1)),
+        height: Math.max(20, this.height() * (this.scaleY() || 1)),
+        scaleX: 1, scaleY: 1,
+      });
+      updateCropOverlay();
+    });
+    cropHelper.on('dragmove', function () { updateCropOverlay(); });
+
+    updateCropOverlay();
+
+    var bar = document.getElementById('fp-bg-crop-bar');
+    if (bar) bar.hidden = false;
+
+    var popover = document.getElementById('fp-bg-popover');
+    var navBtn  = document.getElementById('fp-bg-nav-btn');
+    if (popover) popover.hidden = true;
+    if (navBtn)  navBtn.classList.remove('fp-bg-nav-btn--open');
+  }
+
+  function updateCropOverlay() {
+    if (!S.bgCropRect || !S.bgCropOverlays) return;
+    var cr = S.bgCropRect;
+    var cx = cr.x(), cy = cr.y();
+    var cw = cr.width()  * (cr.scaleX() || 1);
+    var ch = cr.height() * (cr.scaleY() || 1);
+    var o  = S.bgCropOverlays;
+
+    o.top.setAttrs({    x: o.ix, y: o.iy,    width: o.iw,               height: Math.max(0, cy - o.iy)           });
+    o.bottom.setAttrs({ x: o.ix, y: cy + ch, width: o.iw,               height: Math.max(0, o.iy + o.ih - cy - ch) });
+    o.left.setAttrs({   x: o.ix, y: cy,      width: Math.max(0, cx - o.ix), height: ch                             });
+    o.right.setAttrs({  x: cx + cw, y: cy,   width: Math.max(0, o.ix + o.iw - cx - cw), height: ch                });
+
+    if (S.bgCropBorder) S.bgCropBorder.setAttrs({ x: cx, y: cy, width: cw, height: ch });
+
+    bgLayer.batchDraw();
+  }
+
+  function applyBgCrop() {
+    if (!S.bgCropRect || !S.bgKonvaImg) return;
+    var cr  = S.bgCropRect;
+    var img = S.bgKonvaImg;
+
+    var cx = cr.x(), cy = cr.y();
+    var cw = cr.width()  * (cr.scaleX() || 1);
+    var ch = cr.height() * (cr.scaleY() || 1);
+
+    var sx    = img.scaleX();
+    var sy    = img.scaleY();
+    var imgEl = img.getAttr('image');
+    var natW  = imgEl ? imgEl.naturalWidth  : 1;
+    var natH  = imgEl ? imgEl.naturalHeight : 1;
+
+    // Convert canvas-space crop rect to source-image pixel coordinates
+    var origX   = S.bgCropOrigX;
+    var origY   = S.bgCropOrigY;
+    var imgCropX = (cx - origX) / sx;
+    var imgCropY = (cy - origY) / sy;
+    var imgCropW = cw / sx;
+    var imgCropH = ch / sy;
+
+    // Clamp to natural image bounds
+    imgCropX = Math.max(0, Math.min(natW - 1, imgCropX));
+    imgCropY = Math.max(0, Math.min(natH - 1, imgCropY));
+    imgCropW = Math.min(natW - imgCropX, Math.max(1, imgCropW));
+    imgCropH = Math.min(natH - imgCropY, Math.max(1, imgCropH));
+
+    // Apply to the Konva image (x/y = canvas position of crop top-left)
+    img.setAttrs({
+      x:      cx, y:      cy,
+      width:  imgCropW, height: imgCropH,
+      crop:   { x: imgCropX, y: imgCropY, width: imgCropW, height: imgCropH },
+    });
+
+    S.bgConfig.offsetX = cx;
+    S.bgConfig.offsetY = cy;
+    S.bgConfig.crop    = { x: imgCropX, y: imgCropY, w: imgCropW, h: imgCropH };
+
+    if (S.floorId) {
+      apiFetch('PATCH', 'floor-plans/' + S.floorId, {
+        bg_offset_x: cx, bg_offset_y: cy,
+        bg_crop: JSON.stringify(S.bgConfig.crop),
+      }).catch(function () {});
+    }
+
+    exitBgCropMode(true);
+    bgLayer.batchDraw();
+  }
+
+  function exitBgCropMode(cropAlreadyApplied) {
+    if (!S.bgCropMode) return;
+    S.bgCropMode = false;
+
+    // Destroy all crop UI nodes
+    if (S.bgCropTr)     { S.bgCropTr.destroy();     S.bgCropTr = null; }
+    if (S.bgCropRect)   { S.bgCropRect.destroy();   S.bgCropRect = null; }
+    if (S.bgCropBorder) { S.bgCropBorder.destroy(); S.bgCropBorder = null; }
+    if (S.bgCropOverlays) {
+      var ovls = S.bgCropOverlays;
+      ovls.top.destroy(); ovls.bottom.destroy();
+      ovls.left.destroy(); ovls.right.destroy();
+      S.bgCropOverlays = null;
+    }
+
+    // If cancelling (not applying): restore image to its pre-crop-mode state
+    if (!cropAlreadyApplied && S.bgKonvaImg) {
+      var img = S.bgKonvaImg;
+      var c   = S.bgConfig.crop;
+      if (c && c.w > 0) {
+        // Re-apply the existing crop using stored original image origin
+        img.setAttrs({
+          x:      S.bgCropOrigX + c.x * img.scaleX(),
+          y:      S.bgCropOrigY + c.y * img.scaleY(),
+          width:  c.w, height: c.h,
+          crop:   { x: c.x, y: c.y, width: c.w, height: c.h },
+        });
+      } else {
+        // No prior crop — restore to full image at original position
+        var imgEl = img.getAttr('image');
+        img.setAttrs({
+          x:      S.bgCropOrigX, y: S.bgCropOrigY,
+          width:  imgEl ? imgEl.naturalWidth  : 0,
+          height: imgEl ? imgEl.naturalHeight : 0,
+          crop:   null,
+        });
+      }
+    }
+
+    bgLayer.listening(false);
+    bgLayer.moveToBottom();
+    zoneLayer.moveToTop();
+    tableLayer.moveToTop();
+    bgLayer.batchDraw();
+
+    var bar = document.getElementById('fp-bg-crop-bar');
+    if (bar) bar.hidden = true;
   }
 
   function bindBgControls() {
@@ -755,10 +1032,53 @@
       });
     }
 
-    // Esc key exits bg edit mode
+    var cropBtn   = document.getElementById('fp-bg-crop-btn');
+    var cropApply = document.getElementById('fp-bg-crop-apply');
+    var cropReset = document.getElementById('fp-bg-crop-reset');
+
+    if (cropBtn) {
+      cropBtn.addEventListener('click', function () {
+        enterBgCropMode();
+      });
+    }
+
+    if (cropApply) {
+      cropApply.addEventListener('click', function () {
+        applyBgCrop();
+      });
+    }
+
+    if (cropReset) {
+      cropReset.addEventListener('click', function () {
+        if (!S.bgKonvaImg || !S.bgCropMode) return;
+        var img   = S.bgKonvaImg;
+        var imgEl = img.getAttr('image');
+        // Restore full image at original position
+        img.setAttrs({
+          x:      S.bgCropOrigX, y: S.bgCropOrigY,
+          width:  imgEl ? imgEl.naturalWidth  : 0,
+          height: imgEl ? imgEl.naturalHeight : 0,
+          crop:   null,
+        });
+        S.bgConfig.offsetX = S.bgCropOrigX;
+        S.bgConfig.offsetY = S.bgCropOrigY;
+        S.bgConfig.crop    = null;
+        if (S.floorId) {
+          apiFetch('PATCH', 'floor-plans/' + S.floorId, {
+            bg_offset_x: S.bgCropOrigX, bg_offset_y: S.bgCropOrigY,
+            bg_crop: null,
+          }).catch(function () {});
+        }
+        exitBgCropMode(true);
+        bgLayer.batchDraw();
+      });
+    }
+
+    // Esc exits either bg edit mode or crop mode
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && S.bgEditMode) {
-        exitBgEditMode(true);
+      if (e.key === 'Escape') {
+        if (S.bgCropMode)  exitBgCropMode(false);
+        else if (S.bgEditMode) exitBgEditMode(true);
       }
     });
   }

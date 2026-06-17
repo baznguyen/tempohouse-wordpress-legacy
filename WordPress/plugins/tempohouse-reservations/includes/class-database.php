@@ -198,6 +198,11 @@ class THR_Database {
             $wpdb->query( "ALTER TABLE {$p}thr_floor_plans ADD COLUMN bg_scale_y FLOAT NOT NULL DEFAULT 0.0" );
         }
 
+        // v1.5 migration — bg_crop JSON for non-destructive background cropping
+        if ( ! $wpdb->get_var( "SHOW COLUMNS FROM {$p}thr_floor_plans LIKE 'bg_crop'" ) ) {
+            $wpdb->query( "ALTER TABLE {$p}thr_floor_plans ADD COLUMN bg_crop TEXT DEFAULT NULL" );
+        }
+
         // Seed system tags
         self::seed_tags();
 

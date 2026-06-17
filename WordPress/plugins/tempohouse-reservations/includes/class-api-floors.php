@@ -105,6 +105,7 @@ class THR_API_Floors {
                 'bg_opacity'     => 0.5,
                 'bg_offset_x'    => 0.0,
                 'bg_offset_y'    => 0.0,
+                'bg_crop'        => null,
                 'updated_at'     => THR_API::now_utc(),
             ],
             [ 'id' => $id ]
@@ -120,7 +121,7 @@ class THR_API_Floors {
 
         $body    = $req->get_json_params() ?? [];
         $allowed = [ 'name', 'floor_number', 'width_px', 'height_px', 'is_active', 'sort_order',
-                     'bg_scale', 'bg_scale_y', 'bg_opacity', 'bg_offset_x', 'bg_offset_y' ];
+                     'bg_scale', 'bg_scale_y', 'bg_opacity', 'bg_offset_x', 'bg_offset_y', 'bg_crop' ];
         $update  = array_intersect_key( $body, array_flip( $allowed ) );
         if ( isset( $update['name'] ) ) $update['name'] = sanitize_text_field( $update['name'] );
         // Clamp float bg fields to sane ranges
@@ -129,6 +130,22 @@ class THR_API_Floors {
         if ( isset( $update['bg_opacity'] ) )  $update['bg_opacity']  = max( 0.0, min( 1.0,  (float) $update['bg_opacity'] ) );
         if ( isset( $update['bg_offset_x'] ) ) $update['bg_offset_x'] = (float) $update['bg_offset_x'];
         if ( isset( $update['bg_offset_y'] ) ) $update['bg_offset_y'] = (float) $update['bg_offset_y'];
+        if ( array_key_exists( 'bg_crop', $update ) ) {
+            $crop = $update['bg_crop'];
+            if ( $crop === null || $crop === '' ) {
+                $update['bg_crop'] = null;
+            } else {
+                $c = is_string( $crop ) ? json_decode( $crop, true ) : (array) $crop;
+                if ( ! $c || ! isset( $c['x'], $c['y'], $c['w'], $c['h'] ) || (float) $c['w'] <= 0 ) {
+                    unset( $update['bg_crop'] );
+                } else {
+                    $update['bg_crop'] = wp_json_encode( [
+                        'x' => (float) $c['x'], 'y' => (float) $c['y'],
+                        'w' => (float) $c['w'], 'h' => (float) $c['h'],
+                    ] );
+                }
+            }
+        }
         $update['updated_at'] = THR_API::now_utc();
 
         $wpdb->update( $this->table, $update, [ 'id' => $row->id ] );
@@ -136,6 +153,13 @@ class THR_API_Floors {
     }
 
     private function format( object $row ): array {
+        $bg_crop = null;
+        if ( ! empty( $row->bg_crop ) ) {
+            $decoded = json_decode( $row->bg_crop, true );
+            if ( $decoded && isset( $decoded['w'] ) && (float) $decoded['w'] > 0 ) {
+                $bg_crop = $decoded;
+            }
+        }
         return [
             'id'             => (int)   $row->id,
             'name'           => $row->name,
@@ -146,6 +170,7 @@ class THR_API_Floors {
             'bg_opacity'     => (float) ( $row->bg_opacity   ?? 0.5 ),
             'bg_offset_x'    => (float) ( $row->bg_offset_x  ?? 0.0 ),
             'bg_offset_y'    => (float) ( $row->bg_offset_y  ?? 0.0 ),
+            'bg_crop'        => $bg_crop,
             'width_px'       => (int)   $row->width_px,
             'height_px'      => (int)   $row->height_px,
             'is_active'      => (bool)  $row->is_active,
