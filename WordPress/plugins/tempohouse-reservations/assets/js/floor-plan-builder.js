@@ -45,6 +45,8 @@
     floorStats:  {},      // floorId → { tables, seats, booked }
     selected:    null,
     selectedIds: new Set(), // for multi-select
+    pendingZoneId:      null, // zone currently being edited (shift-click membership)
+    pendingZoneMembers: null, // Set<string> of tableIds (pending, not yet saved)
     rubber:      null,    // rubber band state
     dirty:       false,
     date:        TODAY,
@@ -640,7 +642,9 @@
     group.on('click tap', function (e) {
       e.cancelBubble = true;
       if (S.placing) return;
-      if (e.evt && e.evt.shiftKey && S.mode === 'builder') {
+      if (S.pendingZoneId && e.evt && e.evt.shiftKey && S.mode === 'builder') {
+        toggleZoneMembership(String(item.id));
+      } else if (e.evt && e.evt.shiftKey && S.mode === 'builder') {
         toggleMultiSelect(String(item.id));
       } else {
         selectTable(item.id);
@@ -704,30 +708,6 @@
       this.position({ x: d.pos_x, y: d.pos_y });
       markDirty();
       tableLayer.batchDraw();
-
-      // Auto zone membership on drag (builder mode, non-zone/label items only)
-      if (S.mode === 'builder' && d.type !== 'zone' && d.type !== 'text_label') {
-        var cx = d.pos_x;
-        var cy = d.pos_y;
-        var sid = String(d.id);
-        Object.values(S.tables).forEach(function (z) {
-          if (z.type !== 'zone') return;
-          if (!z.meta) z.meta = { color: '#EAF5EE', members: [] };
-          var members = (z.meta.members || []).map(String);
-          var wasIn   = members.indexOf(sid) !== -1;
-          var bbox    = getZoneBBoxRaw(z, sid);
-          var isIn    = bbox && (cx > bbox.x1 && cx < bbox.x2 && cy > bbox.y1 && cy < bbox.y2);
-          if (isIn && !wasIn) {
-            z.meta.members = members.concat([sid]);
-            apiFetch('PATCH', 'furniture/' + z.id, { meta: z.meta });
-            showToast('Added to "' + (z.label || 'Zone') + '"', 'info');
-          } else if (!isIn && wasIn) {
-            z.meta.members = members.filter(function (m) { return m !== sid; });
-            apiFetch('PATCH', 'furniture/' + z.id, { meta: z.meta });
-            showToast('Removed from "' + (z.label || 'Zone') + '"', 'warn');
-          }
-        });
-      }
 
       resetZoneHighlights();
       renderZoneLayer();
@@ -1090,7 +1070,11 @@
         listening: false,
       });
 
-      var zGroup = new Konva.Group({ id: 'zone-' + item.id, name: 'zone-group' });
+      var zGroup = new Konva.Group({
+        id: 'zone-' + item.id,
+        name: 'zone-group',
+        draggable: S.mode === 'builder',
+      });
       zGroup.add(rect);
       zGroup.add(label);
 
@@ -1119,6 +1103,50 @@
             markDirty();
           });
         });
+      });
+
+      // Drag zone: move all member tables together
+      zGroup.on('dragstart', function () {
+        if (S.mode !== 'builder') return;
+        members.forEach(function (mid) {
+          var t = S.tables[mid];
+          if (t) { t._zdx = t.pos_x; t._zdy = t.pos_y; }
+        });
+      });
+
+      zGroup.on('dragmove', function () {
+        if (S.mode !== 'builder') return;
+        var dx = this.x();
+        var dy = this.y();
+        members.forEach(function (mid) {
+          var tNode = stage.findOne('#tbl-' + mid);
+          var t = S.tables[mid];
+          if (tNode && t && t._zdx !== undefined) {
+            tNode.position({ x: t._zdx + dx, y: t._zdy + dy });
+          }
+        });
+        tableLayer.batchDraw();
+      });
+
+      zGroup.on('dragend', function () {
+        if (S.mode !== 'builder') return;
+        var dx = this.x();
+        var dy = this.y();
+        this.position({ x: 0, y: 0 }); // zone has no stored pos; reset after dragging
+        members.forEach(function (mid) {
+          var t = S.tables[mid];
+          var tNode = stage.findOne('#tbl-' + mid);
+          if (!t || !tNode || t._zdx === undefined) return;
+          t.pos_x = snapToGrid(t._zdx + dx);
+          t.pos_y = snapToGrid(t._zdy + dy);
+          tNode.position({ x: t.pos_x, y: t.pos_y });
+          delete t._zdx;
+          delete t._zdy;
+          apiFetch('PATCH', 'furniture/' + mid, { pos_x: t.pos_x, pos_y: t.pos_y });
+        });
+        tableLayer.batchDraw();
+        renderZoneLayer();
+        markDirty();
       });
 
       zoneLayer.add(zGroup);
@@ -1186,10 +1214,13 @@
   function selectZone(id) {
     S.selected = id;
     S.selectedIds = new Set();
+    var zone = S.tables[id];
+    S.pendingZoneId      = id;
+    S.pendingZoneMembers = new Set(((zone && zone.meta && zone.meta.members) || []).map(String));
     showFloatPanel(id);
-    // No transformer for zones
     transformer.nodes([]);
     tableLayer.batchDraw();
+    updateZoneMemberVisuals();
     updateZoneButton();
   }
 
@@ -1215,10 +1246,13 @@
   }
 
   function deselect() {
-    S.selected    = null;
-    S.selectedIds = new Set();
+    S.selected           = null;
+    S.selectedIds        = new Set();
+    S.pendingZoneId      = null;
+    S.pendingZoneMembers = null;
     transformer.nodes([]);
     tableLayer.batchDraw();
+    updateZoneMemberVisuals();
     hideFloatPanel();
     var delBtn = document.getElementById('fp-delete-sel');
     if (delBtn) delBtn.disabled = true;
@@ -1653,26 +1687,26 @@
     var body = document.getElementById('fp-fp-body');
     if (!body) return;
     var meta    = item.meta || {};
-    var members = (meta.members || []).map(String);
+    var pending = (S.pendingZoneId === id && S.pendingZoneMembers) ? S.pendingZoneMembers : new Set((meta.members || []).map(String));
 
-    // Member chips (click × to remove)
-    var memberHtml = members.length === 0
+    // Member chips — click to remove (toggle off)
+    var memberHtml = pending.size === 0
       ? '<span class="fp-zone-empty">No tables in this zone yet</span>'
-      : members.map(function (mid) {
+      : Array.from(pending).map(function (mid) {
           var t   = S.tables[mid];
           var lbl = t ? escHtml(t.label || mid) : escHtml(mid);
-          return '<button type="button" class="fp-zone-chip fp-zone-chip--member" data-remove="' + escAttr(mid) + '" title="Remove from zone">' +
+          return '<button type="button" class="fp-zone-chip fp-zone-chip--member" data-toggle="' + escAttr(mid) + '" title="Shift-click on canvas, or click here to remove">' +
             lbl +
             '<svg width="7" height="7" viewBox="0 0 7 7" fill="none" aria-hidden="true"><path d="M1 1l5 5M6 1L1 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
             '</button>';
         }).join('');
 
-    // Available table chips (click + to add)
+    // Available chips — click to add (toggle on)
     var availHtml = Object.keys(S.tables).reduce(function (acc, tid) {
       var t = S.tables[tid];
       if (!t || t.type === 'zone' || t.type === 'text_label') return acc;
-      if (members.indexOf(String(tid)) !== -1) return acc;
-      return acc + '<button type="button" class="fp-zone-chip fp-zone-chip--add" data-add="' + escAttr(String(tid)) + '" title="Add to zone">' +
+      if (pending.has(String(tid))) return acc;
+      return acc + '<button type="button" class="fp-zone-chip fp-zone-chip--add" data-toggle="' + escAttr(String(tid)) + '" title="Shift-click on canvas, or click here to add">' +
         escHtml(t.label || 'Table') +
         '<svg width="7" height="7" viewBox="0 0 7 7" fill="none" aria-hidden="true"><path d="M3.5 1v5M1 3.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
         '</button>';
@@ -1689,54 +1723,24 @@
       '</div>' +
       '<div class="fp-prop-row fp-zone-section">' +
         '<span class="fp-prop-label">Members</span>' +
-        '<div class="fp-zone-chips" id="fp-zone-member-chips">' + memberHtml + '</div>' +
+        '<div class="fp-zone-chips" id="fp-zone-chips">' + memberHtml +
+          (availHtml ? availHtml : '') +
+        '</div>' +
       '</div>' +
-      (availHtml
-        ? '<div class="fp-prop-row fp-zone-section">' +
-            '<span class="fp-prop-label">Add tables</span>' +
-            '<div class="fp-zone-chips" id="fp-zone-avail-chips">' + availHtml + '</div>' +
-          '</div>'
-        : '') +
-      '<div class="fp-prop-row" style="margin-top:2px;">' +
-        '<button type="button" id="fp-fp-ungroup" class="fp-btn fp-btn-secondary" style="width:100%;">Ungroup zone</button>' +
+      '<p class="fp-zone-hint">Shift-click a table to add or remove it from this zone.</p>' +
+      '<div class="fp-zone-actions">' +
+        '<button type="button" id="fp-fp-save-zone" class="fp-btn fp-btn-primary" style="flex:1;">Update Zone</button>' +
+        '<button type="button" id="fp-fp-ungroup" class="fp-btn fp-btn-secondary">Ungroup</button>' +
       '</div>';
 
-    var labelEl = document.getElementById('fp-fp-label');
-    if (labelEl) {
-      labelEl.addEventListener('change', function () {
-        item.label = labelEl.value.trim() || item.label;
-        markDirty();
-        renderZoneLayer();
-        var title = document.getElementById('fp-fp-title');
-        if (title) title.textContent = item.label;
-      });
-    }
+    document.getElementById('fp-zone-chips').addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-toggle]');
+      if (btn) toggleZoneMembership(btn.dataset.toggle);
+    });
 
-    var colorEl = document.getElementById('fp-fp-zone-color');
-    if (colorEl) {
-      colorEl.addEventListener('input', function () {
-        if (!item.meta) item.meta = {};
-        item.meta.color = colorEl.value;
-        markDirty();
-        renderZoneLayer();
-      });
-    }
-
-    var memberChipsEl = document.getElementById('fp-zone-member-chips');
-    if (memberChipsEl) {
-      memberChipsEl.addEventListener('click', function (e) {
-        var btn = e.target.closest('[data-remove]');
-        if (btn) removeFromZone(id, btn.dataset.remove);
-      });
-    }
-
-    var availChipsEl = document.getElementById('fp-zone-avail-chips');
-    if (availChipsEl) {
-      availChipsEl.addEventListener('click', function (e) {
-        var btn = e.target.closest('[data-add]');
-        if (btn) addToZone(id, btn.dataset.add);
-      });
-    }
+    document.getElementById('fp-fp-save-zone').addEventListener('click', function () {
+      saveZone(id);
+    });
 
     var ungroupBtn = document.getElementById('fp-fp-ungroup');
     if (ungroupBtn) {
@@ -1755,26 +1759,53 @@
     }
   }
 
-  function removeFromZone(zoneId, tableId) {
-    var zone = S.tables[zoneId];
-    if (!zone || !zone.meta) return;
-    zone.meta.members = (zone.meta.members || []).filter(function (m) { return String(m) !== String(tableId); });
-    apiFetch('PATCH', 'furniture/' + zoneId, { meta: zone.meta }).then(function () {
-      renderZoneLayer();
-      showZoneFloatProps(zoneId, zone);
-    }).catch(function (err) { console.warn('removeFromZone failed', err); });
+  function toggleZoneMembership(tableId) {
+    if (!S.pendingZoneId || !S.pendingZoneMembers) return;
+    var tid = String(tableId);
+    if (S.pendingZoneMembers.has(tid)) {
+      S.pendingZoneMembers.delete(tid);
+    } else {
+      S.pendingZoneMembers.add(tid);
+    }
+    updateZoneMemberVisuals();
+    var zone = S.tables[S.pendingZoneId];
+    if (zone) showZoneFloatProps(S.pendingZoneId, zone);
   }
 
-  function addToZone(zoneId, tableId) {
+  function updateZoneMemberVisuals() {
+    var hasZone = !!(S.pendingZoneId && S.pendingZoneMembers);
+    Object.keys(S.tables).forEach(function (tid) {
+      var t = S.tables[tid];
+      if (!t || t.type === 'zone' || t.type === 'text_label') return;
+      var g = stage.findOne('#tbl-' + tid);
+      if (!g) return;
+      g.opacity(hasZone && !S.pendingZoneMembers.has(String(tid)) ? 0.38 : 1);
+    });
+    tableLayer.batchDraw();
+  }
+
+  function saveZone(zoneId) {
     var zone = S.tables[zoneId];
-    if (!zone || !zone.meta) return;
-    var members = (zone.meta.members || []).map(String);
-    if (members.indexOf(String(tableId)) === -1) members.push(String(tableId));
-    zone.meta.members = members;
-    apiFetch('PATCH', 'furniture/' + zoneId, { meta: zone.meta }).then(function () {
+    if (!zone) return;
+    var labelEl = document.getElementById('fp-fp-label');
+    var colorEl = document.getElementById('fp-fp-zone-color');
+    if (labelEl) zone.label = labelEl.value.trim() || zone.label;
+    if (!zone.meta) zone.meta = {};
+    if (colorEl) zone.meta.color = colorEl.value;
+    zone.meta.members = Array.from(S.pendingZoneMembers || []);
+    var saveBtn = document.getElementById('fp-fp-save-zone');
+    if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
+    apiFetch('PATCH', 'furniture/' + zoneId, { label: zone.label, meta: zone.meta }).then(function () {
       renderZoneLayer();
-      showZoneFloatProps(zoneId, zone);
-    }).catch(function (err) { console.warn('addToZone failed', err); });
+      var titleEl = document.getElementById('fp-fp-title');
+      if (titleEl) titleEl.textContent = zone.label;
+      showToast('Zone updated', 'ok');
+      if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Update Zone'; }
+      markDirty();
+    }).catch(function (err) {
+      console.warn('saveZone failed', err);
+      if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Update Zone'; }
+    });
   }
 
   /* ── Prop change handlers ────────────────────────────────────────── */
