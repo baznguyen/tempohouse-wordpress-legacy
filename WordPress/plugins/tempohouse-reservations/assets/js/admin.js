@@ -2,16 +2,40 @@
 (function ($) {
   'use strict';
 
+  var modal = window.thrModal || function (opts) {
+    // Fallback if thr-modal.js not loaded
+    if (opts.type === 'confirm') return Promise.resolve(confirm(opts.title || opts.body || ''));
+    if (opts.type === 'alert') { alert(opts.body || opts.title || ''); return Promise.resolve(true); }
+    return Promise.resolve(null);
+  };
+
   // Status transitions via AJAX
   $(document).on('click', '.thr-status-btn', function () {
-    const $btn = $(this);
-    const id     = $btn.data('id');
-    const status = $btn.data('status');
-    const labels = { confirmed: 'Confirm', seated: 'Seat Now', completed: 'Complete', cancelled: 'Cancel', no_show: 'No-show' };
+    var $btn   = $(this);
+    var id     = $btn.data('id');
+    var status = $btn.data('status');
+    var labels = { confirmed: 'Confirm', seated: 'Seat Now', completed: 'Complete', cancelled: 'Cancel', no_show: 'No-show' };
 
-    if (status === 'cancelled' && !confirm('Cancel this reservation?')) return;
-    if (status === 'no_show'   && !confirm('Mark as no-show?')) return;
+    var needsConfirm = status === 'cancelled' || status === 'no_show';
+    var confirmTitle = status === 'cancelled' ? 'Cancel this reservation?' : 'Mark as no-show?';
+    var confirmOk    = status === 'cancelled' ? 'Cancel Reservation' : 'Mark No-show';
 
+    if (needsConfirm) {
+      modal({
+        type:   'confirm',
+        title:  confirmTitle,
+        ok:     confirmOk,
+        cancel: 'Go back',
+        danger: true,
+      }).then(function (ok) {
+        if (ok) doStatusUpdate($btn, id, status, labels);
+      });
+    } else {
+      doStatusUpdate($btn, id, status, labels);
+    }
+  });
+
+  function doStatusUpdate($btn, id, status, labels) {
     $btn.prop('disabled', true).text('Updating…');
 
     $.post(thrAdmin.ajaxUrl, {
@@ -21,56 +45,62 @@
       status: status,
     }).done(function (res) {
       if (res.success) {
-        // Reload so status badges refresh
         window.location.reload();
       } else {
-        alert(res.data || 'Update failed.');
+        modal({ type: 'alert', title: 'Update failed', body: '<p>' + (res.data || 'Something went wrong. Please try again.') + '</p>', ok: 'OK' });
         $btn.prop('disabled', false).text(labels[status] || 'Update');
       }
     }).fail(function () {
-      alert('Network error. Please try again.');
+      modal({ type: 'alert', title: 'Network error', body: '<p>Could not reach the server. Please check your connection and try again.</p>', ok: 'OK' });
       $btn.prop('disabled', false).text(labels[status] || 'Update');
     });
-  });
+  }
 
   // VIP toggle
   $(document).on('change', '.thr-vip-toggle', function () {
-    const $cb = $(this);
-    const id   = $cb.data('id');
-    const isVip = $cb.is(':checked') ? 1 : 0;
+    var $cb   = $(this);
+    var id    = $cb.data('id');
+    var isVip = $cb.is(':checked') ? 1 : 0;
 
     fetch(thrAdmin.apiUrl + 'reservations/' + id, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': thrAdmin.nonce },
       body: JSON.stringify({ is_vip: isVip }),
     })
-    .then(r => r.json())
-    .then(data => {
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
       if (data.is_vip !== undefined) {
-        // Show brief confirmation
-        const notice = $('<span style="color:#2d6a4f;margin-left:8px;font-size:0.82rem;">Saved</span>');
+        var notice = $('<span style="color:#2d6a4f;margin-left:8px;font-size:0.82rem;">Saved</span>');
         $cb.closest('label').append(notice);
-        setTimeout(() => notice.fadeOut(300, () => notice.remove()), 2000);
+        setTimeout(function () { notice.fadeOut(300, function () { notice.remove(); }); }, 2000);
       }
     });
   });
 
   // Resend confirmation email
   $(document).on('click', '.thr-resend-btn', function () {
-    const $btn = $(this);
-    const id   = $btn.data('id');
+    var $btn = $(this);
+    var id   = $btn.data('id');
 
-    if (!confirm('Resend confirmation email to guest?')) return;
-    $btn.prop('disabled', true).text('Sending…');
+    modal({
+      type:   'confirm',
+      title:  'Resend confirmation email?',
+      body:   '<p>A new confirmation email will be sent to the guest.</p>',
+      ok:     'Resend',
+      cancel: 'Cancel',
+    }).then(function (ok) {
+      if (!ok) return;
+      $btn.prop('disabled', true).text('Sending…');
 
-    fetch(thrAdmin.apiUrl + 'reservations/' + id + '/status', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': thrAdmin.nonce },
-      body: JSON.stringify({ status: 'confirmed', _resend_email: true }),
-    })
-    .then(() => {
-      $btn.text('Sent ✓');
-      setTimeout(() => { $btn.prop('disabled', false).text('Resend confirmation'); }, 3000);
+      fetch(thrAdmin.apiUrl + 'reservations/' + id + '/status', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': thrAdmin.nonce },
+        body: JSON.stringify({ status: 'confirmed', _resend_email: true }),
+      })
+      .then(function () {
+        $btn.text('Sent ✓');
+        setTimeout(function () { $btn.prop('disabled', false).text('Resend confirmation'); }, 3000);
+      });
     });
   });
 

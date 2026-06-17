@@ -238,6 +238,128 @@
 .thr-btn-danger { color: var(--thr-red) !important; border-color: rgba(192,57,43,0.3) !important; }
 .thr-btn-danger:hover { background: rgba(192,57,43,0.08) !important; }
 
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SHARED MODAL (thr-modal.js)
+   Used across all plugin admin pages. thrModal() creates the #thr-modal DOM.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#thr-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 16, 28, 0.50);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(3px);
+  animation: thr-modal-fade-in 0.12s ease;
+}
+#thr-modal[hidden] { display: none !important; }
+
+@keyframes thr-modal-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.thr-modal-card {
+  background: #ffffff;
+  border: 1px solid rgba(26,24,22,0.12);
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.10);
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  animation: thr-modal-slide-up 0.15s ease;
+}
+
+@keyframes thr-modal-slide-up {
+  from { transform: translateY(10px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.thr-modal-hd {
+  padding: 20px 20px 0;
+}
+.thr-modal-title {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--thr-ink);
+  letter-spacing: -0.01em;
+}
+
+.thr-modal-body {
+  padding: 10px 20px 4px;
+  font-size: 13px;
+  color: rgba(26,24,22,0.70);
+  line-height: 1.55;
+}
+.thr-modal-body p {
+  margin: 0 0 12px;
+}
+.thr-modal-input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+  padding: 9px 11px;
+  font-size: 13px;
+  border: 1.5px solid var(--thr-border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--thr-ink);
+  outline: none;
+  transition: border-color 0.12s;
+}
+.thr-modal-input:focus { border-color: var(--thr-green); }
+.thr-modal-input::placeholder { color: rgba(26,24,22,0.35); }
+
+.thr-modal-foot {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 14px 20px 18px;
+}
+
+/* Modal-specific buttons (standalone, not WP button classes) */
+.thr-modal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  padding: 0 16px;
+  height: 34px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, opacity 0.12s;
+  line-height: 1;
+  font-family: inherit;
+}
+.thr-modal-btn-primary {
+  background: var(--thr-green);
+  color: #fff;
+  border-color: var(--thr-green);
+}
+.thr-modal-btn-primary:hover { background: #246342; border-color: #246342; }
+.thr-modal-btn-ghost {
+  background: transparent;
+  color: rgba(26,24,22,0.55);
+  border-color: rgba(26,24,22,0.18);
+}
+.thr-modal-btn-ghost:hover {
+  background: rgba(26,24,22,0.06);
+  color: var(--thr-ink);
+}
+.thr-modal-btn-danger {
+  background: var(--thr-red);
+  color: #fff;
+  border-color: var(--thr-red);
+}
+.thr-modal-btn-danger:hover { background: #a93226; border-color: #a93226; }
+
 /* ── Shift report print ───────────────────────────────────────────────────── */
 @media print {
   #adminmenumain, #adminmenuback, #wpadminbar, .thr-filters, .thr-stats-grid .thr-stat + .thr-stat + .thr-stat { display: none !important; }

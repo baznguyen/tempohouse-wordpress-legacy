@@ -73,7 +73,6 @@
     bindCanvasTools();
     bindFloatPanel();
     bindToolbar();
-    bindModal();
     bindKeyboard();
     bindBgControls();
     setDateLabel(S.date);
@@ -269,70 +268,13 @@
   }
 
   /* ══════════════════════════════════════════════════════════════════
-     CUSTOM MODAL (replaces window.prompt / confirm / alert)
+     MODAL — delegate to shared thr-modal.js
   ══════════════════════════════════════════════════════════════════ */
-  var _modalResolve = null;
-
-  function fpModal(opts) {
-    return new Promise(function (resolve) {
-      _modalResolve = resolve;
-      var overlay  = document.getElementById('fp-modal');
-      var titleEl  = document.getElementById('fp-modal-title');
-      var bodyEl   = document.getElementById('fp-modal-body');
-      var okBtn    = document.getElementById('fp-modal-ok');
-      var cancelBtn= document.getElementById('fp-modal-cancel');
-      if (!overlay) { resolve(opts.type === 'confirm' ? false : null); return; }
-
-      titleEl.textContent = opts.title || '';
-      bodyEl.innerHTML    = opts.body  || '';
-      okBtn.textContent   = opts.ok    || 'OK';
-      cancelBtn.textContent = opts.cancel || 'Cancel';
-      cancelBtn.hidden    = (opts.type === 'alert');
-      okBtn.className     = 'fp-btn ' + (opts.danger ? 'fp-btn-modal-danger' : 'fp-btn-primary');
-
-      overlay.hidden = false;
-
-      if (opts.type === 'prompt') {
-        var inp = bodyEl.querySelector('.fp-modal-input');
-        if (inp) setTimeout(function () { inp.focus(); inp.select(); }, 60);
-      } else {
-        setTimeout(function () { okBtn.focus(); }, 60);
-      }
-    });
-  }
-
-  function _closeModal(result) {
-    var overlay = document.getElementById('fp-modal');
-    if (overlay) overlay.hidden = true;
-    if (_modalResolve) { _modalResolve(result); _modalResolve = null; }
-  }
-
-  function bindModal() {
-    var okBtn    = document.getElementById('fp-modal-ok');
-    var cancelBtn= document.getElementById('fp-modal-cancel');
-    var overlay  = document.getElementById('fp-modal');
-    if (!overlay) return;
-
-    okBtn.addEventListener('click', function () {
-      var inp = document.querySelector('#fp-modal-body .fp-modal-input');
-      _closeModal(inp ? (inp.value.trim() || null) : true);
-    });
-    cancelBtn.addEventListener('click', function () { _closeModal(null); });
-
-    // Close on backdrop click
-    overlay.addEventListener('click', function (e) {
-      if (e.target === overlay) _closeModal(null);
-    });
-
-    // Enter/Esc keyboard shortcuts
-    overlay.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
-        e.preventDefault();
-        okBtn.click();
-      }
-      if (e.key === 'Escape') { e.preventDefault(); _closeModal(null); }
-    });
-  }
+  var fpModal = window.thrModal || function (opts) {
+    if (opts.type === 'confirm') return Promise.resolve(confirm(opts.title || ''));
+    if (opts.type === 'alert')   { alert(opts.body || opts.title || ''); return Promise.resolve(true); }
+    var r = prompt(opts.title || ''); return Promise.resolve(r);
+  };
 
   /* ══════════════════════════════════════════════════════════════════
      TOAST NOTIFICATIONS
@@ -715,6 +657,28 @@
       pushUndo(item.id);
     });
 
+    group.on('dragmove', function () {
+      if (S.mode !== 'builder') return;
+      var d = S.tables[item.id];
+      if (!d || d.type === 'zone' || d.type === 'text_label') return;
+      var cx = this.x();
+      var cy = this.y();
+      Object.values(S.tables).forEach(function (z) {
+        if (z.type !== 'zone') return;
+        var zGroup = zoneLayer.findOne('#zone-' + z.id);
+        if (!zGroup) return;
+        var zRect = zGroup.findOne('Rect');
+        if (!zRect) return;
+        var c = (z.meta && z.meta.color) ? z.meta.color : '#EAF5EE';
+        var bbox = getZoneBBoxRaw(z, d.id);
+        var inside = bbox && (cx > bbox.x1 && cx < bbox.x2 && cy > bbox.y1 && cy < bbox.y2);
+        zRect.fill(hexToRgba(c, inside ? 0.30 : 0.18));
+        zRect.stroke(inside ? zoneBorderColor(c, 1.0) : zoneBorderColor(c));
+        zRect.strokeWidth(inside ? 3 : 2);
+      });
+      zoneLayer.batchDraw();
+    });
+
     group.on('dragend', function () {
       var d = S.tables[item.id];
       if (!d) return;
@@ -730,6 +694,7 @@
         showToast('Tables cannot overlap', 'warn');
         S.undoStack.pop();
         syncUndoBtns();
+        resetZoneHighlights();
         return;
       }
 
@@ -738,7 +703,33 @@
       this.position({ x: d.pos_x, y: d.pos_y });
       markDirty();
       tableLayer.batchDraw();
-      renderZoneLayer(); // update zone overlays on drag
+
+      // Auto zone membership on drag (builder mode, non-zone/label items only)
+      if (S.mode === 'builder' && d.type !== 'zone' && d.type !== 'text_label') {
+        var cx = d.pos_x;
+        var cy = d.pos_y;
+        var sid = String(d.id);
+        Object.values(S.tables).forEach(function (z) {
+          if (z.type !== 'zone') return;
+          if (!z.meta) z.meta = { color: '#EAF5EE', members: [] };
+          var members = (z.meta.members || []).map(String);
+          var wasIn   = members.indexOf(sid) !== -1;
+          var bbox    = getZoneBBoxRaw(z, sid);
+          var isIn    = bbox && (cx > bbox.x1 && cx < bbox.x2 && cy > bbox.y1 && cy < bbox.y2);
+          if (isIn && !wasIn) {
+            z.meta.members = members.concat([sid]);
+            apiFetch('PATCH', 'furniture/' + z.id, { meta: z.meta });
+            showToast('Added to "' + (z.label || 'Zone') + '"', 'info');
+          } else if (!isIn && wasIn) {
+            z.meta.members = members.filter(function (m) { return m !== sid; });
+            apiFetch('PATCH', 'furniture/' + z.id, { meta: z.meta });
+            showToast('Removed from "' + (z.label || 'Zone') + '"', 'warn');
+          }
+        });
+      }
+
+      resetZoneHighlights();
+      renderZoneLayer();
     });
 
     group.on('transformend', function () {
@@ -1068,53 +1059,35 @@
 
       if (!members.length) return;
 
-      // Compute AABB from member positions
-      var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-      members.forEach(function (mid) {
-        var m = S.tables[mid];
-        if (!m) return;
-        var mW = toNum(m.width, 80) / 2;
-        var mH = toNum(m.height, 80) / 2;
-        var mx = toNum(m.pos_x, 0);
-        var my = toNum(m.pos_y, 0);
-        minX = Math.min(minX, mx - mW);
-        minY = Math.min(minY, my - mH);
-        maxX = Math.max(maxX, mx + mW);
-        maxY = Math.max(maxY, my + mH);
-      });
+      var bbox = getZoneBBoxRaw(item);
+      if (!bbox) return;
 
-      if (!isFinite(minX)) return;
-
-      var pad = 20;
-      var zx  = minX - pad;
-      var zy  = minY - pad;
-      var zw  = (maxX - minX) + pad * 2;
-      var zh  = (maxY - minY) + pad * 2;
+      var zx = bbox.x1;
+      var zy = bbox.y1;
+      var zw = bbox.x2 - bbox.x1;
+      var zh = bbox.y2 - bbox.y1;
 
       var rect = new Konva.Rect({
         x: zx, y: zy,
         width: zw, height: zh,
-        cornerRadius: 8,
-        fill: color,
-        opacity: 0.25,
-        stroke: color,
-        strokeWidth: 1.5,
-        dash: [8, 4],
+        cornerRadius: 10,
+        fill:        hexToRgba(color, 0.18),
+        stroke:      zoneBorderColor(color),
+        strokeWidth: 2,
         name: 'zone-rect',
+        hitStrokeWidth: 10,
       });
 
       var label = new Konva.Text({
-        x: zx + 8, y: zy + 6,
+        x: zx + 10, y: zy + 7,
         text: item.label || 'Zone',
         fontSize: 11,
         fontFamily: 'system-ui,-apple-system,sans-serif',
-        fontStyle: 'bold',
-        fill: '#1a4a2e',
-        opacity: 0.8,
+        fontStyle: '600',
+        fill: zoneBorderColor(color, 0.9),
         listening: false,
       });
 
-      // Clickable zone group
       var zGroup = new Konva.Group({ id: 'zone-' + item.id, name: 'zone-group' });
       zGroup.add(rect);
       zGroup.add(label);
@@ -1124,9 +1097,46 @@
         if (S.mode === 'builder') selectZone(item.id);
       });
 
+      // Double-click to rename zone
+      zGroup.on('dblclick dbltap', function (e) {
+        e.cancelBubble = true;
+        if (S.mode !== 'builder') return;
+        fpModal({
+          type:  'prompt',
+          title: 'Rename Zone',
+          body:  '<input class="thr-modal-input" type="text" value="' + escAttr(item.label || '') + '" maxlength="40">',
+          ok:    'Rename',
+        }).then(function (name) {
+          if (!name || name === item.label) return;
+          item.label = name;
+          apiFetch('PATCH', 'furniture/' + item.id, { label: name }).then(function () {
+            renderZoneLayer();
+            var titleEl = document.getElementById('fp-fp-title');
+            if (titleEl && S.selected === item.id) titleEl.textContent = name;
+            showToast('Zone renamed to "' + name + '"', 'info');
+            markDirty();
+          });
+        });
+      });
+
       zoneLayer.add(zGroup);
     });
 
+    zoneLayer.batchDraw();
+  }
+
+  function resetZoneHighlights() {
+    Object.values(S.tables).forEach(function (z) {
+      if (z.type !== 'zone') return;
+      var zGroup = zoneLayer.findOne('#zone-' + z.id);
+      if (!zGroup) return;
+      var zRect = zGroup.findOne('Rect');
+      if (!zRect) return;
+      var c = (z.meta && z.meta.color) ? z.meta.color : '#EAF5EE';
+      zRect.fill(hexToRgba(c, 0.18));
+      zRect.stroke(zoneBorderColor(c));
+      zRect.strokeWidth(2);
+    });
     zoneLayer.batchDraw();
   }
 
@@ -1136,7 +1146,7 @@
       type:  'prompt',
       title: 'Create Zone',
       body:  '<p>Name this zone to group the selected tables into a labelled area.</p>' +
-             '<input class="fp-modal-input" type="text" placeholder=\'e.g. VIP, Outdoor, Bar Area\' maxlength="40">',
+             '<input class="thr-modal-input" type="text" placeholder=\'e.g. VIP, Outdoor, Bar Area\' maxlength="40">',
       ok:    'Create Zone',
     }).then(function (name) {
       if (!name) return;
@@ -1491,26 +1501,41 @@
     var wrap  = document.getElementById('fp-canvas-wrap');
     if (!panel || !wrap) return;
 
-    var wrapRect  = wrap.getBoundingClientRect();
-    var panelW    = panel.offsetWidth  || 240;
-    var panelH    = panel.offsetHeight || 300;
+    var wrapRect = wrap.getBoundingClientRect();
+    var panelW   = panel.offsetWidth  || 240;
+    var panelH   = panel.offsetHeight || 300;
 
-    var canvasLeft  = rect.x - wrapRect.left;
-    var canvasTop   = rect.y - wrapRect.top;
+    var canvasLeft = rect.x - wrapRect.left;
+    var canvasTop  = rect.y - wrapRect.top;
 
+    // Try to place to the right; flip left if overflow
     var left = canvasLeft + rect.width + 12;
     var top  = canvasTop;
 
-    // Flip left if right overflow
-    if (left + panelW > wrapRect.width) {
+    if (left + panelW > wrapRect.width - 4) {
       left = canvasLeft - panelW - 12;
     }
 
-    // Clamp horizontally
-    left = Math.max(4, Math.min(left, wrapRect.width - panelW - 4));
+    // Clamp to canvas bounds
+    left = Math.max(4, Math.min(left, wrapRect.width  - panelW - 4));
+    top  = Math.max(4, Math.min(top,  wrapRect.height - panelH - 4));
 
-    // Clamp vertically
-    top = Math.max(4, Math.min(top, wrapRect.height - panelH - 4));
+    // Avoid overlapping the selected item rect itself (push vertically if too close)
+    var panelRight  = left + panelW;
+    var panelBottom = top  + panelH;
+    var itemRight   = canvasLeft + rect.width;
+    var itemBottom  = canvasTop  + rect.height;
+    var overlapH = Math.min(panelRight, itemRight) - Math.max(left, canvasLeft);
+    var overlapV = Math.min(panelBottom, itemBottom) - Math.max(top, canvasTop);
+    if (overlapH > 0 && overlapV > 0) {
+      // Push panel below the item if there's room, else above
+      var belowTop = canvasTop + rect.height + 12;
+      if (belowTop + panelH < wrapRect.height - 4) {
+        top = belowTop;
+      } else {
+        top = Math.max(4, canvasTop - panelH - 12);
+      }
+    }
 
     panel.style.position = 'absolute';
     panel.style.left     = left + 'px';
@@ -1637,7 +1662,16 @@
     var ungroupBtn = document.getElementById('fp-fp-ungroup');
     if (ungroupBtn) {
       ungroupBtn.addEventListener('click', function () {
-        deleteZone(id);
+        fpModal({
+          type:   'confirm',
+          title:  'Remove zone "' + (item.label || 'Zone') + '"?',
+          body:   '<p>The zone grouping will be removed. Tables will remain on the floor plan.</p>',
+          ok:     'Remove Zone',
+          cancel: 'Keep',
+          danger: true,
+        }).then(function (ok) {
+          if (ok) deleteZone(id);
+        });
       });
     }
   }
@@ -1957,7 +1991,7 @@
     fpModal({
       type:  'prompt',
       title: 'Add Floor',
-      body:  '<input class="fp-modal-input" type="text" placeholder=\'e.g. Level 1, Rooftop, Garden\' maxlength="40">',
+      body:  '<input class="thr-modal-input" type="text" placeholder=\'e.g. Level 1, Rooftop, Garden\' maxlength="40">',
       ok:    'Add Floor',
     }).then(function (name) {
       if (!name) return;
@@ -2221,6 +2255,44 @@
   function snapTo24(v) { return Math.round(v / 24) * 24; }
 
   function toNum(v, def) { return isNaN(parseFloat(v)) ? def : parseFloat(v); }
+
+  function hexToRgba(hex, alpha) {
+    var h = (hex || '#EAF5EE').replace('#', '');
+    if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    var r = parseInt(h.substring(0, 2), 16);
+    var g = parseInt(h.substring(2, 4), 16);
+    var b = parseInt(h.substring(4, 6), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+  }
+
+  // Derive a darker border from the zone fill so it's always visible on canvas
+  function zoneBorderColor(hex, alpha) {
+    var h = (hex || '#EAF5EE').replace('#', '');
+    if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    var r = Math.round(parseInt(h.substring(0, 2), 16) * 0.52);
+    var g = Math.round(parseInt(h.substring(2, 4), 16) * 0.52);
+    var b = Math.round(parseInt(h.substring(4, 6), 16) * 0.52);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + (alpha || 0.85) + ')';
+  }
+
+  function getZoneBBoxRaw(zItem, excludeId) {
+    var members = (zItem.meta && zItem.meta.members) ? zItem.meta.members : [];
+    var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    members.forEach(function (mid) {
+      if (excludeId !== undefined && String(mid) === String(excludeId)) return;
+      var m = S.tables[mid];
+      if (!m) return;
+      var mW = toNum(m.width, 80) / 2;
+      var mH = toNum(m.height, 80) / 2;
+      minX = Math.min(minX, toNum(m.pos_x, 0) - mW);
+      minY = Math.min(minY, toNum(m.pos_y, 0) - mH);
+      maxX = Math.max(maxX, toNum(m.pos_x, 0) + mW);
+      maxY = Math.max(maxY, toNum(m.pos_y, 0) + mH);
+    });
+    if (!isFinite(minX)) return null;
+    var pad = 20;
+    return { x1: minX - pad, y1: minY - pad, x2: maxX + pad, y2: maxY + pad };
+  }
 
   /* ══════════════════════════════════════════════════════════════════
      API

@@ -78,7 +78,9 @@ class THR_Admin {
         if ( ! in_array( $page, $our_pages, true ) ) return;
 
         wp_enqueue_style( 'thr-admin', THR_PLUGIN_URL . 'assets/css/admin.css', [], THR_VERSION );
-        wp_enqueue_script( 'thr-admin', THR_PLUGIN_URL . 'assets/js/admin.js', [ 'jquery' ], THR_VERSION, true );
+        $modal_v = (string) filemtime( THR_PLUGIN_DIR . 'assets/js/thr-modal.js' );
+        wp_enqueue_script( 'thr-modal', THR_PLUGIN_URL . 'assets/js/thr-modal.js', [], $modal_v, true );
+        wp_enqueue_script( 'thr-admin', THR_PLUGIN_URL . 'assets/js/admin.js', [ 'jquery', 'thr-modal' ], THR_VERSION, true );
         wp_localize_script( 'thr-admin', 'thrAdmin', [
             'apiUrl'   => rest_url( THR_REST_NS . '/' ),
             'nonce'    => wp_create_nonce( 'wp_rest' ),
@@ -91,7 +93,7 @@ class THR_Admin {
             $js_v  = (string) filemtime( THR_PLUGIN_DIR . 'assets/js/floor-plan-builder.js' );
             wp_enqueue_style(  'thr-fp', THR_PLUGIN_URL . 'assets/css/floor-plan-builder.css', [], $css_v );
             wp_enqueue_script( 'konva',  'https://unpkg.com/konva@9.3.14/konva.min.js', [], '9.3.14', true );
-            wp_enqueue_script( 'thr-fp', THR_PLUGIN_URL . 'assets/js/floor-plan-builder.js', [ 'konva' ], $js_v, true );
+            wp_enqueue_script( 'thr-fp', THR_PLUGIN_URL . 'assets/js/floor-plan-builder.js', [ 'konva', 'thr-modal' ], $js_v, true );
 
             $types = [];
             foreach ( THR_API_Furniture::TYPES as $slug => $def ) {
@@ -890,20 +892,6 @@ class THR_Admin {
 
           <!-- Toast notification -->
           <div class="fp-toast" id="fp-toast" role="status" aria-live="polite"></div>
-
-          <!-- ═══ CUSTOM MODAL (replaces window.prompt / confirm / alert) ══ -->
-          <div class="fp-modal-overlay" id="fp-modal" hidden role="dialog" aria-modal="true" aria-labelledby="fp-modal-title">
-            <div class="fp-modal-card" id="fp-modal-card">
-              <div class="fp-modal-hd">
-                <span class="fp-modal-title" id="fp-modal-title"></span>
-              </div>
-              <div class="fp-modal-body" id="fp-modal-body"></div>
-              <div class="fp-modal-foot">
-                <button class="fp-btn fp-btn-ghost" id="fp-modal-cancel" type="button">Cancel</button>
-                <button class="fp-btn fp-btn-primary" id="fp-modal-ok" type="button">OK</button>
-              </div>
-            </div>
-          </div>
 
         </div><!-- #fp-app -->
         </div><!-- .wrap -->
