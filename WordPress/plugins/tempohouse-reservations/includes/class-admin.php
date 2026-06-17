@@ -6,7 +6,23 @@ class THR_Admin {
     public function init(): void {
         add_action( 'admin_menu',            [ $this, 'add_menus' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+        add_action( 'admin_head',            [ $this, 'floor_plan_head_styles' ] );
         add_action( 'wp_ajax_thr_update_status', [ $this, 'ajax_update_status' ] );
+    }
+
+    public function floor_plan_head_styles(): void {
+        if ( ( $_GET['page'] ?? '' ) !== 'thr-floor-plans' ) return;
+        ?>
+        <style id="thr-fp-reset">
+            #wpcontent { padding-left: 0 !important; }
+            #wpbody-content { padding-bottom: 0 !important; }
+            #wpbody { padding-top: 0 !important; float: none !important; }
+            .thr-fp-wrap { margin: 0 !important; padding: 0 !important; }
+            #wpbody-content > .notice,
+            #wpbody-content > .updated,
+            #wpbody-content > .error { display: none !important; }
+        </style>
+        <?php
     }
 
     public function add_menus(): void {
@@ -41,21 +57,23 @@ class THR_Admin {
             $wl_label .= ' <span class="update-plugins count-' . $pending_wl . '"><span class="update-count">' . $pending_wl . '</span></span>';
         }
 
-        add_submenu_page( 'thr-dashboard', 'Dashboard',     'Dashboard',     'thr_view_reservations',   'thr-dashboard',     [ $this, 'page_dashboard' ] );
-        add_submenu_page( 'thr-dashboard', 'Reservations',  $res_label,      'thr_view_reservations',   'thr-reservations',  [ $this, 'page_list' ] );
-        add_submenu_page( 'thr-dashboard', 'Floor Plans',   'Floor Plans',   'thr_manage_floor_plans',  'thr-floor-plans',   [ $this, 'page_floor_plans' ] );
-        add_submenu_page( 'thr-dashboard', 'Blocks',        'Blocks',        'thr_manage_settings',     'thr-blocks',        [ $this, 'page_blocks' ] );
-        add_submenu_page( 'thr-dashboard', 'Tags',          'Tags',          'thr_manage_tags',         'thr-tags',          [ $this, 'page_tags' ] );
-        add_submenu_page( 'thr-dashboard', 'Waitlist',      $wl_label,       'thr_view_reservations',   'thr-waitlist',      [ $this, 'page_waitlist' ] );
-        add_submenu_page( 'thr-dashboard', 'Shift Report',  'Shift Report',  'thr_view_reports',        'thr-shift-report',  [ $this, 'page_shift_report' ] );
-        add_submenu_page( 'thr-dashboard', 'Settings',      'Settings',      'thr_manage_settings',     'thr-settings',      [ $this, 'page_settings' ] );
+        add_submenu_page( 'thr-dashboard', 'Dashboard',        'Dashboard',        'thr_view_reservations',   'thr-dashboard',        [ $this, 'page_dashboard' ] );
+        add_submenu_page( 'thr-dashboard', 'Reservations',    $res_label,         'thr_view_reservations',   'thr-reservations',     [ $this, 'page_list' ] );
+        add_submenu_page( 'thr-dashboard', 'FOH Run-sheet',   'FOH Run-sheet',    'thr_view_reservations',   'thr-run-sheet',        [ $this, 'page_run_sheet' ] );
+        add_submenu_page( 'thr-dashboard', 'Floor Plans',     'Floor Plans',      'thr_manage_floor_plans',  'thr-floor-plans',      [ $this, 'page_floor_plans' ] );
+        add_submenu_page( 'thr-dashboard', 'Blocks',          'Blocks',           'thr_manage_settings',     'thr-blocks',           [ $this, 'page_blocks' ] );
+        add_submenu_page( 'thr-dashboard', 'Tags',            'Tags',             'thr_manage_tags',         'thr-tags',             [ $this, 'page_tags' ] );
+        add_submenu_page( 'thr-dashboard', 'Waitlist',        $wl_label,          'thr_view_reservations',   'thr-waitlist',         [ $this, 'page_waitlist' ] );
+        add_submenu_page( 'thr-dashboard', 'Event Enquiries', 'Event Enquiries',  'thr_view_reservations',   'thr-event-enquiries',  [ $this, 'page_event_enquiries' ] );
+        add_submenu_page( 'thr-dashboard', 'Shift Report',    'Shift Report',     'thr_view_reports',        'thr-shift-report',     [ $this, 'page_shift_report' ] );
+        add_submenu_page( 'thr-dashboard', 'Settings',        'Settings',         'thr_manage_settings',     'thr-settings',         [ $this, 'page_settings' ] );
 
         // Hidden: single reservation view
         add_submenu_page( null, 'Reservation', 'Reservation', 'thr_view_reservations', 'thr-reservation', [ $this, 'page_single' ] );
     }
 
     public function enqueue_assets( string $hook ): void {
-        $our_pages = [ 'thr-dashboard', 'thr-reservations', 'thr-floor-plans', 'thr-blocks', 'thr-tags', 'thr-waitlist', 'thr-settings', 'thr-shift-report', 'thr-reservation' ];
+        $our_pages = [ 'thr-dashboard', 'thr-reservations', 'thr-run-sheet', 'thr-floor-plans', 'thr-blocks', 'thr-tags', 'thr-waitlist', 'thr-event-enquiries', 'thr-settings', 'thr-shift-report', 'thr-reservation' ];
         $page      = $_GET['page'] ?? '';
         if ( ! in_array( $page, $our_pages, true ) ) return;
 
@@ -68,26 +86,23 @@ class THR_Admin {
             'adminUrl' => admin_url( 'admin.php' ),
         ] );
 
-        // Floor plan builder — only load Konva + builder on the floor-plans page
         if ( $page === 'thr-floor-plans' ) {
-            wp_enqueue_style( 'thr-fp-builder', THR_PLUGIN_URL . 'assets/css/floor-plan-builder.css', [], THR_VERSION );
-            wp_enqueue_script( 'konva', 'https://unpkg.com/konva@9.3.14/konva.min.js', [], '9.3.14', true );
-            wp_enqueue_script( 'thr-fp-builder', THR_PLUGIN_URL . 'assets/js/floor-plan-builder.js', [ 'konva' ], THR_VERSION, true );
+            $css_v = (string) filemtime( THR_PLUGIN_DIR . 'assets/css/floor-plan-builder.css' );
+            $js_v  = (string) filemtime( THR_PLUGIN_DIR . 'assets/js/floor-plan-builder.js' );
+            wp_enqueue_style(  'thr-fp', THR_PLUGIN_URL . 'assets/css/floor-plan-builder.css', [], $css_v );
+            wp_enqueue_script( 'konva',  'https://unpkg.com/konva@9.3.14/konva.min.js', [], '9.3.14', true );
+            wp_enqueue_script( 'thr-fp', THR_PLUGIN_URL . 'assets/js/floor-plan-builder.js', [ 'konva' ], $js_v, true );
 
-            // Normalize TYPES for JS (rename 'cap' → 'capacity' for consistency)
-            $furniture_types = [];
-            foreach ( THR_API_Furniture::TYPES as $slug => $type ) {
-                $furniture_types[ $slug ] = [
-                    'label'    => $type['label'],
-                    'capacity' => $type['cap'],
-                    'shape'    => $type['shape'],
-                ];
+            $types = [];
+            foreach ( THR_API_Furniture::TYPES as $slug => $def ) {
+                $types[ $slug ] = [ 'label' => $def['label'], 'capacity' => $def['cap'], 'shape' => $def['shape'] ];
             }
-
-            wp_localize_script( 'thr-fp-builder', 'thrFloorPlan', [
-                'apiUrl'         => rest_url( THR_REST_NS . '/' ),
-                'nonce'          => wp_create_nonce( 'wp_rest' ),
-                'furnitureTypes' => $furniture_types,
+            wp_localize_script( 'thr-fp', 'thrFP', [
+                'apiUrl' => rest_url( THR_REST_NS . '/' ),
+                'nonce'  => wp_create_nonce( 'wp_rest' ),
+                'types'  => $types,
+                'today'  => gmdate( 'Y-m-d', time() + 7 * 3600 ),
+                'newResUrl' => admin_url( 'admin.php?page=thr-reservations&action=add' ),
             ] );
         }
     }
@@ -263,7 +278,12 @@ class THR_Admin {
                     </tr>
                 </thead>
                 <tbody>
-                <?php foreach ( $rows as $r ): ?>
+                <?php foreach ( $rows as $r ):
+                    $is_returning = (bool) $wpdb->get_var( $wpdb->prepare(
+                        "SELECT COUNT(*) FROM $table WHERE diner_email = %s AND id != %d AND status IN ('confirmed','completed','seated')",
+                        $r->diner_email, $r->id
+                    ) );
+                ?>
                 <tr class="<?= $r->is_vip ? 'thr-row-vip' : '' ?>">
                     <td><a href="<?= admin_url( "admin.php?page=thr-reservation&id={$r->id}" ) ?>" class="thr-ref"><?= esc_html( $r->reference_code ) ?></a></td>
                     <td>
@@ -273,6 +293,7 @@ class THR_Admin {
                     <td>
                         <?= esc_html( $r->diner_name ) ?>
                         <?php if ( $r->is_vip ): ?><span class="thr-badge thr-badge--vip">VIP</span><?php endif; ?>
+                        <?php if ( $is_returning ): ?><span class="thr-badge thr-badge--confirmed" style="font-size:10px;margin-left:4px;">Returning</span><?php endif; ?>
                         <br><span class="thr-muted"><?= esc_html( $r->diner_email ) ?></span>
                     </td>
                     <td><?= (int) $r->party_size ?></td>
@@ -587,6 +608,7 @@ class THR_Admin {
                             <tr><th>Name</th><td><?= esc_html( $r->diner_name ) ?></td></tr>
                             <tr><th>Email</th><td><a href="mailto:<?= esc_attr( $r->diner_email ) ?>"><?= esc_html( $r->diner_email ) ?></a></td></tr>
                             <tr><th>Phone</th><td><?= $r->diner_phone ? esc_html( $r->diner_phone ) : '—' ?></td></tr>
+                            <tr><th>Zalo</th><td><?= isset( $r->diner_zalo ) && $r->diner_zalo ? esc_html( $r->diner_zalo ) : '—' ?></td></tr>
                             <tr><th>Language</th><td><?= esc_html( strtoupper( $r->diner_lang ) ) ?></td></tr>
                         </table>
                     </div>
@@ -649,7 +671,7 @@ class THR_Admin {
                         <ul class="thr-email-status">
                             <li><?= $r->confirmation_sent_at ? '✓' : '○' ?> Confirmation</li>
                             <li><?= $r->reminder_24h_sent_at ? '✓' : '○' ?> 24h reminder</li>
-                            <li><?= $r->reminder_4h_sent_at ? '✓' : '○' ?> 4h reminder</li>
+                            <li><?= $r->reminder_4h_sent_at ? '✓' : '○' ?> 2h reminder</li>
                             <li><?= $r->feedback_sent_at ? '✓' : '○' ?> Feedback</li>
                         </ul>
                         <?php if ( current_user_can( 'thr_edit_reservations' ) ): ?>
@@ -695,82 +717,182 @@ class THR_Admin {
 
     // ── Floor Plans ───────────────────────────────────────────────────────────
     public function page_floor_plans(): void {
-        $type_groups = [
-            'Tables'   => [ 'table-round-2', 'table-round-4', 'table-round-6', 'table-round-8', 'table-rect-2', 'table-rect-4', 'table-rect-6', 'table-rect-8' ],
-            'Booths'   => [ 'booth-2', 'booth-4', 'booth-6' ],
-            'Bar'      => [ 'bar-stool', 'bar-counter', 'high-top-2', 'high-top-4' ],
-            'Lounge'   => [ 'lounge-sofa', 'lounge-chair', 'banquette' ],
-            'Zones'    => [ 'area-vip', 'stage', 'dj-booth', 'outdoor-table' ],
-        ];
+        $slots = THR_Settings::time_slots();
         ?>
-        <div class="wrap thr-wrap" style="margin-right:0;">
-            <div id="thr-fp-app">
-                <!-- Toolbar -->
-                <div id="thr-fp-toolbar">
-                    <div class="thr-fp-toolbar-group">
-                        <select id="thr-fp-floor-select" class="thr-fp-floor-select"></select>
-                        <button class="thr-fp-btn" id="thr-fp-btn-add-floor">+ Floor</button>
-                        <button class="thr-fp-btn" id="thr-fp-btn-upload-bg">Upload BG</button>
-                    </div>
-                    <div class="thr-fp-toolbar-sep"></div>
-                    <div class="thr-fp-toolbar-group">
-                        <button class="thr-fp-btn" id="thr-fp-btn-zoom-out">−</button>
-                        <span class="thr-fp-zoom-label" id="thr-fp-zoom-label">100%</span>
-                        <button class="thr-fp-btn" id="thr-fp-btn-zoom-in">+</button>
-                        <button class="thr-fp-btn" id="thr-fp-btn-zoom-fit">Fit</button>
-                    </div>
-                    <div class="thr-fp-toolbar-sep"></div>
-                    <div class="thr-fp-toolbar-group">
-                        <button class="thr-fp-btn thr-fp-btn--danger" id="thr-fp-btn-delete">Delete</button>
-                    </div>
-                    <div class="thr-fp-toolbar-sep"></div>
-                    <div class="thr-fp-toolbar-group">
-                        <button class="thr-fp-btn thr-fp-btn--primary" id="thr-fp-btn-save">Save</button>
-                        <span id="thr-fp-save-status"></span>
-                    </div>
-                    <div class="thr-fp-mode-toggle">
-                        <button class="thr-fp-btn thr-fp-btn--active" id="thr-fp-btn-edit">Edit</button>
-                        <button class="thr-fp-btn" id="thr-fp-btn-live">Live view</button>
-                    </div>
-                </div>
+        <div class="wrap thr-fp-wrap">
+        <div id="fp-app" data-mode="live">
 
-                <!-- Palette -->
-                <div id="thr-fp-palette">
-                    <?php foreach ( $type_groups as $group_label => $type_keys ):
-                        $all_types = THR_API_Furniture::TYPES;
-                    ?>
-                    <div class="thr-fp-palette-heading"><?= esc_html( $group_label ) ?></div>
-                    <?php foreach ( $type_keys as $key ):
-                        $t   = $all_types[ $key ] ?? null;
-                        if ( ! $t ) continue;
-                        $icon_cls = ( $t['shape'] ?? '' ) === 'circle' ? 'thr-fp-palette-icon--circle' : '';
-                        $cap = isset( $t['capacity'] ) ? $t['capacity'][0] . '–' . $t['capacity'][1] : '';
-                    ?>
-                    <div class="thr-fp-palette-item" data-place-type="<?= esc_attr( $key ) ?>">
-                        <div class="thr-fp-palette-icon <?= $icon_cls ?>"><?= esc_html( $cap ) ?></div>
-                        <?= esc_html( $t['label'] ) ?>
-                    </div>
-                    <?php endforeach; ?>
-                    <?php endforeach; ?>
-                </div>
-
-                <!-- Canvas -->
-                <div id="thr-fp-canvas-wrap">
-                    <div id="thr-konva-container"></div>
-                    <div class="thr-fp-legend">
-                        <div class="thr-fp-legend-item"><div class="thr-fp-legend-dot" style="background:#2d6a4f;"></div> Available</div>
-                        <div class="thr-fp-legend-item"><div class="thr-fp-legend-dot" style="background:#ddaa62;"></div> Reserved</div>
-                        <div class="thr-fp-legend-item"><div class="thr-fp-legend-dot" style="background:#c0392b;"></div> Seated</div>
-                        <div class="thr-fp-legend-item"><div class="thr-fp-legend-dot" style="background:#555;"></div> Blocked</div>
-                    </div>
-                </div>
-
-                <!-- Properties -->
-                <div id="thr-fp-props">
-                    <p class="thr-fp-props-empty">Select a piece of furniture<br>to edit its properties.</p>
-                </div>
+          <!-- ═══ HEADER ══════════════════════════════════════════════════════ -->
+          <header class="fp-header">
+            <div class="fp-h-left">
+              <span class="fp-h-title fp-live-only">Restaurant map</span>
+              <span class="fp-h-title fp-builder-only">Restaurant map <span class="fp-h-mode-pill">Editing</span></span>
             </div>
-        </div>
+            <div class="fp-h-right">
+              <!-- Live mode actions -->
+              <button class="fp-btn fp-btn-outline fp-live-only" id="fp-btn-edit">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M9 2l2 2L4 11H2V9L9 2z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Edit Floorplan
+              </button>
+              <a class="fp-btn fp-btn-primary fp-live-only" id="fp-btn-new-res" href="#">+ Reservation</a>
+              <!-- Builder mode actions -->
+              <button class="fp-btn fp-btn-ghost fp-builder-only" id="fp-btn-undo" disabled title="Undo (Ctrl+Z)">
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M3 6.5H9.5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M3 6.5L5.5 4M3 6.5L5.5 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="fp-btn fp-btn-ghost fp-builder-only" id="fp-btn-redo" disabled title="Redo (Ctrl+Y)">
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M12 6.5H5.5a3.5 3.5 0 0 0 0 7H9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M12 6.5L9.5 4M12 6.5L9.5 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <span class="fp-h-sep fp-builder-only"></span>
+              <button class="fp-btn fp-btn-outline fp-builder-only" id="fp-btn-exit-builder">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7 1L2 6l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Live view
+              </button>
+              <button class="fp-btn fp-btn-primary fp-builder-only" id="fp-btn-publish" disabled>Publish updates</button>
+            </div>
+          </header>
+
+          <!-- ═══ FLOOR NAVIGATOR ═══════════════════════════════════════════ -->
+          <nav class="fp-floor-nav" id="fp-floor-nav">
+            <div class="fp-floor-tabs" id="fp-floor-tabs">
+              <!-- populated by JS -->
+            </div>
+            <div class="fp-floor-nav-end">
+              <!-- Floor background button (builder only) -->
+              <div class="fp-bg-nav-wrap fp-builder-only" id="fp-bg-nav-wrap">
+                <input type="file" id="fp-bg-file" accept="image/jpeg,image/png,image/webp" style="display:none" aria-hidden="true">
+                <button class="fp-bg-nav-btn" id="fp-bg-nav-btn" type="button" title="Set floor background image">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><rect x="1" y="2.5" width="11" height="8.5" rx="1.5" stroke="currentColor" stroke-width="1.2"/><circle cx="4.5" cy="5.5" r="1" fill="currentColor"/><path d="M1 9l3-3 2.5 2.5L9 6l3 3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Background
+                  <span class="fp-bg-nav-dot" id="fp-bg-nav-dot" hidden></span>
+                </button>
+                <div class="fp-bg-popover" id="fp-bg-popover" hidden>
+                  <div class="fp-bg-thumb-wrap">
+                    <img class="fp-bg-thumb" id="fp-bg-thumb" src="" alt="" hidden>
+                    <span class="fp-bg-no-thumb" id="fp-bg-no-thumb">No background image</span>
+                  </div>
+                  <button class="fp-btn fp-btn-outline fp-bg-upload-btn" id="fp-bg-upload" type="button">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M2 4l4-4 4 4M1 10h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Upload image</span>
+                  </button>
+                  <div class="fp-bg-sliders" id="fp-bg-sliders" hidden>
+                    <div class="fp-bg-slider-row">
+                      <label for="fp-bg-opacity">Opacity</label>
+                      <input type="range" id="fp-bg-opacity" min="0" max="1" step="0.05" value="0.5">
+                    </div>
+                    <div class="fp-bg-slider-row">
+                      <label for="fp-bg-scale">Scale</label>
+                      <input type="range" id="fp-bg-scale" min="0.1" max="3" step="0.05" value="1">
+                    </div>
+                    <button class="fp-btn fp-btn-ghost fp-bg-remove-btn" id="fp-bg-remove" type="button">Remove background</button>
+                  </div>
+                </div>
+              </div>
+              <button class="fp-add-floor-btn fp-builder-only" id="fp-add-floor" title="Add floor">
+                <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                Floor
+              </button>
+            </div>
+          </nav>
+
+          <!-- ═══ TOOLBAR (builder only) ══════════════════════════════════════ -->
+          <div class="fp-toolbar fp-builder-only" id="fp-toolbar"></div>
+
+          <!-- ═══ LIVE SUBBAR ════════════════════════════════════════════════ -->
+          <div class="fp-subbar fp-live-only" id="fp-subbar">
+            <button class="fp-chip" id="fp-chip-date">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 5h11M4 1v2M9 1v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              <span id="fp-date-lbl">Today</span>
+            </button>
+            <button class="fp-chip" id="fp-chip-time">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M6.5 3.5V6.5l2 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              <span id="fp-time-lbl">All day</span>
+            </button>
+            <span class="fp-subbar-sep"></span>
+            <div class="fp-view-tabs">
+              <button class="fp-view-tab fp-view-tab--active" data-view="map">2D floor plan</button>
+              <button class="fp-view-tab fp-view-tab--disabled" data-view="calendar" disabled title="Calendar view coming soon">Calendar</button>
+            </div>
+          </div>
+
+          <!-- ═══ BODY ═══════════════════════════════════════════════════════ -->
+          <div class="fp-body" id="fp-body">
+
+            <!-- Canvas -->
+            <div class="fp-canvas-wrap" id="fp-canvas-wrap">
+              <div class="fp-canvas-toolbar fp-builder-only" id="fp-canvas-toolbar">
+                <div class="fp-tool-group">
+                  <button class="fp-tool" id="fp-zoom-in" title="Zoom in">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M10 10l3 3M4 6h4M6 4v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  </button>
+                  <button class="fp-tool" id="fp-zoom-out" title="Zoom out">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M10 10l3 3M4 6h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  </button>
+                  <button class="fp-tool" id="fp-zoom-fit" title="Fit all">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 5V2a1 1 0 0 1 1-1h3M1 9v3a1 1 0 0 0 1 1h3M13 5V2a1 1 0 0 0-1-1h-3M13 9v3a1 1 0 0 1-1 1h-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+                <span class="fp-tool-sep"></span>
+                <div class="fp-tool-group">
+                  <button class="fp-tool fp-tool--delete" id="fp-delete-sel" title="Delete selected" disabled>
+                    <svg width="13" height="14" viewBox="0 0 13 14" fill="none"><path d="M1 3.5h11M4 3.5V2.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1M5 6.5v4M8 6.5v4M2 3.5l.7 8a1 1 0 0 0 1 .9h5.6a1 1 0 0 0 1-.9l.7-8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+                <div class="fp-zoom-display" id="fp-zoom-pct">100%</div>
+              </div>
+              <div id="fp-konva"></div>
+              <div class="fp-place-hint" id="fp-place-hint" hidden>
+                Click canvas to place &nbsp;·&nbsp; <kbd>Esc</kbd> to cancel
+              </div>
+              <!-- Floating properties panel (desktop: near item; mobile: bottom sheet) -->
+              <div class="fp-float-panel" id="fp-float-panel" hidden>
+                <div class="fp-fp-handle"></div>
+                <div class="fp-fp-hd">
+                  <span class="fp-fp-title" id="fp-fp-title">Table</span>
+                  <button class="fp-fp-close" id="fp-fp-close" type="button" aria-label="Close">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+                <div class="fp-fp-body" id="fp-fp-body"></div>
+                <div class="fp-fp-foot fp-builder-only" id="fp-fp-foot">
+                  <button class="fp-btn fp-btn-danger-ghost" id="fp-fp-delete" type="button" disabled>
+                    <svg width="12" height="13" viewBox="0 0 12 13" fill="none"><path d="M.5 3h11M3.5 3V2a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1M4.5 6v4M7.5 6v4M1.5 3l.7 7.5a1 1 0 0 0 1 .9h5.6a1 1 0 0 0 1-.9l.7-7.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+
+
+          </div><!-- .fp-body -->
+
+          <!-- ═══ LIVE LEGEND ════════════════════════════════════════════════ -->
+          <footer class="fp-legend fp-live-only">
+            <span class="fp-legend-item"><i class="fp-dot" style="background:#3B82F6"></i>Booked</span>
+            <span class="fp-legend-item"><i class="fp-dot" style="background:#F97316"></i>Occupied</span>
+            <span class="fp-legend-item"><i class="fp-dot" style="background:#22C55E"></i>Free</span>
+            <span class="fp-legend-item"><i class="fp-dot" style="background:#9CA3AF"></i>Blocked</span>
+          </footer>
+
+          <!-- ═══ FLOATING PANELS ═══════════════════════════════════════════ -->
+          <div class="fp-datepicker" id="fp-date-panel" hidden>
+            <input type="date" id="fp-date-input" class="fp-date-input">
+          </div>
+          <div class="fp-timepicker" id="fp-time-panel" hidden>
+            <div class="fp-time-opt fp-time-opt--active" data-time="">All day</div>
+            <?php foreach ( $slots as $slot ):
+              $h = (int) substr( $slot, 0, 2 );
+              $m = substr( $slot, 3, 2 );
+              $label = ( $h % 12 ?: 12 ) . ':' . $m . ( $h >= 12 ? ' PM' : ' AM' );
+            ?>
+            <div class="fp-time-opt" data-time="<?= esc_attr( $slot ) ?>"><?= esc_html( $label ) ?></div>
+            <?php endforeach; ?>
+          </div>
+
+          <!-- Toast notification -->
+          <div class="fp-toast" id="fp-toast" role="status" aria-live="polite"></div>
+
+        </div><!-- #fp-app -->
+        </div><!-- .wrap -->
         <?php
     }
 
@@ -1190,6 +1312,294 @@ class THR_Admin {
         <?php
     }
 
+    // ── FOH Mobile Run-sheet ──────────────────────────────────────────────────
+    public function page_run_sheet(): void {
+        $today     = gmdate( 'Y-m-d', time() + 7 * 3600 );
+        $today_fmt = gmdate( 'l, F j, Y', time() + 7 * 3600 );
+        $api_url   = rest_url( THR_REST_NS . '/' );
+        $nonce     = wp_create_nonce( 'wp_rest' );
+        ?>
+        <style>
+        #wpcontent { padding-left: 0 !important; }
+        #wpbody { padding-top: 0 !important; }
+        .thr-rs-wrap { max-width: 100%; padding: 16px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d0d0d; min-height: 100vh; color: #F7F3EE; }
+        .thr-rs-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 0 16px; border-bottom: 1px solid rgba(221,170,98,0.2); margin-bottom: 16px; }
+        .thr-rs-title { font-size: 20px; font-weight: 700; color: #DDAA62; margin: 0; }
+        .thr-rs-date { font-size: 13px; color: rgba(247,243,238,0.5); margin-top: 2px; }
+        .thr-rs-summary { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .thr-rs-stat { background: rgba(221,170,98,0.08); border: 1px solid rgba(221,170,98,0.15); border-radius: 6px; padding: 10px 16px; text-align: center; min-width: 80px; }
+        .thr-rs-stat__val { font-size: 22px; font-weight: 700; color: #DDAA62; display: block; }
+        .thr-rs-stat__lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(247,243,238,0.4); margin-top: 2px; display: block; }
+        .thr-rs-table { width: 100%; border-collapse: collapse; }
+        .thr-rs-table th { padding: 8px 10px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(247,243,238,0.4); border-bottom: 1px solid rgba(247,243,238,0.1); text-align: left; }
+        .thr-rs-table td { padding: 12px 10px; border-bottom: 1px solid rgba(247,243,238,0.06); vertical-align: top; }
+        .thr-rs-time { font-size: 16px; font-weight: 700; color: #F7F3EE; white-space: nowrap; }
+        .thr-rs-name { font-size: 15px; font-weight: 600; }
+        .thr-rs-meta { font-size: 12px; color: rgba(247,243,238,0.5); margin-top: 2px; }
+        .thr-rs-tags { font-size: 11px; color: rgba(221,170,98,0.7); }
+        .thr-rs-notes { font-size: 12px; color: rgba(247,243,238,0.55); font-style: italic; }
+        .thr-rs-vip { color: #B8860B; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-left: 4px; }
+        .thr-rs-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .thr-rs-btn { padding: 8px 12px; border-radius: 4px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; min-height: 44px; min-width: 60px; }
+        .thr-rs-btn--seat { background: #2563EB; color: #fff; }
+        .thr-rs-btn--complete { background: #16A34A; color: #fff; }
+        .thr-rs-btn--noshow { background: rgba(247,243,238,0.08); color: rgba(247,243,238,0.6); border: 1px solid rgba(247,243,238,0.15); }
+        .thr-rs-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .thr-rs-status { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .thr-rs-status--confirmed { background: rgba(221,170,98,0.15); color: #DDAA62; }
+        .thr-rs-status--seated { background: rgba(231,76,60,0.15); color: #e74c3c; }
+        .thr-rs-status--pending { background: rgba(247,243,238,0.1); color: rgba(247,243,238,0.5); }
+        .thr-rs-status--completed { background: rgba(22,163,74,0.15); color: #16A34A; }
+        .thr-rs-status--no_show { background: rgba(107,114,128,0.15); color: #6B7280; }
+        .thr-rs-refresh { font-size: 12px; color: rgba(247,243,238,0.3); }
+        .thr-rs-empty { color: rgba(247,243,238,0.4); padding: 32px; text-align: center; }
+        .thr-rs-err { color: #e74c3c; padding: 16px; font-size: 14px; }
+        @media print { .thr-rs-actions { display: none; } #wpbody { padding-top: 0 !important; } }
+        </style>
+
+        <div class="thr-rs-wrap">
+            <div class="thr-rs-header">
+                <div>
+                    <div class="thr-rs-title">FOH Run-sheet</div>
+                    <div class="thr-rs-date" id="thr-rs-date"><?= esc_html( $today_fmt ) ?></div>
+                </div>
+                <div>
+                    <button onclick="window.print()" style="background:rgba(247,243,238,0.08);border:1px solid rgba(247,243,238,0.15);color:#F7F3EE;padding:8px 14px;border-radius:4px;cursor:pointer;font-size:13px;">Print</button>
+                    <span class="thr-rs-refresh" id="thr-rs-refresh" style="display:block;margin-top:4px;text-align:right;"></span>
+                </div>
+            </div>
+
+            <div class="thr-rs-summary" id="thr-rs-summary">
+                <div class="thr-rs-stat"><span class="thr-rs-stat__val" id="rs-total">—</span><span class="thr-rs-stat__lbl">Reservations</span></div>
+                <div class="thr-rs-stat"><span class="thr-rs-stat__val" id="rs-covers">—</span><span class="thr-rs-stat__lbl">Covers</span></div>
+                <div class="thr-rs-stat"><span class="thr-rs-stat__val" id="rs-vip">—</span><span class="thr-rs-stat__lbl">VIP</span></div>
+            </div>
+
+            <div id="thr-rs-body">
+                <p class="thr-rs-empty">Loading…</p>
+            </div>
+        </div>
+
+        <script>
+        (function() {
+            var API   = '<?= esc_js( $api_url ) ?>';
+            var NONCE = '<?= esc_js( $nonce ) ?>';
+            var TODAY = '<?= esc_js( $today ) ?>';
+            var timer = null;
+
+            function statusLabel(s) {
+                var map = { confirmed:'Confirmed', seated:'Seated', pending:'Pending', completed:'Done', no_show:'No-show', late:'Late', cancelled:'Cancelled' };
+                return map[s] || s;
+            }
+            function statusClass(s) {
+                var map = { confirmed:'confirmed', seated:'seated', pending:'pending', completed:'completed', no_show:'no_show', late:'seated', cancelled:'no_show' };
+                return 'thr-rs-status thr-rs-status--' + (map[s] || 'pending');
+            }
+
+            function updateStatus(id, newStatus, rowEl) {
+                var btns = rowEl.querySelectorAll('.thr-rs-btn');
+                btns.forEach(function(b) { b.disabled = true; });
+                fetch(API + 'reservations/' + id + '/status', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': NONCE },
+                    body: JSON.stringify({ status: newStatus })
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) { loadData(); })
+                .catch(function() {
+                    btns.forEach(function(b) { b.disabled = false; });
+                    alert('Status update failed. Please try again.');
+                });
+            }
+
+            function renderRow(r) {
+                var tr = document.createElement('tr');
+                var actions = '';
+                if (r.status === 'confirmed' || r.status === 'pending') {
+                    actions += '<button class="thr-rs-btn thr-rs-btn--seat" data-action="seated">Seat</button>';
+                }
+                if (r.status === 'seated' || r.status === 'confirmed') {
+                    actions += '<button class="thr-rs-btn thr-rs-btn--complete" data-action="completed">Done</button>';
+                }
+                if (r.status !== 'no_show' && r.status !== 'completed' && r.status !== 'cancelled') {
+                    actions += '<button class="thr-rs-btn thr-rs-btn--noshow" data-action="no_show">No-show</button>';
+                }
+                var vipBadge = r.is_vip ? '<span class="thr-rs-vip">VIP</span>' : '';
+                var tags     = r.tags ? '<div class="thr-rs-tags">' + escHtml(r.tags) + '</div>' : '';
+                var notes    = r.notes_diner ? '<div class="thr-rs-notes">' + escHtml(r.notes_diner) + '</div>' : '';
+                tr.innerHTML =
+                    '<td><div class="thr-rs-time">' + escHtml(r.time_local) + '</div></td>' +
+                    '<td>' +
+                        '<div class="thr-rs-name">' + escHtml(r.diner_name) + vipBadge + '</div>' +
+                        '<div class="thr-rs-meta">' + r.party_size + ' pax · ' + escHtml(ucfirst(r.occasion)) + (r.area_label ? ' · ' + escHtml(r.area_label) : '') + '</div>' +
+                        tags + notes +
+                    '</td>' +
+                    '<td><span class="' + statusClass(r.status) + '">' + statusLabel(r.status) + '</span></td>' +
+                    '<td><div class="thr-rs-actions">' + actions + '</div></td>';
+
+                tr.querySelectorAll('.thr-rs-btn[data-action]').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        updateStatus(r.id, btn.dataset.action, tr);
+                    });
+                });
+                return tr;
+            }
+
+            function escHtml(s) {
+                if (!s) return '';
+                return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+            }
+            function ucfirst(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+
+            function loadData() {
+                fetch(API + 'reports/shift?date=' + TODAY, {
+                    headers: { 'X-WP-Nonce': NONCE }
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    document.getElementById('rs-total').textContent  = data.summary.total_reservations;
+                    document.getElementById('rs-covers').textContent = data.summary.total_covers;
+                    document.getElementById('rs-vip').textContent    = data.summary.vip_count;
+
+                    var body = document.getElementById('thr-rs-body');
+                    if (!data.reservations || data.reservations.length === 0) {
+                        body.innerHTML = '<p class="thr-rs-empty">No reservations for today.</p>';
+                        return;
+                    }
+                    var table = document.createElement('table');
+                    table.className = 'thr-rs-table';
+                    table.innerHTML = '<thead><tr><th>Time</th><th>Guest</th><th>Status</th><th>Actions</th></tr></thead>';
+                    var tbody = document.createElement('tbody');
+                    data.reservations.forEach(function(r) { tbody.appendChild(renderRow(r)); });
+                    table.appendChild(tbody);
+                    body.innerHTML = '';
+                    body.appendChild(table);
+
+                    var now = new Date();
+                    document.getElementById('thr-rs-refresh').textContent = 'Last updated ' + now.toLocaleTimeString();
+                })
+                .catch(function() {
+                    document.getElementById('thr-rs-body').innerHTML = '<p class="thr-rs-err">Failed to load data. Will retry in 60s.</p>';
+                });
+            }
+
+            loadData();
+            timer = setInterval(loadData, 60000);
+        })();
+        </script>
+        <?php
+    }
+
+    // ── Event Enquiries list ──────────────────────────────────────────────────
+    public function page_event_enquiries(): void {
+        global $wpdb;
+        $table = THR_Database::t( 'event_enquiries' );
+
+        // Handle status update
+        if ( isset( $_POST['thr_eq_status'] ) && wp_verify_nonce( $_POST['thr_nonce'] ?? '', 'thr_eq_status' ) ) {
+            $eq_id     = (int) ( $_POST['eq_id'] ?? 0 );
+            $new_status = sanitize_text_field( $_POST['eq_status'] ?? '' );
+            $allowed   = [ 'new', 'reviewing', 'quoted', 'confirmed', 'declined', 'closed' ];
+            if ( $eq_id && in_array( $new_status, $allowed, true ) ) {
+                $wpdb->update( $table, [ 'status' => $new_status, 'updated_at' => current_time( 'mysql', true ) ], [ 'id' => $eq_id ] );
+                echo '<div class="notice notice-success"><p>Status updated.</p></div>';
+            }
+        }
+
+        $status_filter = sanitize_text_field( $_GET['status'] ?? '' );
+        $where  = $status_filter ? $wpdb->prepare( 'WHERE status = %s', $status_filter ) : '';
+        $rows   = $wpdb->get_results( "SELECT * FROM $table $where ORDER BY created_at DESC LIMIT 200" );
+        $counts = $wpdb->get_var( "SELECT COUNT(*) FROM $table WHERE status='new'" );
+        $statuses = [ 'new', 'reviewing', 'quoted', 'confirmed', 'declined', 'closed' ];
+        $base_url = admin_url( 'admin.php?page=thr-event-enquiries' );
+        ?>
+        <div class="wrap thr-wrap">
+            <h1 class="thr-page-title">
+                Event Enquiries
+                <?php if ( $counts ): ?><span class="thr-badge thr-badge--pending" style="margin-left:8px;"><?= (int) $counts ?> new</span><?php endif; ?>
+            </h1>
+            <p class="description">Private event and venue hire enquiries submitted via the website.</p>
+
+            <form method="get" class="thr-filters">
+                <input type="hidden" name="page" value="thr-event-enquiries">
+                <select name="status">
+                    <option value="">All statuses</option>
+                    <?php foreach ( $statuses as $s ): ?>
+                    <option value="<?= $s ?>" <?= selected( $status_filter, $s, false ) ?>><?= ucfirst( $s ) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <button type="submit" class="button">Filter</button>
+                <?php if ( $status_filter ): ?><a href="<?= $base_url ?>" class="button">Clear</a><?php endif; ?>
+            </form>
+
+            <?php if ( $rows ): ?>
+            <table class="thr-table wp-list-table widefat striped">
+                <thead>
+                    <tr>
+                        <th>Ref</th>
+                        <th>Contact</th>
+                        <th>Event type</th>
+                        <th>Preferred date</th>
+                        <th>Guests</th>
+                        <th>Budget</th>
+                        <th>Status</th>
+                        <th>Received</th>
+                        <th>Update status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php foreach ( $rows as $eq ): ?>
+                <tr>
+                    <td><span class="thr-ref"><?= esc_html( $eq->reference_code ) ?></span></td>
+                    <td>
+                        <?= esc_html( $eq->contact_name ) ?><br>
+                        <a href="mailto:<?= esc_attr( $eq->contact_email ) ?>" class="thr-muted"><?= esc_html( $eq->contact_email ) ?></a><br>
+                        <?php if ( $eq->contact_phone ): ?><span class="thr-muted"><?= esc_html( $eq->contact_phone ) ?></span><?php endif; ?>
+                        <?php if ( $eq->company_name ): ?><br><em class="thr-muted"><?= esc_html( $eq->company_name ) ?></em><?php endif; ?>
+                    </td>
+                    <td><?= esc_html( ucfirst( str_replace( '_', ' ', $eq->event_type ) ) ) ?></td>
+                    <td><?= $eq->preferred_date ? esc_html( date( 'D j M Y', strtotime( $eq->preferred_date ) ) ) : '<span class="thr-muted">—</span>' ?></td>
+                    <td><?= (int) $eq->guest_count ?></td>
+                    <td><?= esc_html( $eq->budget_range ?: '—' ) ?></td>
+                    <td>
+                        <?php
+                        $badge_map = [ 'new' => 'thr-badge--pending', 'reviewing' => 'thr-badge--confirmed', 'quoted' => 'thr-badge--seated', 'confirmed' => 'thr-badge--done', 'declined' => 'thr-badge--cancelled', 'closed' => 'thr-badge--noshow' ];
+                        $badge_cls = $badge_map[ $eq->status ] ?? '';
+                        ?>
+                        <span class="thr-badge <?= $badge_cls ?>"><?= esc_html( ucfirst( $eq->status ) ) ?></span>
+                    </td>
+                    <td><span class="thr-muted"><?= esc_html( substr( $eq->created_at, 0, 10 ) ) ?></span></td>
+                    <td>
+                        <?php if ( current_user_can( 'thr_edit_reservations' ) ): ?>
+                        <form method="post" style="display:flex;gap:4px;align-items:center;">
+                            <?php wp_nonce_field( 'thr_eq_status', 'thr_nonce' ); ?>
+                            <input type="hidden" name="eq_id" value="<?= (int) $eq->id ?>">
+                            <select name="eq_status" class="regular-text" style="max-width:120px;">
+                                <?php foreach ( $statuses as $s ): ?>
+                                <option value="<?= $s ?>" <?= selected( $eq->status, $s, false ) ?>><?= ucfirst( $s ) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <button type="submit" name="thr_eq_status" class="button button-small">Save</button>
+                        </form>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <?php if ( $eq->notes ): ?>
+                <tr>
+                    <td></td>
+                    <td colspan="8" style="padding-top:0;padding-bottom:12px;font-size:12px;color:rgba(0,0,0,0.5);font-style:italic;"><?= esc_html( $eq->notes ) ?></td>
+                </tr>
+                <?php endif; ?>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+            <?php else: ?>
+            <p class="thr-empty">No event enquiries found.</p>
+            <?php endif; ?>
+        </div>
+        <?php
+    }
+
     // ── Shift Report ──────────────────────────────────────────────────────────
     public function page_shift_report(): void {
         global $wpdb;
@@ -1239,15 +1649,21 @@ class THR_Admin {
             <?php if ( $rows ): ?>
             <table class="thr-table thr-shift-table wp-list-table widefat">
                 <thead>
-                    <tr><th>Time</th><th>Name</th><th>Party</th><th>Occasion</th><th>Area</th><th>Tags</th><th>Notes</th><th>Phone</th></tr>
+                    <tr><th>Time</th><th>Name</th><th>Party</th><th>Occasion</th><th>Area</th><th>Tags</th><th>Notes</th><th>Phone</th><th>Zalo</th></tr>
                 </thead>
                 <tbody>
-                <?php foreach ( $rows as $r ): ?>
+                <?php foreach ( $rows as $r ):
+                    $is_returning = (bool) $wpdb->get_var( $wpdb->prepare(
+                        "SELECT COUNT(*) FROM $table WHERE diner_email = %s AND id != %d AND status IN ('confirmed','completed','seated')",
+                        $r->diner_email, $r->id
+                    ) );
+                ?>
                 <tr class="<?= $r->is_vip ? 'thr-row-vip' : '' ?>">
                     <td><strong><?= esc_html( substr( $r->dt_local, 11, 5 ) ) ?></strong></td>
                     <td>
                         <?= esc_html( $r->diner_name ) ?>
                         <?php if ( $r->is_vip ): ?><span class="thr-badge thr-badge--vip">VIP</span><?php endif; ?>
+                        <?php if ( $is_returning ): ?><span class="thr-badge thr-badge--confirmed" style="font-size:10px;margin-left:4px;">Returning</span><?php endif; ?>
                     </td>
                     <td><?= (int) $r->party_size ?></td>
                     <td><?= esc_html( ucfirst( $r->occasion ) ) ?></td>
@@ -1255,6 +1671,7 @@ class THR_Admin {
                     <td><?= esc_html( $r->tag_names ?: '' ) ?></td>
                     <td><?= esc_html( $r->notes_diner ?: '' ) ?></td>
                     <td><?= esc_html( $r->diner_phone ?: '' ) ?></td>
+                    <td><?= esc_html( $r->diner_zalo ?? '' ) ?></td>
                 </tr>
                 <?php endforeach; ?>
                 </tbody>
@@ -1276,8 +1693,10 @@ class THR_Admin {
                 'booking_advance_min', 'booking_advance_max', 'party_size_min', 'party_size_max',
                 'default_duration', 'slots_lunch', 'slots_dinner', 'slots_late', 'slots_enabled',
                 'status_orange_min', 'status_red_min', 'cancel_policy_text',
-                'reminder_24h', 'reminder_4h', 'feedback_delay_min',
+                'reminder_24h', 'reminder_2h', 'feedback_delay_min',
                 'shift_report_email', 'shift_report_time',
+                'venue_capacity', 'vietqr_bank_id', 'vietqr_account_no', 'vietqr_account_name',
+                'booking_default_lang',
             ];
             $data = [];
             foreach ( $save_keys as $key ) {
@@ -1285,7 +1704,7 @@ class THR_Admin {
             }
             // Checkboxes (unchecked = absent from POST)
             $data['reminder_24h']        = isset( $_POST['reminder_24h'] );
-            $data['reminder_4h']         = isset( $_POST['reminder_4h'] );
+            $data['reminder_2h']         = isset( $_POST['reminder_2h'] );
             $data['auto_confirm_public'] = isset( $_POST['auto_confirm_public'] );
             $data['shift_report_enabled']= isset( $_POST['shift_report_enabled'] );
             if ( isset( $_POST['cancel_policy_text'] ) ) $data['cancel_policy_text'] = sanitize_textarea_field( $_POST['cancel_policy_text'] );
@@ -1319,7 +1738,7 @@ class THR_Admin {
                     <?php $this->field( 'Reply-to email',    'email_reply_to',     $s['email_reply_to'], 'email' ); ?>
                     <?php $this->field( 'Logo URL (email)',  'email_logo_url',     $s['email_logo_url'], 'url' ); ?>
                     <label class="thr-label"><input type="checkbox" name="reminder_24h" value="1" <?= checked( $s['reminder_24h'], true, false ) ?>> Send 24h reminder email</label><br>
-                    <label class="thr-label"><input type="checkbox" name="reminder_4h"  value="1" <?= checked( $s['reminder_4h'], true, false ) ?>> Send 4h reminder email</label>
+                    <label class="thr-label"><input type="checkbox" name="reminder_2h"  value="1" <?= checked( $s['reminder_2h'] ?? true, true, false ) ?>> Send 2h reminder email</label>
                 </div>
 
                 <div class="thr-card">
