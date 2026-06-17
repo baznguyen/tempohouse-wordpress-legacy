@@ -40,23 +40,6 @@ get_header();
     </div>
   </div>
 
-  <!-- ── 1c. Cocktail strip ──────────────────────────── -->
-  <div class="page-bar__cocktail-strip" aria-hidden="true">
-    <div class="page-bar__cocktail-track">
-      <span class="page-bar__cocktail-item">Lychee Martini</span>
-      <span class="page-bar__cocktail-sep">&middot;</span>
-      <span class="page-bar__cocktail-item">Panpan Spritz</span>
-      <span class="page-bar__cocktail-sep">&middot;</span>
-      <span class="page-bar__cocktail-item">Negroni</span>
-      <span class="page-bar__cocktail-sep">&middot;</span>
-      <span class="page-bar__cocktail-item">Espresso Martini</span>
-      <span class="page-bar__cocktail-sep">&middot;</span>
-      <span class="page-bar__cocktail-item">Manhattan</span>
-      <span class="page-bar__cocktail-sep">&middot;</span>
-      <span class="page-bar__cocktail-item">Old Fashioned</span>
-    </div>
-    <p class="page-bar__cocktail-source">218c Pasteur, District 3, Ho Chi Minh City &mdash; Nightly from 18:00</p>
-  </div>
 
   <!-- ── 2. The Cocktail Programme ──────────────────── -->
   <section class="page-inner__section page-inner__section--dark page-bar__programme" aria-labelledby="bar-programme-title">
