@@ -67,6 +67,8 @@
     bgCropOrigX:  0,
     bgCropOrigY:  0,
     snapEnabled: true,
+    spaceDown:    false,
+    panning:      null,    // { active, startX, startY, stageX, stageY, moved }
   };
 
   /* ── Konva refs ─────────────────────────────────────────────────── */
@@ -134,23 +136,51 @@
     });
     ro.observe(wrap);
 
-    // Mouse events for rubber band + placing
+    // Mouse events for rubber band + placing + pan
     stage.on('mousedown touchstart', function (e) {
+      if (S.placing) return;
+      var pos = stage.getPointerPosition();
+      if (!pos) return;
+
+      // Space+drag: pan regardless of target
+      if (S.spaceDown && !e.evt.shiftKey) {
+        e.evt.preventDefault();
+        S.panning = { active: true, startX: pos.x, startY: pos.y, stageX: stage.x(), stageY: stage.y(), moved: false };
+        stage.container().style.cursor = 'grabbing';
+        return;
+      }
+
       if (e.target !== stage) return;
-      if (S.placing) return; // placing handled on click
-      if (S.mode === 'builder') {
-        var pos = stage.getPointerPosition();
+
+      if (S.mode === 'builder' && e.evt.shiftKey) {
+        // Shift+drag on background = rubber band select
         S.rubber = { x: pos.x, y: pos.y, active: false };
+      } else {
+        // Any other click-drag on background = pan
+        S.panning = { active: true, startX: pos.x, startY: pos.y, stageX: stage.x(), stageY: stage.y(), moved: false };
+        stage.container().style.cursor = 'grabbing';
       }
     });
 
     stage.on('mousemove touchmove', function () {
-      if (!S.rubber) return;
       var pos = stage.getPointerPosition();
-      var x  = Math.min(S.rubber.x, pos.x);
-      var y  = Math.min(S.rubber.y, pos.y);
-      var w  = Math.abs(pos.x - S.rubber.x);
-      var h  = Math.abs(pos.y - S.rubber.y);
+      if (!pos) return;
+
+      if (S.panning && S.panning.active) {
+        var dx = pos.x - S.panning.startX;
+        var dy = pos.y - S.panning.startY;
+        if (Math.abs(dx) > 2 || Math.abs(dy) > 2) S.panning.moved = true;
+        stage.x(S.panning.stageX + dx);
+        stage.y(S.panning.stageY + dy);
+        stage.batchDraw();
+        return;
+      }
+
+      if (!S.rubber) return;
+      var x = Math.min(S.rubber.x, pos.x);
+      var y = Math.min(S.rubber.y, pos.y);
+      var w = Math.abs(pos.x - S.rubber.x);
+      var h = Math.abs(pos.y - S.rubber.y);
       if (w > 4 || h > 4) {
         S.rubber.active = true;
         showRubberBand(x, y, w, h);
@@ -158,6 +188,10 @@
     });
 
     stage.on('mouseup touchend', function (e) {
+      if (S.panning) {
+        S.panning.active = false;
+        stage.container().style.cursor = S.spaceDown ? 'grab' : '';
+      }
       if (S.rubber && S.rubber.active) {
         selectItemsInRect();
         hideRubberBand();
@@ -168,12 +202,54 @@
     stage.on('click tap', function (e) {
       if (e.target !== stage) return;
       if (S.placing) { placeTable(stage.getPointerPosition()); return; }
+      if (S.panning && S.panning.moved) { S.panning.moved = false; return; }
       if (!S.rubber || !S.rubber.active) deselect();
     });
 
     stage.on('wheel', function (e) {
       e.evt.preventDefault();
       zoomBy(e.evt.deltaY < 0 ? 1.1 : 1 / 1.1);
+    });
+
+    // Space+drag to pan
+    document.addEventListener('keydown', function (e) {
+      var tag = document.activeElement ? document.activeElement.tagName : '';
+      if (e.code === 'Space' && !S.spaceDown && tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
+        e.preventDefault();
+        S.spaceDown = true;
+        stage.container().style.cursor = 'grab';
+      }
+    });
+    document.addEventListener('keyup', function (e) {
+      if (e.code === 'Space') {
+        S.spaceDown = false;
+        if (S.panning && !S.panning.moved) S.panning = null;
+        stage.container().style.cursor = '';
+      }
+    });
+
+    // Middle-mouse-button drag to pan
+    stage.container().addEventListener('mousedown', function (e) {
+      if (e.button !== 1) return;
+      e.preventDefault();
+      S.panning = { active: true, startX: e.clientX, startY: e.clientY, stageX: stage.x(), stageY: stage.y(), moved: false, clientCoords: true };
+      stage.container().style.cursor = 'grabbing';
+    });
+    document.addEventListener('mousemove', function (e) {
+      if (!S.panning || !S.panning.active || !S.panning.clientCoords) return;
+      var dx = e.clientX - S.panning.startX;
+      var dy = e.clientY - S.panning.startY;
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) S.panning.moved = true;
+      stage.x(S.panning.stageX + dx);
+      stage.y(S.panning.stageY + dy);
+      stage.batchDraw();
+    });
+    document.addEventListener('mouseup', function (e) {
+      if (e.button !== 1) return;
+      if (S.panning && S.panning.clientCoords) {
+        S.panning = null;
+        stage.container().style.cursor = S.spaceDown ? 'grab' : '';
+      }
     });
   }
 
@@ -1129,6 +1205,27 @@
       name:      'table-group',
     });
 
+    // Group membership ring — drawn BEFORE the table shape so it renders behind
+    if (item.group_id) {
+      var gW = toNum(item.width, 80);
+      var gH = toNum(item.height, 80);
+      if (isRound(item)) {
+        var gR = Math.max(24, Math.min(52, gW / 2)) + 9;
+        group.add(new Konva.Circle({
+          radius: gR, fill: 'transparent',
+          stroke: '#0D9488', strokeWidth: 2, dash: [5, 3],
+          listening: false, name: 'group-ring',
+        }));
+      } else {
+        group.add(new Konva.Rect({
+          x: -gW / 2 - 9, y: -gH / 2 - 9, width: gW + 18, height: gH + 18,
+          fill: 'transparent',
+          stroke: '#0D9488', strokeWidth: 2, dash: [5, 3],
+          cornerRadius: 10, listening: false, name: 'group-ring',
+        }));
+      }
+    }
+
     if (item.type === 'text_label')   { drawTextLabel(group, item); }
     else if (isBarSeat(item))         { drawBarSeat(group, item); }
     else if (isRound(item))           { drawRoundTable(group, item); }
@@ -1782,6 +1879,83 @@
     }).catch(function (err) { console.warn('Delete zone failed', err); });
   }
 
+  /* ── Group / Join helpers ────────────────────────────────────────── */
+  function getGroupLabel(groupId) {
+    var members = Object.values(S.tables).filter(function (t) { return t.group_id === groupId; });
+    if (!members.length) return 'Group';
+    members.sort(function (a, b) { return a.id - b.id; });
+    return members.map(function (m) { return m.label || ('T' + m.id); }).join(' + ');
+  }
+
+  function joinSelected() {
+    if (S.selectedIds.size < 2) return;
+    var ids = Array.from(S.selectedIds).map(Number).sort(function (a, b) { return a - b; });
+    var groupId = ids[0]; // use lowest ID as group identifier
+
+    // PATCH all selected to share group_id = groupId
+    var promises = ids.map(function (id) {
+      return apiFetch('PATCH', 'furniture/' + id, { group_id: groupId }).then(function () {
+        if (S.tables[id]) S.tables[id].group_id = groupId;
+      });
+    });
+    Promise.all(promises).then(function () {
+      ids.forEach(function (id) {
+        var node = stage.findOne('#tbl-' + id);
+        if (node) { node.destroy(); }
+        if (S.tables[id]) addTableNode(S.tables[id]);
+      });
+      tableLayer.batchDraw();
+      var totalCap = ids.reduce(function (s, id) { return s + (parseInt((S.tables[id] || {}).capacity_max) || 0); }, 0);
+      showToast('Joined ' + ids.length + ' tables \xB7 ' + totalCap + ' seats combined', 'ok');
+      markDirty();
+      showMultiSelectFloat(S.selectedIds.size); // refresh panel
+    }).catch(function (err) { console.warn('joinSelected failed', err); });
+  }
+
+  function separateSelected() {
+    // Separate all tables in the same group as any of the selected items
+    var groupId = null;
+    S.selectedIds.forEach(function (sid) {
+      var it = S.tables[sid];
+      if (it && it.group_id) groupId = it.group_id;
+    });
+    var toSep = Object.values(S.tables).filter(function (t) { return t.group_id === groupId; }).map(function (t) { return t.id; });
+    if (!toSep.length) return;
+
+    var promises = toSep.map(function (id) {
+      return apiFetch('PATCH', 'furniture/' + id, { group_id: null }).then(function () {
+        if (S.tables[id]) S.tables[id].group_id = null;
+      });
+    });
+    Promise.all(promises).then(function () {
+      toSep.forEach(function (id) {
+        var node = stage.findOne('#tbl-' + id);
+        if (node) { node.destroy(); }
+        if (S.tables[id]) addTableNode(S.tables[id]);
+      });
+      tableLayer.batchDraw();
+      showToast('Tables separated', 'info');
+      markDirty();
+      if (S.selectedIds.size > 1) showMultiSelectFloat(S.selectedIds.size);
+      else if (S.selected) showFloatPanel(S.selected);
+    }).catch(function (err) { console.warn('separateSelected failed', err); });
+  }
+
+  function leaveGroup(id) {
+    var item = S.tables[id];
+    if (!item || !item.group_id) return;
+    apiFetch('PATCH', 'furniture/' + id, { group_id: null }).then(function () {
+      item.group_id = null;
+      var node = stage.findOne('#tbl-' + id);
+      if (node) { node.destroy(); }
+      addTableNode(item);
+      tableLayer.batchDraw();
+      showToast('Left group', 'info');
+      markDirty();
+      if (S.selected === String(id)) showFloatPanel(id);
+    }).catch(function (err) { console.warn('leaveGroup failed', err); });
+  }
+
   function selectZone(id) {
     S.selected = id;
     S.selectedIds = new Set();
@@ -1865,7 +2039,32 @@
     var title = document.getElementById('fp-fp-title');
     if (title) title.textContent = count + ' items selected';
     var body = document.getElementById('fp-fp-body');
-    if (body) body.innerHTML = '<p style="font-size:13px;color:#6B7280;margin:8px 0;">Use Shift+click to add/remove. Press Ctrl+D to duplicate all selected.</p>';
+    // Determine if selected items are all joinable
+    var selArr = Array.from(S.selectedIds);
+    var allJoinable = selArr.every(function (sid) {
+      var it = S.tables[sid];
+      return it && (TYPES[it.type] || {}).joinable;
+    });
+    // Check if all selected are in the same group (and that group is non-null)
+    var groupIds = selArr.map(function (sid) { return (S.tables[sid] || {}).group_id; }).filter(Boolean);
+    var allSameGroup = groupIds.length === selArr.length && groupIds.every(function (g) { return g === groupIds[0]; });
+    var totalCap = selArr.reduce(function (s, sid) { return s + (parseInt((S.tables[sid] || {}).capacity_max) || 0); }, 0);
+
+    if (body) body.innerHTML =
+      '<p style="font-size:12px;color:#6B7280;margin:6px 0 8px;">Shift+click to add/remove \xB7 Ctrl+D to duplicate</p>' +
+      (totalCap > 0 ? '<p style="font-size:12px;color:#374151;margin:0 0 8px;">Combined capacity: <strong>' + totalCap + '</strong> seats</p>' : '') +
+      (allJoinable && !allSameGroup ?
+        '<button class="fp-btn fp-btn-sm fp-btn-outline" id="fp-join-sel" type="button" style="width:100%;margin-bottom:4px;">Join as combined seating</button>' : '') +
+      (allSameGroup ?
+        '<button class="fp-btn fp-btn-sm fp-btn-outline" id="fp-separate-sel" type="button" style="width:100%;margin-bottom:4px;">Separate all from group</button>' : '');
+
+    setTimeout(function () {
+      var joinBtn = document.getElementById('fp-join-sel');
+      if (joinBtn) joinBtn.addEventListener('click', function () { joinSelected(); });
+      var sepBtn = document.getElementById('fp-separate-sel');
+      if (sepBtn) sepBtn.addEventListener('click', function () { separateSelected(); });
+    }, 0);
+
     var delBtn = document.getElementById('fp-fp-delete');
     if (delBtn) delBtn.disabled = true;
     var dupBtn = document.getElementById('fp-tb-dup');
@@ -2194,10 +2393,20 @@
         '<input class="fp-prop-input" id="fp-fp-label" value="' + escAttr(item.label || '') + '" ' + readonly + '>' +
       '</div>' +
       '<div class="fp-prop-row">' +
-        '<label class="fp-prop-label">Capacity</label>' +
-        '<input class="fp-prop-input" id="fp-fp-cap" type="number" min="1" max="20" value="' + (parseInt(item.capacity_max) || 4) + '"' +
+        '<label class="fp-prop-label">Min seats</label>' +
+        '<input class="fp-prop-input fp-prop-input--sm" id="fp-fp-cap-min" type="number" min="0" max="20" value="' + (parseInt(item.capacity_min) || 0) + '"' +
           (isBarSeatItem ? ' readonly' : ' ' + readonly) + '>' +
       '</div>' +
+      '<div class="fp-prop-row">' +
+        '<label class="fp-prop-label">Max seats</label>' +
+        '<input class="fp-prop-input fp-prop-input--sm" id="fp-fp-cap" type="number" min="1" max="40" value="' + (parseInt(item.capacity_max) || 4) + '"' +
+          (isBarSeatItem ? ' readonly' : ' ' + readonly) + '>' +
+      '</div>' +
+      (S.mode === 'builder' ?
+        '<div class="fp-prop-row">' +
+          '<label class="fp-prop-label">Ref. ID</label>' +
+          '<input class="fp-prop-input fp-prop-input--sm" id="fp-fp-key" maxlength="20" value="' + escAttr(item.element_key || '') + '" placeholder="e.g. T1">' +
+        '</div>' : '') +
       (S.mode === 'live' ?
         '<div class="fp-prop-row">' +
           '<label class="fp-prop-label">Status</label>' +
@@ -2205,7 +2414,14 @@
         '</div>' : '') +
       '<div class="fp-prop-row">' +
         '<label class="fp-prop-label" style="font-size:11px;color:#9CA3AF;">' + escHtml(typeDef.label || item.type) + '</label>' +
-      '</div>';
+      '</div>' +
+      (S.mode === 'builder' && (typeDef.joinable || item.group_id) ?
+        '<div class="fp-prop-row fp-prop-row--group" id="fp-group-row">' +
+          (item.group_id ?
+            '<span class="fp-group-badge">Joined \xB7 ' + escHtml(getGroupLabel(item.group_id)) + '</span>' +
+            '<button class="fp-btn fp-btn-xs fp-btn-ghost fp-group-leave-btn" id="fp-group-leave" type="button">Leave group</button>' :
+            '<span style="font-size:11px;color:#9CA3AF;">Joinable</span>') +
+        '</div>' : '');
 
     if (S.mode === 'builder') {
       var capEl = document.getElementById('fp-fp-cap');
@@ -2215,6 +2431,18 @@
       var labelEl = document.getElementById('fp-fp-label');
       if (labelEl) {
         labelEl.addEventListener('change', function () { applyPropChange(id); });
+      }
+      var capMinEl = document.getElementById('fp-fp-cap-min');
+      if (capMinEl && !isBarSeatItem) {
+        capMinEl.addEventListener('input', function () { applyPropChange(id); });
+      }
+      var keyEl = document.getElementById('fp-fp-key');
+      if (keyEl) {
+        keyEl.addEventListener('change', function () { applyPropChange(id); });
+      }
+      var leaveBtn = document.getElementById('fp-group-leave');
+      if (leaveBtn) {
+        leaveBtn.addEventListener('click', function () { leaveGroup(id); });
       }
     }
   }
@@ -2419,10 +2647,14 @@
   function applyPropChange(id) {
     var item = S.tables[id];
     if (!item) return;
-    var labelEl = document.getElementById('fp-fp-label');
-    var capEl   = document.getElementById('fp-fp-cap');
+    var labelEl  = document.getElementById('fp-fp-label');
+    var capEl    = document.getElementById('fp-fp-cap');
+    var capMinEl = document.getElementById('fp-fp-cap-min');
+    var keyEl    = document.getElementById('fp-fp-key');
     if (labelEl)  item.label        = labelEl.value.trim();
     if (capEl)    item.capacity_max = parseInt(capEl.value) || 1;
+    if (capMinEl) item.capacity_min = parseInt(capMinEl.value) || 0;
+    if (keyEl)    item.element_key  = keyEl.value.trim();
 
     var node = stage.findOne('#tbl-' + id);
     if (node) { node.destroy(); }
@@ -2626,6 +2858,7 @@
         rotation_deg: item.rotation_deg || 0,
         capacity_min: item.capacity_min,
         capacity_max: item.capacity_max,
+        element_key:  item.element_key,
       };
       if (item.meta) patch.meta = item.meta;
       return apiFetch('PATCH', 'furniture/' + item.id, patch);

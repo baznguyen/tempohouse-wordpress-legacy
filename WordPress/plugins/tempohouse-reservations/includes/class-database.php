@@ -203,6 +203,18 @@ class THR_Database {
             $wpdb->query( "ALTER TABLE {$p}thr_floor_plans ADD COLUMN bg_crop TEXT DEFAULT NULL" );
         }
 
+        // v1.6 migration — element_key and group_id on furniture
+        if ( ! $wpdb->get_var( "SHOW COLUMNS FROM {$p}thr_furniture LIKE 'element_key'" ) ) {
+            $wpdb->query( "ALTER TABLE {$p}thr_furniture ADD COLUMN element_key VARCHAR(20) DEFAULT NULL" );
+            // seed existing rows with T{id}
+            $wpdb->query( "UPDATE {$p}thr_furniture SET element_key = CONCAT('T', id) WHERE element_key IS NULL AND type NOT LIKE 'zone' AND type NOT LIKE 'bar%'" );
+            $wpdb->query( "UPDATE {$p}thr_furniture SET element_key = CONCAT('B', id) WHERE element_key IS NULL AND type LIKE 'bar%'" );
+            $wpdb->query( "UPDATE {$p}thr_furniture SET element_key = CONCAT('Z', id) WHERE element_key IS NULL AND type = 'zone'" );
+        }
+        if ( ! $wpdb->get_var( "SHOW COLUMNS FROM {$p}thr_furniture LIKE 'group_id'" ) ) {
+            $wpdb->query( "ALTER TABLE {$p}thr_furniture ADD COLUMN group_id BIGINT UNSIGNED DEFAULT NULL" );
+        }
+
         // Seed system tags
         self::seed_tags();
 

@@ -8,37 +8,37 @@ class THR_API_Furniture {
     // All supported furniture types for the floor plan builder
     const TYPES = [
         // ── Simplified toolbar types (v6+ editor) ────────────────────────
-        'table-round'      => [ 'label' => 'Round Table',          'cap' => [1,12], 'shape' => 'circle' ],
-        'table-square'     => [ 'label' => 'Square Table',         'cap' => [1,4],  'shape' => 'rect'   ],
-        'table-rect'       => [ 'label' => 'Rectangle Table',      'cap' => [1,10], 'shape' => 'rect'   ],
-        'lounge'           => [ 'label' => 'Lounge',               'cap' => [2,8],  'shape' => 'rect'   ],
-        'bar-seat'         => [ 'label' => 'Bar Seat',             'cap' => [1,1],  'shape' => 'circle' ],
-        'bar-table'        => [ 'label' => 'Bar Table',            'cap' => [1,6],  'shape' => 'rect'   ],
-        'zone'             => [ 'label' => 'Zone',                 'cap' => [0,0],  'shape' => 'rect'   ],
+        'table-round'      => [ 'label' => 'Round Table',          'cap' => [1,12], 'shape' => 'circle', 'joinable' => false ],
+        'table-square'     => [ 'label' => 'Square Table',         'cap' => [1,4],  'shape' => 'rect',   'joinable' => true  ],
+        'table-rect'       => [ 'label' => 'Rectangle Table',      'cap' => [1,10], 'shape' => 'rect',   'joinable' => true  ],
+        'lounge'           => [ 'label' => 'Lounge',               'cap' => [2,8],  'shape' => 'rect',   'joinable' => false ],
+        'bar-seat'         => [ 'label' => 'Bar Seat',             'cap' => [1,1],  'shape' => 'circle', 'joinable' => false ],
+        'bar-table'        => [ 'label' => 'Bar Table',            'cap' => [1,6],  'shape' => 'rect',   'joinable' => false ],
+        'zone'             => [ 'label' => 'Zone',                 'cap' => [0,0],  'shape' => 'rect',   'joinable' => false ],
         // ── Legacy types (backwards compat) ──────────────────────────────
-        'table-round-2'    => [ 'label' => 'Round Table (2-top)',  'cap' => [1,2],  'shape' => 'circle' ],
-        'table-round-4'    => [ 'label' => 'Round Table (4-top)',  'cap' => [2,4],  'shape' => 'circle' ],
-        'table-round-6'    => [ 'label' => 'Round Table (6-top)',  'cap' => [4,6],  'shape' => 'circle' ],
-        'table-round-8'    => [ 'label' => 'Round Table (8-top)',  'cap' => [6,8],  'shape' => 'circle' ],
-        'table-rect-2'     => [ 'label' => 'Table (2-top)',        'cap' => [1,2],  'shape' => 'rect'   ],
-        'table-rect-4'     => [ 'label' => 'Table (4-top)',        'cap' => [2,4],  'shape' => 'rect'   ],
-        'table-rect-6'     => [ 'label' => 'Table (6-top)',        'cap' => [4,6],  'shape' => 'rect'   ],
-        'table-rect-8'     => [ 'label' => 'Table (8-top)',        'cap' => [6,8],  'shape' => 'rect'   ],
-        'booth-2'          => [ 'label' => 'Booth (2-top)',        'cap' => [1,2],  'shape' => 'rect'   ],
-        'booth-4'          => [ 'label' => 'Booth (4-top)',        'cap' => [2,4],  'shape' => 'rect'   ],
-        'booth-6'          => [ 'label' => 'Booth (6-top)',        'cap' => [4,6],  'shape' => 'rect'   ],
-        'bar-stool'        => [ 'label' => 'Bar Stool',            'cap' => [1,1],  'shape' => 'circle' ],
-        'bar-counter'      => [ 'label' => 'Bar Counter (section)','cap' => [1,4],  'shape' => 'rect'   ],
-        'high-top-2'       => [ 'label' => 'High-Top (2-top)',     'cap' => [1,2],  'shape' => 'circle' ],
-        'high-top-4'       => [ 'label' => 'High-Top (4-top)',     'cap' => [2,4],  'shape' => 'circle' ],
-        'lounge-sofa'      => [ 'label' => 'Lounge Sofa',          'cap' => [2,4],  'shape' => 'rect'   ],
-        'lounge-chair'     => [ 'label' => 'Lounge Chair',         'cap' => [1,2],  'shape' => 'rect'   ],
-        'banquette'        => [ 'label' => 'Banquette',            'cap' => [2,8],  'shape' => 'rect'   ],
-        'outdoor-table'    => [ 'label' => 'Outdoor Table',        'cap' => [2,6],  'shape' => 'rect'   ],
-        'stage'            => [ 'label' => 'Stage / Platform',     'cap' => [0,0],  'shape' => 'rect'   ],
-        'dj-booth'         => [ 'label' => 'DJ Booth',             'cap' => [0,0],  'shape' => 'rect'   ],
-        'area-vip'         => [ 'label' => 'VIP Area',             'cap' => [2,20], 'shape' => 'rect'   ],
-        'text_label'       => [ 'label' => 'Text Label',           'cap' => [0,0],  'shape' => 'rect'   ],
+        'table-round-2'    => [ 'label' => 'Round Table (2-top)',  'cap' => [1,2],  'shape' => 'circle', 'joinable' => false ],
+        'table-round-4'    => [ 'label' => 'Round Table (4-top)',  'cap' => [2,4],  'shape' => 'circle', 'joinable' => false ],
+        'table-round-6'    => [ 'label' => 'Round Table (6-top)',  'cap' => [4,6],  'shape' => 'circle', 'joinable' => false ],
+        'table-round-8'    => [ 'label' => 'Round Table (8-top)',  'cap' => [6,8],  'shape' => 'circle', 'joinable' => false ],
+        'table-rect-2'     => [ 'label' => 'Table (2-top)',        'cap' => [1,2],  'shape' => 'rect',   'joinable' => true  ],
+        'table-rect-4'     => [ 'label' => 'Table (4-top)',        'cap' => [2,4],  'shape' => 'rect',   'joinable' => true  ],
+        'table-rect-6'     => [ 'label' => 'Table (6-top)',        'cap' => [4,6],  'shape' => 'rect',   'joinable' => true  ],
+        'table-rect-8'     => [ 'label' => 'Table (8-top)',        'cap' => [6,8],  'shape' => 'rect',   'joinable' => true  ],
+        'booth-2'          => [ 'label' => 'Booth (2-top)',        'cap' => [1,2],  'shape' => 'rect',   'joinable' => true  ],
+        'booth-4'          => [ 'label' => 'Booth (4-top)',        'cap' => [2,4],  'shape' => 'rect',   'joinable' => true  ],
+        'booth-6'          => [ 'label' => 'Booth (6-top)',        'cap' => [4,6],  'shape' => 'rect',   'joinable' => true  ],
+        'bar-stool'        => [ 'label' => 'Bar Stool',            'cap' => [1,1],  'shape' => 'circle', 'joinable' => false ],
+        'bar-counter'      => [ 'label' => 'Bar Counter (section)','cap' => [1,4],  'shape' => 'rect',   'joinable' => false ],
+        'high-top-2'       => [ 'label' => 'High-Top (2-top)',     'cap' => [1,2],  'shape' => 'circle', 'joinable' => false ],
+        'high-top-4'       => [ 'label' => 'High-Top (4-top)',     'cap' => [2,4],  'shape' => 'circle', 'joinable' => false ],
+        'lounge-sofa'      => [ 'label' => 'Lounge Sofa',          'cap' => [2,4],  'shape' => 'rect',   'joinable' => false ],
+        'lounge-chair'     => [ 'label' => 'Lounge Chair',         'cap' => [1,2],  'shape' => 'rect',   'joinable' => false ],
+        'banquette'        => [ 'label' => 'Banquette',            'cap' => [2,8],  'shape' => 'rect',   'joinable' => true  ],
+        'outdoor-table'    => [ 'label' => 'Outdoor Table',        'cap' => [2,6],  'shape' => 'rect',   'joinable' => true  ],
+        'stage'            => [ 'label' => 'Stage / Platform',     'cap' => [0,0],  'shape' => 'rect',   'joinable' => false ],
+        'dj-booth'         => [ 'label' => 'DJ Booth',             'cap' => [0,0],  'shape' => 'rect',   'joinable' => false ],
+        'area-vip'         => [ 'label' => 'VIP Area',             'cap' => [2,20], 'shape' => 'rect',   'joinable' => false ],
+        'text_label'       => [ 'label' => 'Text Label',           'cap' => [0,0],  'shape' => 'rect',   'joinable' => false ],
     ];
 
     public function __construct() {
@@ -104,7 +104,14 @@ class THR_API_Furniture {
             'created_at'    => $now,
             'updated_at'    => $now,
         ] );
-        $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->table} WHERE id = %d", $wpdb->insert_id ) );
+        $new_id = $wpdb->insert_id;
+        // Auto-generate element_key based on type and new ID
+        if ( empty( $body['element_key'] ) ) {
+            $prefix = ( strpos( $type, 'bar' ) === 0 || $type === 'bar-stool' ) ? 'B' : ( $type === 'zone' ? 'Z' : 'T' );
+            $wpdb->update( $this->table, [ 'element_key' => $prefix . $new_id ], [ 'id' => $new_id ] );
+        }
+        // get fresh row after update
+        $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->table} WHERE id = %d", $new_id ) );
         return new WP_REST_Response( $this->format( $row ), 201 );
     }
 
@@ -116,9 +123,12 @@ class THR_API_Furniture {
 
         $body    = $req->get_json_params() ?? [];
         $allowed = [ 'label', 'pos_x', 'pos_y', 'width', 'height', 'rotation_deg',
-                     'capacity_min', 'capacity_max', 'is_combinable', 'is_available', 'meta' ];
+                     'capacity_min', 'capacity_max', 'is_combinable', 'is_available', 'meta',
+                     'element_key', 'group_id' ];
         $update  = array_intersect_key( $body, array_flip( $allowed ) );
         if ( isset( $update['label'] ) ) $update['label'] = sanitize_text_field( $update['label'] );
+        if ( isset( $update['element_key'] ) ) $update['element_key'] = sanitize_text_field( $update['element_key'] );
+        if ( array_key_exists( 'group_id', $update ) ) $update['group_id'] = is_null( $update['group_id'] ) ? null : (int) $update['group_id'];
         if ( isset( $update['meta'] ) && is_array( $update['meta'] ) ) $update['meta'] = json_encode( $update['meta'] );
         $update['updated_at'] = THR_API::now_utc();
         $wpdb->update( $this->table, $update, [ 'id' => $id ] );
@@ -153,6 +163,9 @@ class THR_API_Furniture {
             'is_combinable' => (bool)  $row->is_combinable,
             'is_available'  => (bool)  $row->is_available,
             'meta'          => $row->meta ? json_decode( $row->meta, true ) : null,
+            'element_key'   => $row->element_key ?? null,
+            'group_id'      => $row->group_id ? (int) $row->group_id : null,
+            'joinable'      => self::TYPES[ $row->type ]['joinable'] ?? false,
             'created_at'    => $row->created_at,
             'updated_at'    => $row->updated_at,
         ];

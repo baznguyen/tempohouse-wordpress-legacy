@@ -97,7 +97,12 @@ class THR_Admin {
 
             $types = [];
             foreach ( THR_API_Furniture::TYPES as $slug => $def ) {
-                $types[ $slug ] = [ 'label' => $def['label'], 'capacity' => $def['cap'], 'shape' => $def['shape'] ];
+                $types[ $slug ] = [
+                    'label'    => $def['label'],
+                    'capacity' => $def['cap'],
+                    'shape'    => $def['shape'],
+                    'joinable' => $def['joinable'] ?? false,
+                ];
             }
             wp_localize_script( 'thr-fp', 'thrFP', [
                 'apiUrl' => rest_url( THR_REST_NS . '/' ),
