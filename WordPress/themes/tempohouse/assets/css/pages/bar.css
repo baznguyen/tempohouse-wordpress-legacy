@@ -21,10 +21,10 @@
   background: rgba(221, 170, 98, 0.25);
 }
 
-/* Override inner-page.css terracotta border → amber.
-   Inner pages default to terracotta; bar is amber. */
+/* Override inner-page.css terracotta border → sand (natural wood tone).
+   Inner pages default to terracotta; bar uses the system's warm wood frame. */
 .page-bar .tempo-frame {
-  --tempo-frame-border: var(--tempo-amber);
+  --tempo-frame-border: var(--tempo-sand);
 }
 
 /* Em-dash bullets in amber for bar feature lists */
@@ -498,39 +498,17 @@
 }
 
 /* ── 5. Night Programme — concert bill ─────────────
-   Full-width dark section. Heading stacks top.
-   Below: the bill list reads like a printed programme.
-   No split-with-frame — unique layout for the bar.
-   The design system has no true dark section background
-   (page-inner__section--dark uses --color-bg-alt).
-   We apply --tempo-ink directly — bar-specific decision. */
+   Full-width section on cream-alt background.
+   Heading stacks top. Bill list reads like a printed
+   programme. Amber accents carry the evening character
+   without a dark background. */
 
 .page-bar__night {
-  background: var(--tempo-ink);
-  border-color: rgba(221, 170, 98, 0.12);
+  background: var(--color-bg-alt);
   position: relative;
   overflow: hidden;
 }
 
-/* Ambient amber candlelight in the corner */
-.page-bar__night::before {
-  content: '';
-  position: absolute;
-  bottom: -10%;
-  right: -5%;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(ellipse, rgba(221, 170, 98, 0.07) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.page-bar__night .page-inner__container {
-  position: relative;
-  z-index: 1;
-}
-
-/* Text colour inversions for ink background */
 .page-bar__night .page-inner__section-head {
   color: var(--tempo-amber);
 }
@@ -539,32 +517,27 @@
   background: rgba(221, 170, 98, 0.25);
 }
 
-.page-bar__night .page-inner__section-title {
-  color: var(--color-text-inverse);
-}
-
-/* Header: stacked (section-head above big H2) —
-   simpler than a grid, lets the big title breathe */
+/* Header: stacked (section-head above big H2) */
 .page-bar__night-header {
   margin-bottom: var(--space-12);
   padding-bottom: var(--space-10);
-  border-bottom: 1px solid rgba(221, 170, 98, 0.12);
+  border-bottom: 1px solid var(--color-border-strong);
 }
 
-/* Poster-scale title — larger than café section titles */
+/* Poster-scale title */
 .page-bar__night .page-inner__section-title {
-  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-size: clamp(2rem, 5vw, 4.5rem);
   line-height: 1.1;
   margin-top: var(--space-3);
+  color: var(--color-text-primary);
 }
 
-/* Concert bill — each programme type as a horizontal entry.
-   Reads like a printed venue programme, not a bullet list. */
+/* Concert bill — programme entries as horizontal rows */
 .page-bar__night-bill {
   list-style: none;
   padding: 0;
   margin: 0 0 var(--space-12);
-  border-top: 1px solid rgba(221, 170, 98, 0.12);
+  border-top: 1px solid var(--color-border-strong);
 }
 
 .page-bar__night-bill-item {
@@ -572,26 +545,26 @@
   justify-content: space-between;
   align-items: baseline;
   gap: var(--space-8);
-  padding-block: var(--space-5);
-  border-bottom: 1px solid rgba(221, 170, 98, 0.08);
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .page-bar__bill-label {
   font-family: var(--font-accent);
-  font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+  font-size: clamp(1rem, 2.2vw, 1.5rem);
   font-weight: 300;
   font-style: italic;
-  color: var(--color-text-inverse);
+  color: var(--color-text-primary);
   flex-shrink: 0;
 }
 
 .page-bar__bill-note {
   font-family: var(--font-display);
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   font-weight: 400;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(247, 243, 238, 0.40);
+  color: var(--color-text-muted);
   text-align: right;
 }
 
@@ -602,7 +575,7 @@
   gap: var(--space-12);
   align-items: center;
   padding-top: var(--space-8);
-  border-top: 1px solid rgba(221, 170, 98, 0.08);
+  border-top: 1px solid var(--color-border);
 }
 
 .page-bar__night-body {
@@ -610,7 +583,7 @@
   font-size: var(--text-base);
   font-weight: 300;
   font-style: italic;
-  color: rgba(247, 243, 238, 0.55);
+  color: var(--color-text-secondary);
   line-height: var(--leading-loose);
   max-width: 40ch;
   margin: 0;
@@ -619,12 +592,6 @@
 .page-bar__night-cta {
   flex-shrink: 0;
   flex-wrap: nowrap;
-}
-
-/* CTAs on ink background — secondary gets a ghost treatment */
-.page-bar__night .page-inner__cta-secondary {
-  color: rgba(247, 243, 238, 0.65);
-  border-color: rgba(247, 243, 238, 0.2);
 }
 
 /* ── 6. The Atmosphere ──────────────────────────── */
@@ -709,6 +676,10 @@
     gap: var(--space-6);
   }
 
+  .page-bar__night .page-inner__section-title {
+    font-size: clamp(1.8rem, 5vw, 4rem);
+  }
+
   .page-bar__night-footer {
     grid-template-columns: 1fr;
     gap: var(--space-8);
@@ -756,9 +727,23 @@
     padding-inline: var(--gutter);
   }
 
+  .page-bar__night-header {
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-6);
+  }
+
+  .page-bar__night-bill {
+    margin-bottom: var(--space-8);
+  }
+
   .page-bar__night-bill-item {
     flex-direction: column;
     gap: var(--space-1);
+    padding-block: var(--space-3);
+  }
+
+  .page-bar__bill-label {
+    font-size: 1rem;
   }
 
   .page-bar__bill-note {
@@ -805,6 +790,10 @@
 
   .page-bar__sig-item {
     min-width: 220px;
+  }
+
+  .page-bar__night-bill-item {
+    padding-block: var(--space-2);
   }
 
   .page-bar__hh-time {
