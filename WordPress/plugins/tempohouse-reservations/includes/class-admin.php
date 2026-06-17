@@ -781,6 +781,14 @@ class THR_Admin {
                     Move / resize
                   </button>
                   <div class="fp-bg-sliders" id="fp-bg-sliders" hidden>
+                    <div class="fp-bg-ratio-row">
+                      <span>Resize</span>
+                      <button class="fp-bg-ratio-btn" id="fp-bg-ratio-btn" type="button" data-locked="true" title="Toggle aspect ratio lock">
+                        <svg class="fp-bg-ratio-icon--locked" width="11" height="13" viewBox="0 0 11 13" fill="none" aria-hidden="true"><rect x="1" y="5.5" width="9" height="7" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M3 5.5V4a2.5 2.5 0 0 1 5 0v1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                        <svg class="fp-bg-ratio-icon--free" width="11" height="13" viewBox="0 0 11 13" fill="none" aria-hidden="true"><rect x="1" y="5.5" width="9" height="7" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M3 5.5V4a2.5 2.5 0 0 1 5 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" opacity="0.35"/></svg>
+                        <span class="fp-bg-ratio-label">Lock ratio</span>
+                      </button>
+                    </div>
                     <div class="fp-bg-slider-row">
                       <label for="fp-bg-opacity">Opacity</label>
                       <input type="range" id="fp-bg-opacity" min="0" max="1" step="0.05" value="0.5">

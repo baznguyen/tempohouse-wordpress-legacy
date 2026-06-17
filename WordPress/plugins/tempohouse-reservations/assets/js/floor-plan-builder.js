@@ -56,7 +56,8 @@
     undoStack:   [],
     redoStack:   [],
     bgConfig:    { url: null, scale: 1, scaleY: 0, opacity: 0.5, offsetX: 0, offsetY: 0 },
-    bgEditMode:  false,
+    bgEditMode:   false,
+    bgKeepRatio:  true,
     bgTransformer: null,
     snapEnabled: true,
   };
@@ -553,7 +554,7 @@
 
     var bgTr = new Konva.Transformer({
       nodes:          [S.bgKonvaImg],
-      keepRatio:      false,
+      keepRatio:      S.bgKeepRatio,
       rotateEnabled:  false,
       borderStroke:        '#3B82F6',
       borderStrokeWidth:   1.5,
@@ -721,6 +722,21 @@
         removeBg();
         if (popover) { popover.hidden = true; }
         if (navBtn) navBtn.classList.remove('fp-bg-nav-btn--open');
+      });
+    }
+
+    var ratioBtn = document.getElementById('fp-bg-ratio-btn');
+    if (ratioBtn) {
+      ratioBtn.addEventListener('click', function () {
+        S.bgKeepRatio = !S.bgKeepRatio;
+        ratioBtn.dataset.locked = String(S.bgKeepRatio);
+        var lbl = ratioBtn.querySelector('.fp-bg-ratio-label');
+        if (lbl) lbl.textContent = S.bgKeepRatio ? 'Lock ratio' : 'Free resize';
+        // Update transformer live if currently in edit mode
+        if (S.bgTransformer) {
+          S.bgTransformer.keepRatio(S.bgKeepRatio);
+          bgLayer.batchDraw();
+        }
       });
     }
 
