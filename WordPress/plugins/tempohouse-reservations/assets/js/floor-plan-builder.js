@@ -1718,14 +1718,15 @@
       var cx  = zx + zw / 2;
       var cy  = zy + zh / 2;
 
+      var isSelected = String(item.id) === String(S.selected);
       var rect = new Konva.Rect({
         x: -zw / 2, y: -zh / 2,
         width: zw, height: zh,
         cornerRadius: 10,
-        fill:        hexToRgba(color, 0.14),
-        stroke:      'rgba(60,80,60,0.55)',
-        strokeWidth: 1.5,
-        dash:        [5, 4],
+        fill:        hexToRgba(color, isSelected ? 0.18 : 0.14),
+        stroke:      isSelected ? '#2E7D52' : 'rgba(60,80,60,0.45)',
+        strokeWidth: isSelected ? 2 : 1.5,
+        dash:        isSelected ? [] : [5, 4],
         name: 'zone-rect',
         hitStrokeWidth: 12,
       });
@@ -1972,6 +1973,7 @@
     showFloatPanel(id);
     transformer.nodes([]);
     tableLayer.batchDraw();
+    renderZoneLayer();
     updateZoneMemberVisuals();
     updateZoneButton();
   }
@@ -1998,12 +2000,14 @@
   }
 
   function deselect() {
+    var wasZone = S.selected && S.tables[S.selected] && S.tables[S.selected].type === 'zone';
     S.selected           = null;
     S.selectedIds        = new Set();
     S.pendingZoneId      = null;
     S.pendingZoneMembers = null;
     transformer.nodes([]);
     tableLayer.batchDraw();
+    if (wasZone) renderZoneLayer();
     updateZoneMemberVisuals();
     hideFloatPanel();
     var delBtn = document.getElementById('fp-delete-sel');
