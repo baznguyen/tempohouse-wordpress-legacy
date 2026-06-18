@@ -1,0 +1,87 @@
+/*
+ * TEMPO House — Gutenberg editor stylesheet
+ * Loaded via add_editor_style() into the block editor iframe.
+ * Scope: .editor-styles-wrapper only — never affects the frontend.
+ */
+
+/* ── Canvas background & base typography */
+.editor-styles-wrapper {
+    background-color: #F7F3EE;
+    color: #1A1816;
+    font-family: var(--tempo-font-body, 'Space Grotesk', sans-serif);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+/* ── Headings */
+.editor-styles-wrapper h1,
+.editor-styles-wrapper h2,
+.editor-styles-wrapper h3,
+.editor-styles-wrapper h4,
+.editor-styles-wrapper h5,
+.editor-styles-wrapper h6 {
+    font-family: var(--tempo-font-display, 'Bricolage Grotesque', sans-serif);
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: #1A1816;
+}
+
+/* ── Blockquote — matches seo.php / single article style */
+.editor-styles-wrapper blockquote,
+.editor-styles-wrapper .wp-block-quote {
+    border-left: 3px solid #7c3b3b;
+    padding-left: 1.5rem;
+    margin-left: 0;
+    font-family: var(--tempo-font-accent, 'Cormorant Garamond', serif);
+    font-style: italic;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    color: rgba(26, 24, 22, 0.72);
+}
+
+/* ── Separator */
+.editor-styles-wrapper .wp-block-separator {
+    border-color: #C8B89A;
+    opacity: 1;
+}
+
+/* ── Links */
+.editor-styles-wrapper a {
+    color: #7c3b3b;
+    text-decoration: underline;
+}
+
+/* ── Button block — terracotta as default colour */
+.editor-styles-wrapper .wp-block-button__link {
+    background-color: #7c3b3b;
+    color: #F7F3EE;
+    border-radius: 0;
+    font-family: var(--tempo-font-body, 'Space Grotesk', sans-serif);
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.75rem 1.5rem;
+}
+
+/* ── Paragraph placeholder text — muted so it reads as helper, not content */
+.editor-styles-wrapper .block-editor-rich-text__editable[data-is-placeholder-visible="true"]::before {
+    color: rgba(26, 24, 22, 0.35);
+    font-style: italic;
+}
+
+/* ── Category label helper style (matches the What's On card eyebrow) */
+.editor-styles-wrapper p.event-label {
+    font-family: var(--tempo-font-body, 'Space Grotesk', sans-serif);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #7c3b3b;
+}
+
+/* ── Pull quote variant */
+.editor-styles-wrapper .wp-block-quote.is-style-plain {
+    border: none;
+    padding: 0;
+    font-style: normal;
+    font-size: inherit;
+}

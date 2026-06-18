@@ -4,6 +4,18 @@ require_once get_template_directory() . '/inc/cpt-events.php';
 require_once get_template_directory() . '/inc/acf-fields.php';
 require_once get_template_directory() . '/inc/seo.php';
 require_once get_template_directory() . '/inc/enquiry.php';
+require_once get_template_directory() . '/inc/block-patterns.php';
+require_once get_template_directory() . '/inc/rest-meta.php';
+
+// ── Gutenberg editor alignment ────────────────────────────────────────────────
+// Load tokens.css into the block editor so CSS custom properties resolve correctly
+// and the editor canvas reflects the actual site design (cream background, brand fonts).
+function tempohouse_editor_styles() {
+    add_theme_support( 'editor-styles' );
+    add_editor_style( 'assets/css/tokens.css' );
+    add_editor_style( 'assets/css/editor.css' );
+}
+add_action( 'after_setup_theme', 'tempohouse_editor_styles' );
 
 function tempohouse_enqueue_assets() {
     $ver = '3.73.0';

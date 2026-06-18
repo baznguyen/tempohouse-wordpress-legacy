@@ -1,0 +1,122 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+
+  "settings": {
+    "useRootPaddingAwareAlignments": true,
+
+    "layout": {
+      "contentSize": "720px",
+      "wideSize": "1280px"
+    },
+
+    "color": {
+      "defaultPalette": false,
+      "defaultGradients": false,
+      "defaultDuotone": false,
+      "custom": false,
+      "palette": [
+        { "slug": "cream",        "color": "#F7F3EE", "name": "Cream" },
+        { "slug": "cream-dark",   "color": "#EDE7DE", "name": "Cream Dark" },
+        { "slug": "ink",          "color": "#1A1816", "name": "Ink" },
+        { "slug": "terracotta",   "color": "#7c3b3b", "name": "Terracotta" },
+        { "slug": "amber",        "color": "#DDAA62", "name": "Amber" },
+        { "slug": "sage",         "color": "#6B7B5E", "name": "Sage" },
+        { "slug": "sand",         "color": "#C8B89A", "name": "Sand" },
+        { "slug": "section-dark", "color": "#2D2924", "name": "Espresso" }
+      ]
+    },
+
+    "typography": {
+      "defaultFontSizes": false,
+      "customFontSize": false,
+      "fontFamilies": [
+        {
+          "slug": "display",
+          "name": "Bricolage Grotesque",
+          "fontFamily": "'Bricolage Grotesque', sans-serif"
+        },
+        {
+          "slug": "body",
+          "name": "Space Grotesk",
+          "fontFamily": "'Space Grotesk', sans-serif"
+        },
+        {
+          "slug": "accent",
+          "name": "Cormorant Garamond",
+          "fontFamily": "'Cormorant Garamond', serif"
+        }
+      ],
+      "fontSizes": [
+        { "slug": "xs",   "size": "0.75rem",  "name": "XS" },
+        { "slug": "sm",   "size": "0.875rem", "name": "Small" },
+        { "slug": "base", "size": "1rem",     "name": "Base" },
+        { "slug": "lg",   "size": "1.125rem", "name": "Large" },
+        { "slug": "xl",   "size": "1.25rem",  "name": "XL" },
+        { "slug": "2xl",  "size": "1.5rem",   "name": "2XL" },
+        { "slug": "3xl",  "size": "1.875rem", "name": "3XL" },
+        { "slug": "4xl",  "size": "2.25rem",  "name": "4XL" }
+      ]
+    },
+
+    "spacing": {
+      "defaultSpacingSizes": false,
+      "spacingSizes": [
+        { "slug": "4",  "size": "1rem",   "name": "4" },
+        { "slug": "6",  "size": "1.5rem", "name": "6" },
+        { "slug": "8",  "size": "2rem",   "name": "8" },
+        { "slug": "12", "size": "3rem",   "name": "12" },
+        { "slug": "16", "size": "4rem",   "name": "16" },
+        { "slug": "20", "size": "5rem",   "name": "20" },
+        { "slug": "24", "size": "6rem",   "name": "24" }
+      ]
+    }
+  },
+
+  "styles": {
+    "color": {
+      "background": "#F7F3EE",
+      "text": "#1A1816"
+    },
+    "typography": {
+      "fontFamily": "var(--wp--preset--font-family--body)",
+      "fontSize": "var(--wp--preset--font-size--base)",
+      "lineHeight": "1.7"
+    },
+    "elements": {
+      "h1": {
+        "typography": {
+          "fontFamily": "var(--wp--preset--font-family--display)",
+          "fontSize": "var(--wp--preset--font-size--4xl)",
+          "lineHeight": "1.1",
+          "letterSpacing": "-0.025em"
+        }
+      },
+      "h2": {
+        "typography": {
+          "fontFamily": "var(--wp--preset--font-family--display)",
+          "fontSize": "var(--wp--preset--font-size--3xl)",
+          "lineHeight": "1.1",
+          "letterSpacing": "-0.025em"
+        }
+      },
+      "h3": {
+        "typography": {
+          "fontFamily": "var(--wp--preset--font-family--display)",
+          "fontSize": "var(--wp--preset--font-size--2xl)",
+          "lineHeight": "1.3"
+        }
+      },
+      "h4": {
+        "typography": {
+          "fontFamily": "var(--wp--preset--font-family--display)",
+          "fontSize": "var(--wp--preset--font-size--xl)"
+        }
+      },
+      "link": {
+        "color": { "text": "#7c3b3b" },
+        ":hover": { "color": { "text": "#6a3232" } }
+      }
+    }
+  }
+}
