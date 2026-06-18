@@ -14,5 +14,8 @@
     "WP_SITEURL": "http://localhost:8888",
     "WP_HOME": "http://localhost:8888"
   },
-  "mappings": {}
+  "mappings": {
+    "wp-content/themes/tempohouse": "./themes/tempohouse",
+    "wp-content/plugins/tempohouse-reservations": "./plugins/tempohouse-reservations"
+  }
 }

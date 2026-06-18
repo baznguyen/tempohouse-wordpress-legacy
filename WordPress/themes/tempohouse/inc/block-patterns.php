@@ -75,7 +75,8 @@ function tempohouse_register_block_patterns() {
             'title'       => __( 'Journal Article Body', 'tempohouse' ),
             'description' => __( 'Category eyebrow, title, excerpt, article body with subheading and pull quote.', 'tempohouse' ),
             'categories'  => [ 'tempohouse' ],
-            'content'     => '<!-- wp:group {"layout":{"type":"constrained","contentSize":"720px"}} -->
+            'content'     => <<<'PATTERN'
+<!-- wp:group {"layout":{"type":"constrained","contentSize":"720px"}} -->
 <div class="wp-block-group">
 
 <!-- wp:paragraph {"style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.1em","fontSize":"0.75rem"}},"textColor":"terracotta"} -->
@@ -115,7 +116,8 @@ function tempohouse_register_block_patterns() {
 <!-- /wp:paragraph -->
 
 </div>
-<!-- /wp:group -->',
+<!-- /wp:group -->
+PATTERN,
         ]
     );
 
