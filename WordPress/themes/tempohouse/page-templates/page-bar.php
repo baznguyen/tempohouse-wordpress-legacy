@@ -63,10 +63,10 @@ get_header();
           </ul>
         </div>
 
-        <div class="tempo-frame tempo-frame--placeholder page-bar__programme-img" data-interactive aria-label="Cocktails at TEMPO House Bar">
+        <div class="tempo-frame page-bar__programme-img" data-interactive aria-label="Cocktails at TEMPO House Bar">
           <div class="tempo-frame__mat">
             <div class="tempo-frame__artwork">
-              <span class="tempo-frame__label">Bar Photography</span>
+              <img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/bar/bar-programme.png" alt="Cocktail programme at TEMPO House Bar" loading="lazy">
             </div>
           </div>
         </div>
@@ -90,8 +90,8 @@ get_header();
       <div class="page-bar__signatures-grid">
 
         <div class="page-bar__sig-item">
-          <div class="tempo-frame tempo-frame--placeholder page-bar__sig-frame" data-interactive aria-label="Espresso Martini at TEMPO House Bar">
-            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><span class="tempo-frame__label">Espresso Martini</span></div></div>
+          <div class="tempo-frame page-bar__sig-frame" data-interactive aria-label="Espresso Martini at TEMPO House Bar">
+            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/bar/bar-espresso-martini.png" alt="Espresso Martini at TEMPO House Bar" loading="lazy"></div></div>
           </div>
           <div class="page-bar__sig-label">
             <span class="page-bar__sig-num" aria-hidden="true">01</span>
@@ -103,8 +103,8 @@ get_header();
         </div>
 
         <div class="page-bar__sig-item">
-          <div class="tempo-frame tempo-frame--placeholder page-bar__sig-frame" data-interactive aria-label="Lychee Martini at TEMPO House Bar">
-            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><span class="tempo-frame__label">Lychee Martini</span></div></div>
+          <div class="tempo-frame page-bar__sig-frame" data-interactive aria-label="Lychee Martini at TEMPO House Bar">
+            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/bar/bar-lychee-martini.png" alt="Lychee Martini at TEMPO House Bar" loading="lazy"></div></div>
           </div>
           <div class="page-bar__sig-label">
             <span class="page-bar__sig-num" aria-hidden="true">02</span>
@@ -116,8 +116,8 @@ get_header();
         </div>
 
         <div class="page-bar__sig-item">
-          <div class="tempo-frame tempo-frame--placeholder page-bar__sig-frame" data-interactive aria-label="Panpan Spritz at TEMPO House Bar">
-            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><span class="tempo-frame__label">Panpan Spritz</span></div></div>
+          <div class="tempo-frame page-bar__sig-frame" data-interactive aria-label="Panpan Spritz at TEMPO House Bar">
+            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/bar/bar-panpan-spritz.png" alt="Panpan Spritz at TEMPO House Bar" loading="lazy"></div></div>
           </div>
           <div class="page-bar__sig-label">
             <span class="page-bar__sig-num" aria-hidden="true">03</span>
@@ -129,8 +129,8 @@ get_header();
         </div>
 
         <div class="page-bar__sig-item">
-          <div class="tempo-frame tempo-frame--placeholder page-bar__sig-frame" data-interactive aria-label="Negroni at TEMPO House Bar">
-            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><span class="tempo-frame__label">Negroni</span></div></div>
+          <div class="tempo-frame page-bar__sig-frame" data-interactive aria-label="Negroni at TEMPO House Bar">
+            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/bar/bar-negroni.png" alt="Negroni at TEMPO House Bar" loading="lazy"></div></div>
           </div>
           <div class="page-bar__sig-label">
             <span class="page-bar__sig-num" aria-hidden="true">04</span>
@@ -142,8 +142,8 @@ get_header();
         </div>
 
         <div class="page-bar__sig-item">
-          <div class="tempo-frame tempo-frame--placeholder page-bar__sig-frame" data-interactive aria-label="Manhattan at TEMPO House Bar">
-            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><span class="tempo-frame__label">Manhattan</span></div></div>
+          <div class="tempo-frame page-bar__sig-frame" data-interactive aria-label="Manhattan at TEMPO House Bar">
+            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/bar/bar-manhattan.png" alt="Manhattan at TEMPO House Bar" loading="lazy"></div></div>
           </div>
           <div class="page-bar__sig-label">
             <span class="page-bar__sig-num" aria-hidden="true">05</span>
@@ -155,8 +155,8 @@ get_header();
         </div>
 
         <div class="page-bar__sig-item">
-          <div class="tempo-frame tempo-frame--placeholder page-bar__sig-frame" data-interactive aria-label="Yuzu Spritz at TEMPO House Bar">
-            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><span class="tempo-frame__label">Yuzu Spritz</span></div></div>
+          <div class="tempo-frame page-bar__sig-frame" data-interactive aria-label="Yuzu Spritz at TEMPO House Bar">
+            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/bar/bar-yuzu-spritz.png" alt="Yuzu Spritz at TEMPO House Bar" loading="lazy"></div></div>
           </div>
           <div class="page-bar__sig-label">
             <span class="page-bar__sig-num" aria-hidden="true">06</span>
@@ -170,7 +170,15 @@ get_header();
       </div>
 
       <p class="page-bar__signatures-footnote">Full cocktail list available at the bar. Menu rotates seasonally &mdash; cocktails from 220k, Manhattan 300k.</p>
-      <div class="page-bar__signatures-dots" aria-hidden="true"></div>
+      <nav class="page-bar__signatures-nav" aria-label="Cocktail carousel navigation">
+        <button class="page-bar__signatures-nav-btn page-bar__signatures-nav-prev" type="button" aria-label="Previous cocktails" disabled>
+          <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8.5 2L3.5 7L8.5 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="square" stroke-linejoin="miter"/></svg>
+        </button>
+        <div class="page-bar__signatures-dots" aria-hidden="true"></div>
+        <button class="page-bar__signatures-nav-btn page-bar__signatures-nav-next" type="button" aria-label="Next cocktails">
+          <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M5.5 2L10.5 7L5.5 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="square" stroke-linejoin="miter"/></svg>
+        </button>
+      </nav>
 
     </div>
   </section>
@@ -224,10 +232,10 @@ get_header();
     <div class="page-inner__container">
       <div class="page-inner__split">
 
-        <div class="tempo-frame tempo-frame--placeholder page-bar__wine-img" data-interactive aria-label="Wine selection at TEMPO House Bar">
+        <div class="tempo-frame page-bar__wine-img" data-interactive aria-label="Wine selection at TEMPO House Bar">
           <div class="tempo-frame__mat">
             <div class="tempo-frame__artwork">
-              <span class="tempo-frame__label">Wine Photography</span>
+              <img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/bar/bar-wine.png" alt="Wine selection at TEMPO House Bar" loading="lazy">
             </div>
           </div>
         </div>
@@ -313,10 +321,10 @@ get_header();
           </ul>
         </div>
 
-        <div class="tempo-frame tempo-frame--placeholder page-bar__atmosphere-img" data-interactive aria-label="Atmosphere at TEMPO House Bar">
+        <div class="tempo-frame page-bar__atmosphere-img" data-interactive aria-label="Atmosphere at TEMPO House Bar">
           <div class="tempo-frame__mat">
             <div class="tempo-frame__artwork">
-              <span class="tempo-frame__label">Atmosphere Photography</span>
+              <img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/bar/bar-atmosphere.png" alt="Evening atmosphere at TEMPO House Bar" loading="lazy">
             </div>
           </div>
         </div>

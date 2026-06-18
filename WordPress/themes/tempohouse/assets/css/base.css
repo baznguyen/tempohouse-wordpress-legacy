@@ -7,6 +7,7 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  overflow-x: clip;
 }
 
 body {
@@ -16,6 +17,7 @@ body {
   line-height: var(--leading-loose);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden; /* belt-and-suspenders: iOS Safari ignores overflow-x:clip on html */
 }
 
 img,
@@ -34,6 +36,10 @@ button {
   border: none;
   background: transparent;
   cursor: pointer;
+}
+
+textarea {
+  resize: none;
 }
 
 /* ── Layout helpers */

@@ -147,7 +147,8 @@
 
 .page-bar__programme {
   position: relative;
-  overflow: hidden;
+  overflow: clip;
+  overflow-clip-margin: 110px;
 }
 
 /* Ambient candlelight from BOTTOM — distinguishes this
@@ -187,7 +188,7 @@
 /* ── 2b. Signature Cocktails Gallery ─────────────── */
 
 .page-bar__signatures-head {
-  margin-bottom: var(--space-14);
+  margin-bottom: var(--space-20);
 }
 
 .page-bar__signatures-intro {
@@ -282,11 +283,41 @@
   text-align: center;
 }
 
-.page-bar__signatures-dots {
+.page-bar__signatures-nav {
   display: none;
+  align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  gap: var(--space-5);
   margin-top: var(--space-6);
+}
+
+.page-bar__signatures-nav-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-border-strong);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  transition: border-color var(--duration-fast) ease, color var(--duration-fast) ease;
+}
+
+.page-bar__signatures-nav-btn:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.page-bar__signatures-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.page-bar__signatures-nav-btn svg { width: 14px; height: 14px; display: block; }
+
+.page-bar__signatures-dots {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 /* ── 2c. Manifesto strip — UNIQUE TO BAR ───────────
@@ -609,15 +640,17 @@
 
 /* ── Responsive: 1000px ─────────────────────────── */
 @media (max-width: 1000px) {
+  /* Signatures grid → horizontal scroll carousel (mirrors matcha pattern) */
   .page-bar__signatures-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(260px, 1fr));
+    grid-template-columns: unset;
+    display: flex;
     overflow-x: scroll;
     scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
     scrollbar-width: none;
-    gap: var(--space-6);
-    padding-bottom: var(--space-4);
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
+    gap: 0;
   }
 
   .page-bar__signatures-grid::-webkit-scrollbar {
@@ -625,13 +658,13 @@
   }
 
   .page-bar__sig-item {
+    flex: 0 0 52%;
     scroll-snap-align: start;
-    min-width: 260px;
+    padding-right: var(--space-8);
+    box-sizing: border-box;
   }
 
-  .page-bar__signatures-dots {
-    display: flex;
-  }
+  /* Nav is shown/hidden by JS; dots always flex inside nav */
 
   .page-bar__signatures-intro {
     grid-template-columns: 1fr;
@@ -659,6 +692,13 @@
 }
 
 /* ── Responsive: 768px ──────────────────────────── */
+@media (max-width: 600px) {
+  /* Widen each cocktail frame to 80% — one dominant item visible, peeks next */
+  .page-bar__sig-item {
+    flex: 0 0 80%;
+  }
+}
+
 @media (max-width: 768px) {
   .page-bar__programme-img .tempo-frame__artwork,
   .page-bar__atmosphere-img .tempo-frame__artwork,

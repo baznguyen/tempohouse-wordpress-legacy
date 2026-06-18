@@ -1,0 +1,324 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   What's On page
+   Desktop (≥1000px): masonry grid, consistent row height via grid-auto-rows
+   Mobile  (<1000px):  single-row scroll-snap carousel + auto-scroll
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.page-whats-on__gallery {
+    background: #F0EBE3;
+    border-top: 1px solid var(--color-border);
+}
+
+/* ── Section labels ───────────────────────────────────────────────────────── */
+
+.page-whats-on__section-label {
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    padding: var(--space-10) var(--gutter) 0;
+    max-width: var(--content-width);
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+}
+
+.page-whats-on__section-label::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: rgba(26, 24, 22, 0.25);
+    flex-shrink: 0;
+}
+
+.page-whats-on__section--ruled {
+    border-top: 1px solid var(--color-border);
+}
+
+/* ── Grid viewport — reset carousel defaults from events.css ─────────────── */
+
+.events__viewport--grid {
+    overflow: visible;
+    padding-block: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DESKTOP MASONRY (≥1000px)
+   grid-auto-rows sets a consistent height for every row so all art frames
+   share the same vertical size and the gap between them is always equal.
+   The flex chain (card → frame-art → mat → artwork) makes artwork fill
+   the frame interior regardless of card width.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.events__viewport--grid .events__track {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: clamp(360px, 32vw, 480px); /* consistent row height */
+    gap: 20px;
+    padding: var(--space-section) var(--gutter);
+    width: auto;
+    animation: none;
+    overflow: visible;
+    align-items: stretch;
+}
+
+/* Card fills its grid cell; flex chain flows height through frame → artwork */
+.events__viewport--grid .event-card {
+    width: auto;
+    flex-shrink: unset;
+    scroll-snap-align: unset;
+    grid-column: span 2;   /* default for positions not matched below */
+    display: flex;
+    flex-direction: column;
+}
+
+.events__viewport--grid .event-card__frame-art {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.events__viewport--grid .event-card__mat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Artwork fills the mat interior; height:0 + flex:1 beats min-content sizing */
+.events__viewport--grid .event-card__artwork {
+    flex: 1;
+    height: 0;
+    min-height: 0;
+    aspect-ratio: unset;
+}
+
+/* ── Editorial column-span pattern ─────────────────────────────────────── */
+/* Row A: wide (4) + narrow (2) + narrow (2) … fills 8 — wraps to 2 rows  */
+/* Row B: narrow (2) + wide (4) mirrors A                                   */
+/* Row C: medium (3) + medium (3)                                           */
+
+.events__viewport--grid .event-card:nth-child(6n+1) { grid-column: span 4; }
+.events__viewport--grid .event-card:nth-child(6n+2) { grid-column: span 2; }
+.events__viewport--grid .event-card:nth-child(6n+3) { grid-column: span 2; }
+.events__viewport--grid .event-card:nth-child(6n+4) { grid-column: span 4; }
+.events__viewport--grid .event-card:nth-child(6n+5) { grid-column: span 3; }
+.events__viewport--grid .event-card:nth-child(6n+6) { grid-column: span 3; }
+
+/* Hide carousel nav on desktop */
+.page-whats-on__carousel-nav { display: none; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MOBILE CAROUSEL (<1000px)
+   Switches from a CSS grid to a horizontal scroll-snap carousel.
+   One card visible at a time; auto-scroll managed by whats-on.js.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 999px) {
+
+    /* overflow-y: clip (not visible) lets overflow-x: auto coexist without the
+       browser promoting y to auto — which would clip the -88px downlight fixture.
+       overflow-clip-margin: 110px is inherited from events.css .events__viewport.
+       padding-top: 120px matches the homepage mobile value so the fixture clears. */
+    .events__viewport--grid {
+        overflow-x: auto;
+        overflow-y: clip;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        scroll-padding-inline-start: var(--gutter);
+        padding: 120px 0 0;
+        cursor: grab;
+    }
+
+    .events__viewport--grid:active  { cursor: grabbing; }
+    .events__viewport--grid::-webkit-scrollbar { display: none; }
+
+    /* Track: back to flex row */
+    .events__viewport--grid .events__track {
+        display: flex;
+        grid-template-columns: unset;
+        grid-auto-rows: unset;
+        align-items: stretch;
+        gap: 16px;
+        padding: 0 var(--gutter);
+        width: max-content;
+    }
+
+    /* Cards: fixed carousel width, one per snap point */
+    .events__viewport--grid .event-card {
+        width: 82vw;
+        max-width: 400px;
+        flex-shrink: 0;
+        scroll-snap-align: start;
+        grid-column: unset;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Frame chain stays flex — artwork uses aspect-ratio to set its height */
+    .events__viewport--grid .event-card__frame-art {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .events__viewport--grid .event-card__mat {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Portrait 3:4 suits event artwork; flex:1 fills card height */
+    .events__viewport--grid .event-card__artwork {
+        flex: 1;
+        height: 0;
+        min-height: 260px;
+        aspect-ratio: unset;
+    }
+
+    /* Date/time always visible on mobile (no hover) */
+    .events__viewport--grid .event-card__date-reveal {
+        opacity: 1;
+        transform: translateY(0);
+        transition: none;
+    }
+
+    /* Show carousel nav on mobile */
+    .page-whats-on__carousel-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-5);
+        padding: var(--space-5) var(--gutter) var(--space-10);
+    }
+}
+
+/* ── Empty / coming-soon state ───────────────────────────────────────────── */
+
+.page-whats-on__coming-soon-label {
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    padding: var(--space-10) var(--gutter) 0;
+    max-width: var(--content-width);
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+}
+
+.page-whats-on__coming-soon-label::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: rgba(26, 24, 22, 0.25);
+    flex-shrink: 0;
+}
+
+.event-card--placeholder {
+    pointer-events: none;
+    cursor: default;
+}
+
+.event-card--placeholder .event-card__frame-art {
+    opacity: 0.55;
+}
+
+.event-card--placeholder .event-card__category-ghost--muted {
+    opacity: 0.08;
+}
+
+.page-whats-on__coming-soon {
+    text-align: center;
+    padding: 0 var(--gutter) var(--space-section);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+.page-whats-on__coming-soon-body {
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-weight: 300;
+    line-height: var(--leading-loose);
+    color: var(--color-text-secondary);
+    max-width: 52ch;
+}
+
+/* ── Homepage empty state ────────────────────────────────────────────────── */
+
+.events__empty {
+    padding: var(--space-16) var(--gutter);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+.events__empty-body {
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: var(--color-text-secondary);
+    max-width: 44ch;
+}
+
+.events__empty-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.75rem;
+    background: var(--color-terracotta);
+    color: var(--color-cream);
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 9999px;
+    transition: background 0.2s ease;
+}
+
+.events__empty-cta:hover { background: #b35c3b; }
+
+/* ── Subscribe strip ─────────────────────────────────────────────────────── */
+
+.page-whats-on__subscribe-strip {
+    text-align: center;
+    padding: var(--space-24) var(--gutter);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+.page-whats-on__subscribe-body {
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-weight: 300;
+    line-height: var(--leading-loose);
+    color: var(--color-text-secondary);
+    max-width: 52ch;
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+    .events__viewport--grid {
+        scroll-behavior: auto;
+    }
+}

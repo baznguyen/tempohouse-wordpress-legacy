@@ -1,12 +1,21 @@
 <?php
+// Query standard Posts tagged 'event' AND 'active' — up to 3 for the homepage carousel.
 $events_query = new WP_Query([
-    'post_type'      => 'event',
+    'post_type'      => 'post',
     'posts_per_page' => 3,
-    'meta_query'     => [[
-        'key'     => 'event_is_active',
-        'value'   => '1',
-        'compare' => '=',
-    ]],
+    'tax_query'      => [
+        'relation' => 'AND',
+        [
+            'taxonomy' => 'post_tag',
+            'field'    => 'slug',
+            'terms'    => 'event',
+        ],
+        [
+            'taxonomy' => 'post_tag',
+            'field'    => 'slug',
+            'terms'    => 'active',
+        ],
+    ],
     'orderby' => 'date',
     'order'   => 'DESC',
 ]);
@@ -15,13 +24,31 @@ $event_items = [];
 
 if ( $events_query->have_posts() ) :
     while ( $events_query->have_posts() ) : $events_query->the_post();
+        $date_raw   = get_field( 'event_date' );
+        $recurrence = get_field( 'event_recurrence' ) ?: '';
+
+        // "Month" label: dated events show "Jul 2025", recurring shows recurrence text.
+        if ( $date_raw ) {
+            $month_label = date_i18n( 'M Y', strtotime( $date_raw ) );
+        } elseif ( $recurrence ) {
+            $labels = [
+                'one-time' => 'One Night Only',
+                'weekly'   => 'Weekly',
+                'monthly'  => 'Monthly',
+                'ongoing'  => 'Ongoing',
+            ];
+            $month_label = $labels[ $recurrence ] ?? ucfirst( $recurrence );
+        } else {
+            $month_label = '';
+        }
+
         $event_items[] = [
             'title'      => get_the_title(),
             'category'   => get_field( 'event_category' )  ?: 'Event',
-            'month'      => get_field( 'event_month' )      ?: '',
+            'month'      => $month_label,
             'time'       => get_field( 'event_time' )       ?: '',
             'interior'   => get_field( 'event_interior' )   ?: 'dark',
-            'href'       => get_field( 'event_href' )       ?: get_permalink(),
+            'href'       => get_permalink(),
             'media_type' => get_field( 'event_media_type' ) ?: 'none',
             'media_id'   => get_field( 'event_media_id' )   ?: 0,
         ];
@@ -29,15 +56,8 @@ if ( $events_query->have_posts() ) :
     wp_reset_postdata();
 endif;
 
-if ( empty( $event_items ) ) {
-    $event_items = [
-        [ 'title' => 'TEMPO Sessions',  'category' => 'Live Music',     'month' => 'Monthly',  'time' => '20:00 – 23:00', 'interior' => 'dark',  'href' => '/#newsletter',    'media_type' => 'none', 'media_id' => 0 ],
-        [ 'title' => 'Gallery Opening', 'category' => 'Exhibition',     'month' => 'Rotating', 'time' => 'By programme',  'interior' => 'sand',  'href' => '/#newsletter',    'media_type' => 'none', 'media_id' => 0 ],
-        [ 'title' => 'Tasting Menu',    'category' => 'Private Dining', 'month' => 'Weekly',   'time' => '19:00 – 22:00', 'interior' => 'cream', 'href' => '/events/enquiry', 'media_type' => 'none', 'media_id' => 0 ],
-    ];
-}
-
-$track_items = array_merge( $event_items, $event_items );
+$has_events  = ! empty( $event_items );
+$track_items = $has_events ? array_merge( $event_items, $event_items ) : [];
 $total       = count( $event_items );
 ?>
 <section class="events" aria-label="What's on">
@@ -48,12 +68,14 @@ $total       = count( $event_items );
     </header>
   </div>
 
+  <?php if ( $has_events ) : ?>
+
   <div class="events__viewport">
     <div class="events__track">
       <?php foreach ( $track_items as $i => $ev ) : ?>
       <article class="event-card" data-interior="<?php echo esc_attr( $ev['interior'] ); ?>">
         <a href="<?php echo esc_url( $ev['href'] ); ?>" class="event-card__link"
-           aria-label="<?php echo esc_attr( $ev['title'] . ' — ' . $ev['time'] ); ?>"></a>
+           aria-label="<?php echo esc_attr( $ev['title'] . ( $ev['time'] ? ' — ' . $ev['time'] : '' ) ); ?>"></a>
 
         <div class="event-card__frame-art">
           <div class="event-card__mat">
@@ -107,6 +129,16 @@ $total       = count( $event_items );
       </svg>
     </button>
   </nav>
+
+  <?php else : ?>
+
+  <!-- No live events — clean coming-soon state, no fake placeholder cards -->
+  <div class="events__empty">
+    <p class="events__empty-body">The programme is taking shape. Subscribe and you&rsquo;ll hear first.</p>
+    <a href="<?php echo esc_url( home_url( '/#newsletter' ) ); ?>" class="events__empty-cta">Stay in the loop</a>
+  </div>
+
+  <?php endif; ?>
 
   <div class="container">
     <div class="events__footer">

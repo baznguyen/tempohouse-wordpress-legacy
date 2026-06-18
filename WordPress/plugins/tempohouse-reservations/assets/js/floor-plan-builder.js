@@ -95,6 +95,30 @@
     setDateLabel(S.date);
     setTimeLabel(S.time);
     loadFloors();
+
+    // Guard browser-level navigation (back button, address bar, tab close)
+    window.addEventListener('beforeunload', function (e) {
+      if (S.dirty && S.mode === 'builder') {
+        e.preventDefault();
+        e.returnValue = '';
+        return '';
+      }
+    });
+
+    // Guard WordPress admin navigation links (sidebar, top bar, any <a> leaving the page)
+    document.addEventListener('click', function (e) {
+      if (!S.dirty || S.mode !== 'builder') return;
+      var a = e.target.closest('a[href]');
+      if (!a) return;
+      var href = a.getAttribute('href');
+      if (!href || href === '#' || href.charAt(0) === '#' || href.indexOf('javascript:') === 0) return;
+      // Skip links inside the floor plan app itself (toolbar, float panels, etc.)
+      if (document.getElementById('fp-app') && document.getElementById('fp-app').contains(a)) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      var dest = a.href; // fully resolved URL
+      guardDirtyNav(function () { window.location.href = dest; });
+    }, true); // capture phase — fires before any stopPropagation in child handlers
   });
 
   /* ══════════════════════════════════════════════════════════════════
@@ -354,8 +378,42 @@
     return Object.values(S.tables).some(function (other) {
       if (excludeId !== undefined && String(other.id) === String(excludeId)) return false;
       if (other.type === 'text_label' || other.type === 'zone') return false;
-      return aabbOverlap(test, tableAABB(other), 4);
+      return aabbOverlap(test, tableAABB(other), 16);
     });
+  }
+
+  // Returns the nearest non-overlapping position to (cx, cy) for an item of size w×h.
+  // Candidates are generated on the same grid as snapToGrid so the caller can use the
+  // result directly without re-snapping (which could reintroduce overlap).
+  // If preferBBox is given, tries positions inside that bbox first.
+  function findFreePositionNear(cx, cy, w, h, excludeId, preferBBox) {
+    var STEP   = S.snapEnabled ? 24 : 8;
+    var MAX_R  = STEP * 10;
+    var gcx    = snapToGrid(cx), gcy = snapToGrid(cy);
+    var candidates = [];
+    for (var dy = -MAX_R; dy <= MAX_R; dy += STEP) {
+      for (var dx = -MAX_R; dx <= MAX_R; dx += STEP) {
+        var d2 = dx * dx + dy * dy;
+        if (d2 <= MAX_R * MAX_R) candidates.push({ x: gcx + dx, y: gcy + dy, d2: d2 });
+      }
+    }
+    candidates.sort(function (a, b) { return a.d2 - b.d2; });
+    // Preferred pass: positions inside the target zone bbox
+    if (preferBBox) {
+      for (var i = 0; i < candidates.length; i++) {
+        var c = candidates[i];
+        if (c.x > preferBBox.x1 && c.x < preferBBox.x2 && c.y > preferBBox.y1 && c.y < preferBBox.y2) {
+          if (!isOverlappingAny(c.x, c.y, w, h, excludeId)) return { x: c.x, y: c.y };
+        }
+      }
+    }
+    // Fallback: any free position near the drop point
+    for (var i = 0; i < candidates.length; i++) {
+      if (!isOverlappingAny(candidates[i].x, candidates[i].y, w, h, excludeId)) {
+        return { x: candidates[i].x, y: candidates[i].y };
+      }
+    }
+    return null;
   }
 
   /* ══════════════════════════════════════════════════════════════════
@@ -445,7 +503,7 @@
         '</div>';
 
       tab.querySelector('.fp-floor-tab-inner').addEventListener('click', function () {
-        selectFloor(floor.id);
+        guardDirtyNav(function () { selectFloor(floor.id); });
       });
       container.appendChild(tab);
     });
@@ -1291,18 +1349,36 @@
       if (!d) return;
       var nx = snapToGrid(this.x());
       var ny = snapToGrid(this.y());
+      // Record drop intent before any nudge — zone membership uses this, not the
+      // final nudged position, so dropping into a packed zone still joins it.
+      var _intentX = nx, _intentY = ny;
 
       if (d.type !== 'text_label' && d.type !== 'zone' && isOverlappingAny(nx, ny, toNum(d.width, 80), toNum(d.height, 80), item.id)) {
-        this.position({ x: d.pos_x, y: d.pos_y });
-        if (transformer.nodes().indexOf(this) !== -1) {
-          transformer.nodes([this]);
+        // Prefer nudging within the target zone so the table visually stays inside.
+        var _dropZoneBBox = null;
+        Object.values(S.tables).forEach(function (z) {
+          if (z.type !== 'zone' || _dropZoneBBox) return;
+          var bbox = getZoneBBoxRaw(z);
+          if (bbox && nx > bbox.x1 && nx < bbox.x2 && ny > bbox.y1 && ny < bbox.y2) {
+            _dropZoneBBox = bbox;
+          }
+        });
+        var freePos = findFreePositionNear(nx, ny, toNum(d.width, 80), toNum(d.height, 80), item.id, _dropZoneBBox);
+        if (freePos) {
+          nx = freePos.x; // already on the snap grid — no re-snap needed
+          ny = freePos.y;
+        } else {
+          this.position({ x: d.pos_x, y: d.pos_y });
+          if (transformer.nodes().indexOf(this) !== -1) {
+            transformer.nodes([this]);
+          }
+          tableLayer.draw();
+          showToast('No space available here', 'warn');
+          S.undoStack.pop();
+          syncUndoBtns();
+          resetZoneHighlights();
+          return;
         }
-        tableLayer.draw();
-        showToast('Tables cannot overlap', 'warn');
-        S.undoStack.pop();
-        syncUndoBtns();
-        resetZoneHighlights();
-        return;
       }
 
       d.pos_x = nx;
@@ -1325,13 +1401,14 @@
           if (!z.meta) z.meta = { color: '#EAF5EE', members: [] };
           var members  = (z.meta.members || []).map(String);
           var wasIn    = members.indexOf(sid) !== -1;
-          // bbox excludes the dragged table if it was a member, so the natural boundary is used
+          // bbox excludes the dragged table if it was a member, so the natural boundary is used.
+          // Use _intentX/Y (original drop point) not finalX/Y (nudged position) so that
+          // dropping into a packed zone still joins it even when the table lands outside the bbox.
           var checkBbox = wasIn ? getZoneBBoxRaw(z, sid) : getZoneBBoxRaw(z);
-          var isInNow   = checkBbox && (finalX > checkBbox.x1 && finalX < checkBbox.x2 && finalY > checkBbox.y1 && finalY < checkBbox.y2);
+          var isInNow   = checkBbox && (_intentX > checkBbox.x1 && _intentX < checkBbox.x2 && _intentY > checkBbox.y1 && _intentY < checkBbox.y2);
 
           if (!wasIn && isInNow) {
             z.meta.members = members.concat([sid]);
-            apiFetch('PATCH', 'furniture/' + z.id, { meta: z.meta });
             showToast('Added to "' + (z.label || 'Zone') + '"', 'ok');
             didAdd = true;
             if (S.pendingZoneId === String(z.id) && S.pendingZoneMembers) {
@@ -1350,7 +1427,6 @@
               }).then(function (confirmed) {
                 if (confirmed) {
                   zRef.meta.members = membersSnap.filter(function (m) { return m !== sid; });
-                  apiFetch('PATCH', 'furniture/' + zRef.id, { meta: zRef.meta });
                   if (S.pendingZoneId === String(zRef.id) && S.pendingZoneMembers) {
                     S.pendingZoneMembers.delete(sid);
                     showZoneFloatProps(String(zRef.id), zRef);
@@ -1770,13 +1846,11 @@
         }).then(function (name) {
           if (!name || name === item.label) return;
           item.label = name;
-          apiFetch('PATCH', 'furniture/' + item.id, { label: name }).then(function () {
-            renderZoneLayer();
-            var titleEl = document.getElementById('fp-fp-title');
-            if (titleEl && S.selected === item.id) titleEl.textContent = name;
-            showToast('Zone renamed to "' + name + '"', 'info');
-            markDirty();
-          });
+          renderZoneLayer();
+          var titleEl = document.getElementById('fp-fp-title');
+          if (titleEl && S.selected === item.id) titleEl.textContent = name;
+          showToast('Zone renamed to "' + name + '"', 'info');
+          markDirty();
         });
       });
 
@@ -1817,7 +1891,7 @@
           tNode.position({ x: t.pos_x, y: t.pos_y });
           delete t._zdx;
           delete t._zdy;
-          apiFetch('PATCH', 'furniture/' + mid, { pos_x: t.pos_x, pos_y: t.pos_y });
+          // position held in S.tables until publish
         });
         tableLayer.batchDraw();
         renderZoneLayer();
@@ -1908,30 +1982,23 @@
   function joinSelected() {
     if (S.selectedIds.size < 2) return;
     var ids = Array.from(S.selectedIds).map(Number).sort(function (a, b) { return a - b; });
-    var groupId = ids[0]; // use lowest ID as group identifier
-
-    // PATCH all selected to share group_id = groupId
-    var promises = ids.map(function (id) {
-      return apiFetch('PATCH', 'furniture/' + id, { group_id: groupId }).then(function () {
-        if (S.tables[id]) S.tables[id].group_id = groupId;
-      });
+    var groupId = ids[0];
+    ids.forEach(function (id) {
+      if (S.tables[id]) S.tables[id].group_id = groupId;
     });
-    Promise.all(promises).then(function () {
-      ids.forEach(function (id) {
-        var node = stage.findOne('#tbl-' + id);
-        if (node) { node.destroy(); }
-        if (S.tables[id]) addTableNode(S.tables[id]);
-      });
-      tableLayer.batchDraw();
-      var totalCap = ids.reduce(function (s, id) { return s + (parseInt((S.tables[id] || {}).capacity_max) || 0); }, 0);
-      showToast('Joined ' + ids.length + ' tables \xB7 ' + totalCap + ' seats combined', 'ok');
-      markDirty();
-      showMultiSelectFloat(S.selectedIds.size); // refresh panel
-    }).catch(function (err) { console.warn('joinSelected failed', err); });
+    ids.forEach(function (id) {
+      var node = stage.findOne('#tbl-' + id);
+      if (node) node.destroy();
+      if (S.tables[id]) addTableNode(S.tables[id]);
+    });
+    tableLayer.batchDraw();
+    var totalCap = ids.reduce(function (s, id) { return s + (parseInt((S.tables[id] || {}).capacity_max) || 0); }, 0);
+    showToast('Joined ' + ids.length + ' tables \xB7 ' + totalCap + ' seats combined', 'ok');
+    markDirty();
+    showMultiSelectFloat(S.selectedIds.size);
   }
 
   function separateSelected() {
-    // Separate all tables in the same group as any of the selected items
     var groupId = null;
     S.selectedIds.forEach(function (sid) {
       var it = S.tables[sid];
@@ -1939,39 +2006,32 @@
     });
     var toSep = Object.values(S.tables).filter(function (t) { return t.group_id === groupId; }).map(function (t) { return t.id; });
     if (!toSep.length) return;
-
-    var promises = toSep.map(function (id) {
-      return apiFetch('PATCH', 'furniture/' + id, { group_id: null }).then(function () {
-        if (S.tables[id]) S.tables[id].group_id = null;
-      });
+    toSep.forEach(function (id) {
+      if (S.tables[id]) S.tables[id].group_id = null;
     });
-    Promise.all(promises).then(function () {
-      toSep.forEach(function (id) {
-        var node = stage.findOne('#tbl-' + id);
-        if (node) { node.destroy(); }
-        if (S.tables[id]) addTableNode(S.tables[id]);
-      });
-      tableLayer.batchDraw();
-      showToast('Tables separated', 'info');
-      markDirty();
-      if (S.selectedIds.size > 1) showMultiSelectFloat(S.selectedIds.size);
-      else if (S.selected) showFloatPanel(S.selected);
-    }).catch(function (err) { console.warn('separateSelected failed', err); });
+    toSep.forEach(function (id) {
+      var node = stage.findOne('#tbl-' + id);
+      if (node) node.destroy();
+      if (S.tables[id]) addTableNode(S.tables[id]);
+    });
+    tableLayer.batchDraw();
+    showToast('Tables separated', 'info');
+    markDirty();
+    if (S.selectedIds.size > 1) showMultiSelectFloat(S.selectedIds.size);
+    else if (S.selected) showFloatPanel(S.selected);
   }
 
   function leaveGroup(id) {
     var item = S.tables[id];
     if (!item || !item.group_id) return;
-    apiFetch('PATCH', 'furniture/' + id, { group_id: null }).then(function () {
-      item.group_id = null;
-      var node = stage.findOne('#tbl-' + id);
-      if (node) { node.destroy(); }
-      addTableNode(item);
-      tableLayer.batchDraw();
-      showToast('Left group', 'info');
-      markDirty();
-      if (S.selected === String(id)) showFloatPanel(id);
-    }).catch(function (err) { console.warn('leaveGroup failed', err); });
+    item.group_id = null;
+    var node = stage.findOne('#tbl-' + id);
+    if (node) node.destroy();
+    addTableNode(item);
+    tableLayer.batchDraw();
+    showToast('Left group', 'info');
+    markDirty();
+    if (S.selected === String(id)) showFloatPanel(id);
   }
 
   function selectZone(id) {
@@ -2474,15 +2534,11 @@
         joinableEl.addEventListener('change', function () {
           var enabled = joinableEl.checked;
           if (S.activeLayout) {
-            // Layout mode: store override in slot meta
             var m = Object.assign({}, item.meta || {});
             m.joinable_override = enabled;
             item.meta = m;
-            apiFetch('PATCH', 'slots/' + id, { meta: m }).catch(function (e) { console.warn('joinable patch failed', e); });
           } else {
-            // Base mode: patch is_combinable on furniture
             item.is_combinable = enabled ? 1 : 0;
-            apiFetch('PATCH', 'furniture/' + id, { is_combinable: item.is_combinable }).catch(function (e) { console.warn('joinable patch failed', e); });
           }
           markDirty();
         });
@@ -2664,19 +2720,11 @@
     if (colorEl) zone.meta.color = colorEl.value;
     if (rotEl)  zone.meta.rotation = ((parseInt(rotEl.value, 10) || 0) % 360 + 360) % 360;
     zone.meta.members = Array.from(S.pendingZoneMembers || []);
-    var saveBtn = document.getElementById('fp-fp-save-zone');
-    if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
-    apiFetch('PATCH', 'furniture/' + zoneId, { label: zone.label, meta: zone.meta }).then(function () {
-      renderZoneLayer();
-      var titleEl = document.getElementById('fp-fp-title');
-      if (titleEl) titleEl.textContent = zone.label;
-      showToast('Zone updated', 'ok');
-      if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Update Zone'; }
-      markDirty();
-    }).catch(function (err) {
-      console.warn('saveZone failed', err);
-      if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Update Zone'; }
-    });
+    renderZoneLayer();
+    var titleEl = document.getElementById('fp-fp-title');
+    if (titleEl) titleEl.textContent = zone.label;
+    showToast('Zone updated', 'ok');
+    markDirty();
   }
 
   function applyZoneRotationPreview(zoneId, rotation) {
@@ -3027,13 +3075,15 @@
       // Base mode: PATCH each furniture item individually (existing behaviour)
       var promises = Object.values(S.tables).map(function (item) {
         var patch = {
-          label:        item.label,
-          pos_x:        item.pos_x,
-          pos_y:        item.pos_y,
-          rotation_deg: item.rotation_deg || 0,
-          capacity_min: item.capacity_min,
-          capacity_max: item.capacity_max,
-          element_key:  item.element_key,
+          label:         item.label,
+          pos_x:         item.pos_x,
+          pos_y:         item.pos_y,
+          rotation_deg:  item.rotation_deg || 0,
+          capacity_min:  item.capacity_min,
+          capacity_max:  item.capacity_max,
+          element_key:   item.element_key,
+          group_id:      item.group_id || null,
+          is_combinable: item.is_combinable !== undefined ? item.is_combinable : 1,
         };
         if (item.meta) patch.meta = item.meta;
         return apiFetch('PATCH', 'furniture/' + item.id, patch);
@@ -3041,7 +3091,7 @@
       promise = Promise.all(promises);
     }
 
-    promise.then(function () {
+    return promise.then(function () {
       S.dirty = false;
       if (btn) {
         btn.textContent = 'Saved ✓';
@@ -3130,6 +3180,34 @@
     startLiveUpdates();
     var btn = document.getElementById('fp-btn-publish');
     if (btn) btn.disabled = true;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     DIRTY-NAV GUARD  — intercept navigation away while S.dirty
+  ══════════════════════════════════════════════════════════════════ */
+  function guardDirtyNav(proceed) {
+    if (!S.dirty || S.mode !== 'builder') { proceed(); return; }
+    fpModal({
+      type:       'confirm',
+      title:      'Unsaved changes',
+      body:       '<p>This layout has unpublished changes. What would you like to do?</p>',
+      ok:         'Publish & continue',
+      extra:      'Abandon changes',
+      extraDanger: true,
+      cancel:     'Stay',
+    }).then(function (result) {
+      if (result === true) {
+        saveLayout().then(function () { proceed(); }).catch(function () {
+          fpModal({ type: 'alert', title: 'Save failed', body: '<p>Could not publish. Check your connection and try again.</p>', ok: 'OK' });
+        });
+      } else if (result === 'extra') {
+        S.dirty = false;
+        var btn = document.getElementById('fp-btn-publish');
+        if (btn) btn.disabled = true;
+        proceed();
+      }
+      // null = cancel → stay, no action
+    });
   }
 
   /* ══════════════════════════════════════════════════════════════════

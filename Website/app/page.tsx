@@ -39,11 +39,12 @@ function IconMapPin() {
   );
 }
 
-// In development: show the full site. In production: show the holding page.
-const IS_PRODUCTION = process.env.NODE_ENV === "production";
+// NEXT_PUBLIC_SITE_MODE=preview → show full site (gated by PinGate in layout)
+// default (unset)              → show coming-soon holding page
+const IS_PREVIEW = process.env.NEXT_PUBLIC_SITE_MODE === "preview";
 
 export default function HomePage() {
-  if (!IS_PRODUCTION) {
+  if (IS_PREVIEW) {
     return (
       <>
         <SiteNav />

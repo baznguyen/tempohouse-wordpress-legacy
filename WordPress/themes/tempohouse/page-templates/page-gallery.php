@@ -10,59 +10,161 @@ get_header();
 
   <!-- ── 1. Page Banner ──────────────────────────── -->
   <header class="page-inner__banner">
-    <p class="page-inner__eyebrow">The Gallery</p>
+    <p class="page-inner__eyebrow">The Gallery &mdash; Level 1</p>
     <h1 class="page-inner__title">Contemporary art in Saigon.<br>Level 1 is always open.</h1>
-    <p class="page-inner__lead">The gallery at TEMPO House runs a year-round programme of rotating exhibitions across painting, photography, installation, and mixed media. Open to café and bar guests — no appointment, no admission fee.</p>
+    <p class="page-inner__lead">A rotating gallery and platform for Vietnamese and Southeast Asian artists at 218c Pasteur, District 3. Free entry &mdash; open to everyone, every day.</p>
   </header>
 
-  <!-- ── 1b. Gallery provenance strip ─────────────── -->
-  <div class="page-gallery__provenance" aria-hidden="true">
+  <!-- ── 1b. Catalogue strip ───────────────────────── -->
+  <div class="page-gallery__catalogue" aria-hidden="true">
     <div class="page-inner__container">
-      <dl class="page-gallery__provenance-grid">
-        <div class="page-gallery__provenance-item">
-          <dt class="page-gallery__provenance-label">Programme</dt>
-          <dd class="page-gallery__provenance-value">4&ndash;6 rotating exhibitions per year</dd>
+      <dl class="page-gallery__catalogue-grid">
+        <div class="page-gallery__catalogue-item">
+          <dt class="page-gallery__catalogue-label">Programme</dt>
+          <dd class="page-gallery__catalogue-value">4&ndash;6 exhibitions per year</dd>
         </div>
-        <div class="page-gallery__provenance-item">
-          <dt class="page-gallery__provenance-label">Medium</dt>
-          <dd class="page-gallery__provenance-value">Painting &middot; Photography &middot; Installation</dd>
+        <div class="page-gallery__catalogue-item">
+          <dt class="page-gallery__catalogue-label">Medium</dt>
+          <dd class="page-gallery__catalogue-value">Painting &middot; Photography &middot; Installation</dd>
         </div>
-        <div class="page-gallery__provenance-item">
-          <dt class="page-gallery__provenance-label">Artists</dt>
-          <dd class="page-gallery__provenance-value">Regional &amp; Southeast Asian</dd>
+        <div class="page-gallery__catalogue-item">
+          <dt class="page-gallery__catalogue-label">Artists</dt>
+          <dd class="page-gallery__catalogue-value">Vietnamese &amp; Southeast Asian</dd>
         </div>
-        <div class="page-gallery__provenance-item">
-          <dt class="page-gallery__provenance-label">Access</dt>
-          <dd class="page-gallery__provenance-value">Free entry &mdash; no appointment</dd>
+        <div class="page-gallery__catalogue-item">
+          <dt class="page-gallery__catalogue-label">Admission</dt>
+          <dd class="page-gallery__catalogue-value">Free entry &mdash; no appointment</dd>
         </div>
       </dl>
     </div>
   </div>
 
-  <!-- ── 2. Current Exhibition ───────────────────── -->
-  <section class="page-inner__section page-inner__section--alt" aria-labelledby="exhibition-title">
+  <!-- ── 2. Gallery Wall — secondary hero (mirrors moods/spaces exactly) ── -->
+  <section class="page-gallery__wall moods" aria-label="Gallery wall — current works">
+
+    <p class="moods__eyebrow">Level 1 &mdash; The Gallery</p>
+
+    <div class="moods__bleed-text" aria-hidden="true">
+      <span class="moods__bleed-line">Works</span>
+      <span class="moods__bleed-line">on view</span>
+    </div>
+
+    <div class="moods__frames-wrap">
+
+      <article class="moods__frame" data-frame="gallery-left" style="--speed: -0.07;" aria-label="Work I">
+        <div class="moods__frame-art">
+          <div class="moods__mat">
+            <div class="moods__artwork">
+              <span class="moods__num">I</span>
+              <div class="moods__title-bar">
+                <p class="moods__label-mode">Current Exhibition</p>
+                <h3 class="moods__label-title">Work I</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="moods__frame" data-frame="gallery-center" style="--speed: -0.04;" aria-label="Work II">
+        <div class="moods__frame-art">
+          <div class="moods__mat">
+            <div class="moods__artwork">
+              <span class="moods__num">II</span>
+              <div class="moods__title-bar">
+                <p class="moods__label-mode">Current Exhibition</p>
+                <h3 class="moods__label-title">Work II</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="moods__frame" data-frame="gallery-right" style="--speed: 0.05;" aria-label="Work III">
+        <div class="moods__frame-art">
+          <div class="moods__mat">
+            <div class="moods__artwork">
+              <span class="moods__num">III</span>
+              <div class="moods__title-bar">
+                <p class="moods__label-mode">Current Exhibition</p>
+                <h3 class="moods__label-title">Work III</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <nav class="moods__carousel-nav" aria-label="Gallery wall navigation">
+      <button class="moods__nav-btn moods__nav-prev" aria-label="Previous" disabled>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="moods__dots">
+        <button class="moods__dot moods__dot--active" aria-label="Work I"></button>
+        <button class="moods__dot" aria-label="Work II"></button>
+        <button class="moods__dot" aria-label="Work III"></button>
+      </div>
+      <button class="moods__nav-btn moods__nav-next" aria-label="Next">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </nav>
+
+  </section>
+
+  <!-- ── 3. Programme Statement ─────────────────────── -->
+  <section class="page-gallery__statement" aria-labelledby="statement-title">
+    <div class="page-inner__container">
+      <p class="page-inner__section-head">The Programme</p>
+      <blockquote class="page-gallery__statement-text" id="statement-title">
+        We show work by Vietnamese and Southeast Asian artists &mdash; painting, photography, installation, and mixed media. Emerging and mid-career practitioners, not only those with gallery representation. The programme is built around the work, not the CV.
+      </blockquote>
+      <div class="page-gallery__statement-meta">
+        <p class="page-gallery__statement-detail">Four to six exhibitions per year, each showing for four to six weeks with a public opening night. Walk in off Pasteur Street, take the stairs to Level 1, and spend time with the work. No ticket. No obligation to buy.</p>
+        <div class="page-inner__cta-row">
+          <a href="<?php echo esc_url( home_url( '/whats-on' ) ); ?>" class="page-inner__cta-primary">See What&rsquo;s On</a>
+          <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="page-inner__cta-secondary">Propose a Show</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 4. For Artists ──────────────────────────────── -->
+  <section class="page-inner__section page-inner__section--alt page-gallery__artists" aria-labelledby="artists-title">
     <div class="page-inner__container">
       <div class="page-inner__split">
 
-        <div class="page-gallery__exhibition-text">
-          <p class="page-inner__section-head">On Show</p>
-          <h2 class="page-inner__section-title" id="exhibition-title">Rotating Programme.<br>Regional Artists. Year-Round.</h2>
+        <div class="page-gallery__artists-text">
+          <p class="page-inner__section-head">For Artists</p>
+          <h2 class="page-inner__section-title" id="artists-title">Your work deserves to be seen. We&rsquo;ll make sure it is.</h2>
 
           <div class="page-inner__section-body">
-            <p>The gallery runs four to six exhibitions per year, each showing for four to six weeks with an opening night open to the public. Artists are drawn from Vietnam and the broader Southeast Asian region, working across painting, photography, installation, and mixed media. We show emerging and mid-career practitioners — not only those with gallery representation. The programme is built around the work, not the CV.</p>
-            <p>The gallery is open to all café and bar guests during trading hours. Walk in off Pasteur Street, take the stairs to Level 1, and spend time with the work. There is no appointment system, no ticketed entry, and no obligation to buy. For artists and organisations interested in the exhibition programme — or in using the space for a creative project — contact us via the form below.</p>
+            <p>We read your statement before you arrive. Opening nights are built around the work &mdash; not the crowd. We handle bar service, coordination with caterers, and promotion through our channels so the artist and their team can focus on what matters. One point of contact, from enquiry to close.</p>
           </div>
 
+          <ul class="page-inner__feature-list page-gallery__artists-specs" aria-label="Gallery technical specifications">
+            <li class="page-inner__feature-item">Track lighting &mdash; adjustable, warm white (3000K)</li>
+            <li class="page-inner__feature-item">Neutral exhibition walls &middot; floor-to-ceiling hang</li>
+            <li class="page-inner__feature-item">Column-free floor &middot; flexible layout</li>
+            <li class="page-inner__feature-item">Natural light from Pasteur Street windows</li>
+            <li class="page-inner__feature-item">Sound system for openings, talks, and screenings</li>
+            <li class="page-inner__feature-item">Bar service for opening nights</li>
+            <li class="page-inner__feature-item">Promotion via newsletter &amp; social channels</li>
+          </ul>
+
           <div class="page-inner__cta-row">
-            <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="page-inner__cta-primary">Enquire About Exhibiting</a>
-            <a href="<?php echo esc_url( home_url( '/whats-on' ) ); ?>" class="page-inner__cta-secondary">See What&rsquo;s On</a>
+            <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="page-inner__cta-primary">Propose a Show</a>
+            <a href="<?php echo esc_url( home_url( '/whats-on' ) ); ?>" class="page-inner__cta-secondary">See Current Programme</a>
           </div>
         </div>
 
-        <div class="tempo-frame tempo-frame--placeholder" data-interactive aria-label="Current exhibition at TEMPO House Gallery">
+        <div class="tempo-frame tempo-frame--placeholder page-gallery__artists-frame" data-interactive aria-label="TEMPO House Gallery — Level 1 exhibition space">
           <div class="tempo-frame__mat">
             <div class="tempo-frame__artwork">
-              <span class="tempo-frame__label">Current Exhibition</span>
+              <span class="tempo-frame__label">Your show here.</span>
             </div>
           </div>
         </div>
@@ -71,37 +173,108 @@ get_header();
     </div>
   </section>
 
-  <!-- ── 3. The Space ─────────────────────────────── -->
-  <section class="page-inner__section" aria-labelledby="space-title">
+  <!-- ── 5. Gallery Walk — wall (desktop) + carousel (mobile) ─────────── -->
+  <section class="page-gallery__walk" aria-label="Gallery walk — works on show">
+
+    <div class="page-gallery__walk-viewport" data-gallery-walk>
+      <div class="page-gallery__walk-track">
+
+        <div class="tempo-frame tempo-frame--placeholder page-gallery__walk-frame" data-interactive aria-label="Work I">
+          <div class="tempo-frame__mat">
+            <div class="tempo-frame__artwork"><span class="tempo-frame__label">I</span></div>
+          </div>
+        </div>
+
+        <div class="tempo-frame tempo-frame--placeholder page-gallery__walk-frame page-gallery__walk-frame--wide" data-interactive aria-label="Work II">
+          <div class="tempo-frame__mat">
+            <div class="tempo-frame__artwork"><span class="tempo-frame__label">II</span></div>
+          </div>
+        </div>
+
+        <div class="tempo-frame tempo-frame--placeholder page-gallery__walk-frame page-gallery__walk-frame--tall" data-interactive aria-label="Work III">
+          <div class="tempo-frame__mat">
+            <div class="tempo-frame__artwork"><span class="tempo-frame__label">III</span></div>
+          </div>
+        </div>
+
+        <div class="tempo-frame tempo-frame--placeholder page-gallery__walk-frame page-gallery__walk-frame--wide" data-interactive aria-label="Work IV">
+          <div class="tempo-frame__mat">
+            <div class="tempo-frame__artwork"><span class="tempo-frame__label">IV</span></div>
+          </div>
+        </div>
+
+        <div class="tempo-frame tempo-frame--placeholder page-gallery__walk-frame" data-interactive aria-label="Work V">
+          <div class="tempo-frame__mat">
+            <div class="tempo-frame__artwork"><span class="tempo-frame__label">V</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <nav class="page-gallery__walk-nav" aria-label="Gallery walk navigation">
+      <button class="page-gallery__walk-nav-btn page-gallery__walk-nav-prev" aria-label="Previous" disabled>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="page-gallery__walk-dots">
+        <button class="page-gallery__walk-dot page-gallery__walk-dot--active" aria-label="Work I"></button>
+        <button class="page-gallery__walk-dot" aria-label="Work II"></button>
+        <button class="page-gallery__walk-dot" aria-label="Work III"></button>
+        <button class="page-gallery__walk-dot" aria-label="Work IV"></button>
+        <button class="page-gallery__walk-dot" aria-label="Work V"></button>
+      </div>
+      <button class="page-gallery__walk-nav-btn page-gallery__walk-nav-next" aria-label="Next">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </nav>
+
+    <p class="page-gallery__walk-caption" aria-hidden="true">Works currently hanging at Level 1, TEMPO House &mdash; 218c Pasteur, Qu&#7853;n 3</p>
+  </section>
+
+  <!-- ── 6. Manifesto ──────────────────────────────── -->
+  <section class="page-gallery__manifesto" aria-hidden="true">
+    <div class="page-inner__container">
+      <p class="page-gallery__manifesto-text">Art belongs in the everyday.</p>
+    </div>
+  </section>
+
+  <!-- ── 7. The Space ──────────────────────────────── -->
+  <section class="page-inner__section page-inner__section--alt" aria-labelledby="space-title">
     <div class="page-inner__container">
       <div class="page-inner__split">
 
         <div class="page-gallery__space-text">
-          <p class="page-inner__section-head">The Venue</p>
-          <h2 class="page-inner__section-title" id="space-title">Level 1 Gallery<br>&middot; Ground Floor &middot; Outdoor</h2>
+          <p class="page-inner__section-head">The Space</p>
+          <h2 class="page-inner__section-title" id="space-title">Level 1 &mdash; a column-free floor built to hold work.</h2>
 
           <div class="page-inner__section-body">
-            <p>The gallery floor at Level 1 is a column-free space designed to hold work without competing with it. Neutral exhibition walls, adjustable track lighting, and natural light from street-facing windows during the day. The floor is non-fixed — furniture and layout reconfigure for exhibitions, talks, film screenings, and events up to 80 guests standing. Combined with the ground floor café and bar and the connecting outdoor area, the full venue at 218c Pasteur accommodates 150 or more for standing events.</p>
+            <p>Neutral exhibition walls, adjustable track lighting at warm white (3000K) for accurate colour rendering, and natural light from street-facing windows for daytime viewing and documentation. The floor is non-fixed &mdash; layout reconfigures for exhibitions, artist talks, film screenings, and events to 80 standing.</p>
+            <p>Combined with the ground floor caf&eacute;, bar, and outdoor terrace, the full venue at 218c Pasteur accommodates 150 or more for opening nights and standing events.</p>
           </div>
 
-          <ul class="page-inner__feature-list page-gallery__menu-list" aria-label="Gallery venue features">
+          <ul class="page-inner__feature-list page-gallery__space-specs" aria-label="Gallery space specifications">
             <li class="page-inner__feature-item">Level 1: up to 80 guests (standing)</li>
-            <li class="page-inner__feature-item">Ground floor + outdoor: full venue to 150+</li>
-            <li class="page-inner__feature-item">Natural light + adjustable track lighting</li>
-            <li class="page-inner__feature-item">Neutral exhibition walls</li>
+            <li class="page-inner__feature-item">Full venue: caf&eacute; + bar + outdoor to 150+</li>
+            <li class="page-inner__feature-item">Track lighting &mdash; warm white 3000K</li>
+            <li class="page-inner__feature-item">Neutral walls &middot; floor-to-ceiling &middot; flexible layout</li>
+            <li class="page-inner__feature-item">Natural light &middot; Pasteur Street frontage</li>
             <li class="page-inner__feature-item">Sound system</li>
-            <li class="page-inner__feature-item">Flexible layout (non-fixed)</li>
           </ul>
 
           <div class="page-inner__cta-row">
             <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-primary">Enquire About the Space</a>
+            <a href="<?php echo esc_url( home_url( '/venue' ) ); ?>" class="page-inner__cta-secondary">View Venue Details</a>
           </div>
         </div>
 
-        <div class="tempo-frame tempo-frame--placeholder" data-interactive aria-label="Level 1 gallery floor at TEMPO House District 3">
+        <div class="tempo-frame tempo-frame--placeholder" data-interactive aria-label="Level 1 gallery floor at TEMPO House, District 3">
           <div class="tempo-frame__mat">
             <div class="tempo-frame__artwork">
-              <span class="tempo-frame__label">Gallery Space</span>
+              <span class="tempo-frame__label">Level 1</span>
             </div>
           </div>
         </div>
@@ -110,57 +283,63 @@ get_header();
     </div>
   </section>
 
-  <!-- ── 4. Events at the Gallery ─────────────────── -->
-  <section class="page-inner__section page-inner__section--alt" aria-labelledby="events-title">
+  <!-- ── 8. Hire the Gallery ───────────────────────── -->
+  <section class="page-inner__section" aria-labelledby="hire-title">
     <div class="page-inner__container">
 
       <div class="page-gallery__events-head">
-        <p class="page-inner__section-head">Events at the Gallery</p>
-        <h2 class="page-inner__section-title" id="events-title">The space works as hard as the ideas inside it.</h2>
+        <p class="page-inner__section-head">Hire the Gallery</p>
+        <h2 class="page-inner__section-title" id="hire-title">The space works as hard as the ideas inside it.</h2>
       </div>
 
-      <ul class="page-inner__card-grid" aria-label="Event types at TEMPO House Gallery">
+      <ul class="page-gallery__programme-list" aria-label="Hire categories at TEMPO House Gallery">
 
-        <li class="page-inner__card">
-          <span class="page-inner__card-num" aria-hidden="true">01</span>
-          <h3 class="page-inner__card-title">Art Openings &amp; Exhibitions</h3>
-          <p class="page-inner__card-body">The gallery floor is built for opening nights. Good wall space, good light, room to circulate without feeling crowded. We handle the venue setup, bar service, and coordination with catering partners so the artist and their team can focus on the work. The evening programme — from doors to close — runs without your intervention.</p>
-          <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__card-cta" aria-label="Enquire about art openings and exhibitions">Enquire &rarr;</a>
+        <li class="page-gallery__programme-item">
+          <span class="page-gallery__programme-num" aria-hidden="true">01</span>
+          <h3 class="page-gallery__programme-title">Art Openings &amp; Private Views</h3>
+          <p class="page-gallery__programme-body">Opening nights built around the work. Good wall space, good light, room to circulate without crowding the art. Bar service, catering coordination, and venue setup handled &mdash; so the artist and their team can focus entirely on the work.</p>
+          <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-gallery__programme-link" aria-label="Enquire about art openings and private views">Enquire &rarr;</a>
         </li>
 
-        <li class="page-inner__card">
-          <span class="page-inner__card-num" aria-hidden="true">02</span>
-          <h3 class="page-inner__card-title">Product Launches</h3>
-          <p class="page-inner__card-body">Level 1 gives a launch an editorial quality that a hotel function room does not. Brands and creative studios use the gallery space because the setting itself communicates intent — the architecture, the art programme context, the address on Pasteur Street. The venue becomes part of the story, not just where it was told.</p>
-          <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__card-cta" aria-label="Enquire about product launches at the gallery">Enquire &rarr;</a>
+        <li class="page-gallery__programme-item">
+          <span class="page-gallery__programme-num" aria-hidden="true">02</span>
+          <h3 class="page-gallery__programme-title">Talks, Screenings &amp; Performances</h3>
+          <p class="page-gallery__programme-body">Artist talks, panel discussions, film screenings, live performances. Flexible layout, sound system, and an audience of 20 to 60 in a room built to take ideas seriously. Not a conference room with art on the walls &mdash; a gallery that also holds events.</p>
+          <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-gallery__programme-link" aria-label="Enquire about talks and screenings">Enquire &rarr;</a>
         </li>
 
-        <li class="page-inner__card">
-          <span class="page-inner__card-num" aria-hidden="true">03</span>
-          <h3 class="page-inner__card-title">Intimate Gatherings</h3>
-          <p class="page-inner__card-body">Birthday dinners, engagement celebrations, brand gatherings of 20 to 60 people — the gallery is more considered than a restaurant hire and smaller in scale than an event hall. The room has genuine character without demanding attention. For occasions where the setting should feel earned rather than booked, this is the right space in District 3.</p>
-          <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__card-cta" aria-label="Enquire about intimate gatherings at the gallery">Enquire &rarr;</a>
+        <li class="page-gallery__programme-item">
+          <span class="page-gallery__programme-num" aria-hidden="true">03</span>
+          <h3 class="page-gallery__programme-title">Brand &amp; Creative Launches</h3>
+          <p class="page-gallery__programme-body">Level 1 gives a launch an editorial quality a hotel function room cannot. Brands and creative studios use the gallery because the setting itself communicates intent &mdash; the architecture, the art programme context, the address on Pasteur Street. The venue becomes part of the story.</p>
+          <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-gallery__programme-link" aria-label="Enquire about brand and creative launches">Enquire &rarr;</a>
+        </li>
+
+        <li class="page-gallery__programme-item">
+          <span class="page-gallery__programme-num" aria-hidden="true">04</span>
+          <h3 class="page-gallery__programme-title">Private Gatherings</h3>
+          <p class="page-gallery__programme-body">Birthday dinners, collector evenings, brand gatherings of 20 to 60 people. More considered than a restaurant hire, smaller in scale than an event hall. For occasions where the setting should feel earned, not simply booked.</p>
+          <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-gallery__programme-link" aria-label="Enquire about private gatherings">Enquire &rarr;</a>
         </li>
 
       </ul>
     </div>
   </section>
 
-  <!-- ── 5. Partnership Callout ────────────────────── -->
-  <section class="page-inner__section" aria-labelledby="partnership-title">
+  <!-- ── 9. Callout ────────────────────────────────── -->
+  <section class="page-gallery__callout" aria-labelledby="callout-title">
     <div class="page-inner__container">
-      <div class="page-gallery__partnership-callout">
-        <p class="page-inner__section-head">Working Together</p>
-        <h2 class="page-inner__section-title" id="partnership-title">You bring the occasion.<br>We bring everything else.</h2>
-        <p class="page-gallery__partnership-body">Tell us what you&rsquo;re planning — we&rsquo;ll put together the right team of vendors, caterers, and crew from our network of trusted partners in Ho Chi Minh City. One point of contact. No chasing.</p>
-        <div class="page-inner__cta-row page-gallery__partnership-cta-row">
-          <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-primary">Start the Conversation</a>
-        </div>
+      <p class="page-inner__section-head">Working Together</p>
+      <h2 class="page-gallery__callout-title" id="callout-title">You bring the work.<br>We bring everything else.</h2>
+      <p class="page-gallery__callout-body">Whether you&rsquo;re an artist proposing a solo show, a manager planning an opening night, or a brand looking for a space with genuine cultural context &mdash; one point of contact. Trusted vendors, caterers, and crew from our network in Ho Chi Minh City. No chasing.</p>
+      <div class="page-inner__cta-row page-gallery__callout-cta">
+        <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-primary">Start the Conversation</a>
+        <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="page-inner__cta-secondary">Propose a Show</a>
       </div>
     </div>
   </section>
 
-  <!-- ── 6. Info Strip ────────────────────────────── -->
+  <!-- ── 10. Info Strip ─────────────────────────────── -->
   <section class="page-gallery__info-strip" aria-label="TEMPO House Gallery information">
     <div class="page-inner__container">
       <div class="page-inner__info-grid">
@@ -168,8 +347,16 @@ get_header();
         <div>
           <p class="page-inner__info-label">Gallery Hours</p>
           <p class="page-inner__info-value">
-            Open during caf&eacute; hours<br>
+            Open during caf&eacute; &amp; bar hours<br>
             + event programme &middot; Level 1
+          </p>
+        </div>
+
+        <div>
+          <p class="page-inner__info-label">Admission</p>
+          <p class="page-inner__info-value">
+            Free entry<br>
+            No appointment required
           </p>
         </div>
 
@@ -184,8 +371,8 @@ get_header();
         <div>
           <p class="page-inner__info-label">Contact</p>
           <p class="page-inner__info-value">
-            <a href="mailto:events@tempohouse.com.vn">events@tempohouse.com.vn</a><br>
-            <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>">Event enquiry form</a>
+            <a href="mailto:gallery@tempohouse.com.vn">gallery@tempohouse.com.vn</a><br>
+            <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>">Exhibition enquiry</a>
           </p>
         </div>
 

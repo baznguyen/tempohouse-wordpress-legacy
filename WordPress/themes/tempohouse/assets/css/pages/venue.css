@@ -75,7 +75,30 @@
   line-height: var(--leading-loose);
 }
 
-/* ── 4. Event Types Head ───────────────────────────────── */
+/* ── 4. Private Events ─────────────────────────────────── */
+
+.page-venue__event-types {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding-top: var(--space-2);
+}
+
+.page-venue__events-explore {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.page-venue__events-explore:hover {
+  text-decoration: underline;
+}
+
+/* ── 4. Event Types Head (legacy, unused) ──────────────── */
 
 .page-venue__types-head {
   margin-bottom: var(--space-10);
@@ -239,6 +262,7 @@
 
   .page-venue__cap-item {
     padding-block: var(--space-6);
+    padding-inline: var(--space-4);
   }
 }
 
@@ -298,9 +322,9 @@
 }
 
 @media (max-width: 600px) {
-  /* Full-width per slide on small phones */
+  /* Full-width per slide on small phones — 100% not 100vw to avoid scrollbar overflow */
   .page-venue__floor {
-    flex: 0 0 100vw;
+    flex: 0 0 100%;
   }
 }
 

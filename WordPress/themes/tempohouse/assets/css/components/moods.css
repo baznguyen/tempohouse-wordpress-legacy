@@ -351,12 +351,14 @@
     position: relative; /* required for z-index elevation in spotlight */
     display: flex;
     overflow-x: auto;
-    overflow-y: clip; /* overflow-x:auto creates implicit overflow-y:auto without this */
-    overflow-clip-margin: 110px; /* allows the -88px beam ::before to show above frames-wrap */
+    /* overflow-x:auto forces overflow-y to compute as 'hidden' per CSS spec (clip→hidden
+       when paired with auto). overflow-clip-margin is ineffective here. Instead we solve
+       the lamp bleed by increasing padding-top so ::before at top:-115px sits inside
+       the wrap's padding box (120-115=5px clearance), then mask the leading edge. */
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     gap: 56px;
-    padding: 94px 48px 0;
+    padding: 120px 48px 0;
     scrollbar-width: none;
     scroll-padding-inline-start: 48px;
     cursor: grab;
@@ -399,18 +401,20 @@
   /* Mobile: override desktop frontal flood → downlight wall flood (hover-only) */
   .moods__frame::before {
     inset: auto;
-    top: -88px;
+    top: -115px;   /* raised so lamp sits at 41px from element top, within mask fade zone */
     left: 50%;
     transform: translateX(-50%);
     width: 210%;
     height: 125%;
     background: radial-gradient(
-      ellipse 180px 90px at 50% 10%,
+      ellipse 180px 90px at 50% 41px,  /* 41px from top = lamp level (-74px from frame) */
       rgba(255, 232, 130, 0.40) 0%,
       rgba(255, 218, 88, 0.28) 50%,
       rgba(255, 205, 58, 0.07) 80%,
       transparent 95%
     );
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 30px);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 30px);
     opacity: 0;
   }
 

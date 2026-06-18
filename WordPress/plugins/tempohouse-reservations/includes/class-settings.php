@@ -54,6 +54,16 @@ class THR_Settings {
         'vietqr_bank_id'       => 'VCB',  // Vietcombank default
         'vietqr_account_no'    => '',
         'vietqr_account_name'  => '',
+        // Large party / private room
+        'private_room_min_party'  => 12,    // party size >= this triggers private-room option
+        'private_room_max_party'  => 15,    // private room capacity ceiling
+        // Service periods (pipe-separated name:start:end in HH:MM)
+        'periods'                 => 'Lunch:11:30:14:30|Dinner:17:30:22:30',
+        // Calendar availability
+        'slot_interval_min'       => 30,    // minutes between selectable time slots
+        'closed_days'             => '',    // comma-separated day numbers to always close: 0=Sun … 6=Sat, empty = open all
+        // Referral sources (pipe-separated label:slug)
+        'referral_sources'        => 'Google:google|Instagram:instagram|Friend or family:friend|Walk by:walkby|Returning guest:returning|Other:other',
     ];
 
     public static function maybe_set_defaults(): void {
@@ -105,5 +115,47 @@ class THR_Settings {
             if ( $slug ) $out[ trim( $slug ) ] = trim( $label );
         }
         return $out;
+    }
+
+    public static function periods(): array {
+        $raw = self::get( 'periods', '' );
+        $out = [];
+        foreach ( explode( '|', $raw ) as $chunk ) {
+            $parts = explode( ':', $chunk, 3 );
+            if ( count( $parts ) === 3 ) {
+                $slug        = strtolower( trim( $parts[0] ) );
+                $out[ $slug ] = [
+                    'label' => trim( $parts[0] ),
+                    'start' => trim( $parts[1] ),
+                    'end'   => trim( $parts[2] ),
+                ];
+            }
+        }
+        return $out;
+    }
+
+    public static function referral_sources(): array {
+        $raw = self::get( 'referral_sources', '' );
+        $out = [];
+        foreach ( explode( '|', $raw ) as $pair ) {
+            [ $label, $slug ] = array_pad( explode( ':', $pair, 2 ), 2, '' );
+            if ( $slug ) $out[ trim( $slug ) ] = trim( $label );
+        }
+        return $out;
+    }
+
+    public static function slots_for_period( string $period ): array {
+        $periods = self::periods();
+        if ( ! isset( $periods[ $period ] ) ) return self::time_slots();
+
+        $start    = strtotime( $periods[ $period ]['start'] );
+        $end      = strtotime( $periods[ $period ]['end'] );
+        $interval = (int) self::get( 'slot_interval_min', 30 ) * 60;
+        $slots    = [];
+
+        for ( $t = $start; $t <= $end; $t += $interval ) {
+            $slots[] = date( 'H:i', $t );
+        }
+        return $slots;
     }
 }

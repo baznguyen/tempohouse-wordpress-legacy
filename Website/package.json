@@ -8,7 +8,9 @@
     "start": "next start",
     "export": "next build",
     "deploy": "next build && node scripts/deploy.js",
-    "deploy:dry": "DRY_RUN=true node scripts/deploy.js"
+    "deploy:dev": "NEXT_PUBLIC_SITE_MODE=preview next build && DEPLOY_ENV=dev node scripts/deploy.js",
+    "deploy:dry": "DRY_RUN=true node scripts/deploy.js",
+    "deploy:dev:dry": "DEPLOY_ENV=dev DRY_RUN=true node scripts/deploy.js"
   },
   "dependencies": {
     "next": "16.2.6",

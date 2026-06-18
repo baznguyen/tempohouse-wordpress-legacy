@@ -111,6 +111,15 @@ $has_upcoming = $upcoming_query->have_posts();
                         $media_type = get_field( 'event_media_type' ) ?: 'none';
                         $media_id   = get_field( 'event_media_id' )   ?: 0;
 
+                        // Detect orientation from uploaded image dimensions.
+                        $orientation = 'portrait';
+                        if ( $media_id ) {
+                            $img_meta = wp_get_attachment_metadata( $media_id );
+                            if ( $img_meta && ! empty( $img_meta['width'] ) && ! empty( $img_meta['height'] ) ) {
+                                $orientation = $img_meta['width'] > $img_meta['height'] ? 'landscape' : 'portrait';
+                            }
+                        }
+
                         // Display label below card: month+year if dated, else recurrence text.
                         if ( $date_raw ) {
                             $month_label = date_i18n( 'M Y', strtotime( $date_raw ) );
@@ -120,7 +129,7 @@ $has_upcoming = $upcoming_query->have_posts();
                             $month_label = 'Ongoing';
                         }
                     ?>
-                    <article class="event-card" data-interior="<?php echo esc_attr( $interior ); ?>">
+                    <article class="event-card" data-interior="<?php echo esc_attr( $interior ); ?>" data-orientation="<?php echo esc_attr( $orientation ); ?>">
                         <a href="<?php the_permalink(); ?>" class="event-card__link"
                            aria-label="<?php echo esc_attr( get_the_title() . ( $time ? ' — ' . $time : '' ) ); ?>"></a>
                         <div class="event-card__frame-art">
@@ -196,6 +205,14 @@ $has_upcoming = $upcoming_query->have_posts();
                         $media_type = get_field( 'event_media_type' ) ?: 'none';
                         $media_id   = get_field( 'event_media_id' )   ?: 0;
 
+                        $orientation = 'portrait';
+                        if ( $media_id ) {
+                            $img_meta = wp_get_attachment_metadata( $media_id );
+                            if ( $img_meta && ! empty( $img_meta['width'] ) && ! empty( $img_meta['height'] ) ) {
+                                $orientation = $img_meta['width'] > $img_meta['height'] ? 'landscape' : 'portrait';
+                            }
+                        }
+
                         if ( $date_raw ) {
                             $month_label = date_i18n( 'M Y', strtotime( $date_raw ) );
                         } elseif ( $recurrence ) {
@@ -204,7 +221,7 @@ $has_upcoming = $upcoming_query->have_posts();
                             $month_label = '';
                         }
                     ?>
-                    <article class="event-card" data-interior="<?php echo esc_attr( $interior ); ?>">
+                    <article class="event-card" data-interior="<?php echo esc_attr( $interior ); ?>" data-orientation="<?php echo esc_attr( $orientation ); ?>">
                         <a href="<?php the_permalink(); ?>" class="event-card__link"
                            aria-label="<?php echo esc_attr( get_the_title() . ( $time ? ' — ' . $time : '' ) ); ?>"></a>
                         <div class="event-card__frame-art">

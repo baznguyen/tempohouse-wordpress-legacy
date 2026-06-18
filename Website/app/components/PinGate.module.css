@@ -1,0 +1,206 @@
+/* ─────────────────────────────────────────────
+   TEMPO House — PIN Gate overlay
+   Mirrors the coming-soon design language:
+     Voice A — italic serif  (not used here)
+     Voice B — small caps    (announce, label, footer)
+   ───────────────────────────────────────────── */
+
+/* Shared palette (mirrors page.module.css) */
+.overlay {
+  --brown:       #7B3A35;
+  --brown-dim:   rgba(123, 58, 53, 0.2);
+  --brown-mid:   rgba(123, 58, 53, 0.5);
+  --ink:         #2C1A18;
+  --ink-mid:     rgba(44, 26, 24, 0.68);
+  --ink-sub:     rgba(44, 26, 24, 0.52);
+  --ink-ghost:   rgba(44, 26, 24, 0.32);
+  --cream:       #F2EDE6;
+
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--cream);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.6s ease both;
+}
+
+.overlay.exit {
+  animation: fadeOut 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  pointer-events: none;
+}
+
+
+/* ── Layout shell ─────────────────────── */
+.inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(2.5rem, 6vh, 4.5rem) clamp(1.5rem, 6vw, 4rem) clamp(2rem, 5vh, 3.5rem);
+  width: 100%;
+  max-width: 520px;
+  margin-inline: auto;
+  gap: 0;
+}
+
+
+/* ── Voice B — small caps ──────────────── */
+.announce,
+.label,
+.error,
+.footerText {
+  font-family: var(--font-body, 'Space Grotesk', system-ui, sans-serif);
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  line-height: 2;
+}
+
+.announce {
+  font-size: clamp(0.54rem, 1.4vw, 0.62rem);
+  color: var(--ink-sub);
+  margin-bottom: clamp(1.5rem, 4vh, 2.75rem);
+  animation: fadeIn 1.2s ease 0s both;
+}
+
+
+/* ── Logo ─────────────────────────────── */
+.logo {
+  width: clamp(180px, 42vw, 300px);
+  height: auto;
+  margin-bottom: clamp(-0.5rem, -1vh, 0rem);
+  animation: scaleIn 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+
+/* ── Divider ──────────────────────────── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: clamp(2.5rem, 7vw, 5rem);
+  margin: 0 auto clamp(2rem, 5vh, 3rem);
+  animation: fadeIn 0.8s ease 0.5s both;
+}
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: var(--brown-dim);
+  display: block;
+}
+.dividerDot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--brown-mid);
+  flex-shrink: 0;
+  display: block;
+}
+
+
+/* ── Label ─────────────────────────────── */
+.label {
+  font-size: clamp(0.54rem, 1.4vw, 0.62rem);
+  color: var(--ink-sub);
+  margin-bottom: clamp(1.25rem, 3vh, 1.75rem);
+  animation: fadeIn 0.8s ease 0.55s both;
+}
+
+
+/* ── PIN input row ────────────────────── */
+.pinRow {
+  display: flex;
+  gap: clamp(0.75rem, 2.5vw, 1.25rem);
+  justify-content: center;
+  margin-bottom: clamp(1rem, 2.5vh, 1.5rem);
+  animation: fadeIn 0.8s ease 0.65s both;
+}
+
+.pinBox {
+  width:  clamp(3rem, 10vw, 3.75rem);
+  height: clamp(3.5rem, 12vw, 4.25rem);
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--brown-dim);
+  outline: none;
+  text-align: center;
+  font-family: var(--font-body, 'Space Grotesk', system-ui, sans-serif);
+  font-size: clamp(1.4rem, 4vw, 1.75rem);
+  font-weight: 300;
+  color: var(--ink);
+  letter-spacing: 0;
+  caret-color: var(--brown);
+  transition: border-color 200ms ease;
+  border-radius: 0;
+  -webkit-appearance: none;
+  -webkit-text-security: disc;
+}
+
+.pinBox:focus {
+  border-bottom-color: var(--brown);
+}
+
+.pinBox.pinBoxFilled {
+  border-bottom-color: var(--brown-mid);
+}
+
+.pinBox.pinBoxError {
+  border-bottom-color: #B84040;
+}
+
+
+/* ── Error message ────────────────────── */
+.error {
+  font-size: clamp(0.5rem, 1.2vw, 0.58rem);
+  letter-spacing: 0.2em;
+  color: #B84040;
+  animation: fadeIn 0.3s ease both;
+}
+
+
+/* ── Footer ───────────────────────────── */
+.footer {
+  padding: clamp(1rem, 3vh, 1.5rem) clamp(1.5rem, 6vw, 4rem);
+  display: flex;
+  justify-content: center;
+}
+
+.footerText {
+  font-size: clamp(0.5rem, 1.2vw, 0.58rem);
+  color: var(--ink-ghost);
+  letter-spacing: 0.22em;
+}
+
+
+/* ── Animations ───────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  40%       { transform: translateX(6px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+
+.shake {
+  animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}

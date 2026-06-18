@@ -86,10 +86,10 @@ get_header();
           </div>
         </div>
 
-        <div class="tempo-frame tempo-frame--placeholder page-cafe__coffee-img" data-interactive aria-label="Specialty coffee at TEMPO House">
+        <div class="tempo-frame page-cafe__coffee-img" data-interactive aria-label="Specialty coffee at TEMPO House">
           <div class="tempo-frame__mat">
             <div class="tempo-frame__artwork">
-              <span class="tempo-frame__label">Coffee Photography</span>
+              <img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/cafe/cafe-coffee-latte.png" alt="Specialty coffee latte art at TEMPO House" loading="lazy">
             </div>
           </div>
         </div>
@@ -113,8 +113,8 @@ get_header();
       <div class="page-cafe__matcha-grid">
 
         <div class="page-cafe__matcha-item">
-          <div class="tempo-frame tempo-frame--placeholder page-cafe__matcha-frame" data-interactive aria-label="Matcha Latte at TEMPO House">
-            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><span class="tempo-frame__label">Matcha Latte</span></div></div>
+          <div class="tempo-frame page-cafe__matcha-frame" data-interactive aria-label="Matcha Latte at TEMPO House">
+            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/cafe/cafe-matcha-latte.png" alt="Matcha Latte at TEMPO House" loading="lazy"></div></div>
           </div>
           <div class="page-cafe__matcha-label">
             <span class="page-cafe__matcha-num" aria-hidden="true">01</span>
@@ -124,8 +124,8 @@ get_header();
         </div>
 
         <div class="page-cafe__matcha-item">
-          <div class="tempo-frame tempo-frame--placeholder page-cafe__matcha-frame" data-interactive aria-label="Matcha Coconut Cloud at TEMPO House">
-            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><span class="tempo-frame__label">Coconut Cloud</span></div></div>
+          <div class="tempo-frame page-cafe__matcha-frame" data-interactive aria-label="Matcha Coconut Cloud at TEMPO House">
+            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/cafe/cafe-matcha-coconut-cloud.png" alt="Coconut Cloud matcha at TEMPO House" loading="lazy"></div></div>
           </div>
           <div class="page-cafe__matcha-label">
             <span class="page-cafe__matcha-num" aria-hidden="true">02</span>
@@ -135,8 +135,8 @@ get_header();
         </div>
 
         <div class="page-cafe__matcha-item">
-          <div class="tempo-frame tempo-frame--placeholder page-cafe__matcha-frame" data-interactive aria-label="Matcha Jasmine Cloud at TEMPO House">
-            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><span class="tempo-frame__label">Jasmine Cloud</span></div></div>
+          <div class="tempo-frame page-cafe__matcha-frame" data-interactive aria-label="Matcha Jasmine Cloud at TEMPO House">
+            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/cafe/cafe-matcha-jasmine-cloud.png" alt="Jasmine Cloud matcha at TEMPO House" loading="lazy"></div></div>
           </div>
           <div class="page-cafe__matcha-label">
             <span class="page-cafe__matcha-num" aria-hidden="true">03</span>
@@ -146,8 +146,8 @@ get_header();
         </div>
 
         <div class="page-cafe__matcha-item">
-          <div class="tempo-frame tempo-frame--placeholder page-cafe__matcha-frame" data-interactive aria-label="Matcha Yuzu at TEMPO House">
-            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><span class="tempo-frame__label">Matcha Yuzu</span></div></div>
+          <div class="tempo-frame page-cafe__matcha-frame" data-interactive aria-label="Matcha Yuzu at TEMPO House">
+            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/cafe/cafe-matcha-yuzu.png" alt="Matcha Yuzu at TEMPO House" loading="lazy"></div></div>
           </div>
           <div class="page-cafe__matcha-label">
             <span class="page-cafe__matcha-num" aria-hidden="true">04</span>
@@ -157,8 +157,8 @@ get_header();
         </div>
 
         <div class="page-cafe__matcha-item">
-          <div class="tempo-frame tempo-frame--placeholder page-cafe__matcha-frame" data-interactive aria-label="Matcha Strawberry at TEMPO House">
-            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><span class="tempo-frame__label">Matcha Strawberry</span></div></div>
+          <div class="tempo-frame page-cafe__matcha-frame" data-interactive aria-label="Matcha Strawberry at TEMPO House">
+            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/cafe/cafe-matcha-strawberry.png" alt="Matcha Strawberry at TEMPO House" loading="lazy"></div></div>
           </div>
           <div class="page-cafe__matcha-label">
             <span class="page-cafe__matcha-num" aria-hidden="true">05</span>
@@ -168,8 +168,8 @@ get_header();
         </div>
 
         <div class="page-cafe__matcha-item">
-          <div class="tempo-frame tempo-frame--placeholder page-cafe__matcha-frame" data-interactive aria-label="Matcha Mango at TEMPO House">
-            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><span class="tempo-frame__label">Matcha Mango</span></div></div>
+          <div class="tempo-frame page-cafe__matcha-frame" data-interactive aria-label="Matcha Mango at TEMPO House">
+            <div class="tempo-frame__mat"><div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/cafe/cafe-matcha-mango.png" alt="Matcha Mango at TEMPO House" loading="lazy"></div></div>
           </div>
           <div class="page-cafe__matcha-label">
             <span class="page-cafe__matcha-num" aria-hidden="true">06</span>
@@ -181,7 +181,16 @@ get_header();
       </div>
 
       <p class="page-cafe__matcha-footnote">Add oat milk to any variation &mdash; on request. Matcha Affogato available from the counter.</p>
-      <div class="page-cafe__matcha-dots" aria-hidden="true"></div>
+
+      <nav class="page-cafe__matcha-nav" aria-label="Matcha programme navigation" aria-hidden="true">
+        <button class="page-cafe__matcha-nav-btn page-cafe__matcha-nav-prev" type="button" aria-label="Previous">
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="page-cafe__matcha-dots"></div>
+        <button class="page-cafe__matcha-nav-btn page-cafe__matcha-nav-next" type="button" aria-label="Next">
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </nav>
 
     </div>
   </section>

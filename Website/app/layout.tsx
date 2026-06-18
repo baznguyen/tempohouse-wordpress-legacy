@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "./globals.css";
+import PinGate from "./components/PinGate";
+
+const IS_PREVIEW = process.env.NEXT_PUBLIC_SITE_MODE === "preview";
 
 const KLAVIYO_ID   = process.env.NEXT_PUBLIC_KLAVIYO_COMPANY_ID ?? "VCR2Ei";
 const META_PIXEL   = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "";
@@ -155,7 +158,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        {children}
+        {IS_PREVIEW ? <PinGate>{children}</PinGate> : children}
         {/* Meta Pixel */}
         {META_PIXEL && (
           <>

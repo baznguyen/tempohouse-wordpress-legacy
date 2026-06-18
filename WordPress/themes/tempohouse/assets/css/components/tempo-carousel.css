@@ -1,0 +1,147 @@
+/* ══════════════════════════════════════════════════
+   Tempo Carousel — responsive card-grid → carousel
+   Standard pattern for all card grids on mobile.
+
+   Usage — wrap any .page-inner__card-grid:
+     <div class="tempo-carousel" data-carousel>
+       <div class="page-inner__card-grid tempo-carousel__track">
+         <!-- cards / items -->
+       </div>
+       <nav class="tempo-carousel__nav" aria-label="…">
+         <button class="tempo-carousel__btn tempo-carousel__prev" aria-label="Previous">
+           <svg …> chevron </svg>
+         </button>
+         <div class="tempo-carousel__dots"></div>
+         <button class="tempo-carousel__btn tempo-carousel__next" aria-label="Next">
+           <svg …> chevron </svg>
+         </button>
+       </nav>
+     </div>
+
+   Desktop (>900px): grid as normal, nav hidden.
+   Tablet (600–900px): 2-column grid, nav hidden.
+   Mobile (<600px): horizontal scroll carousel, nav shown.
+   ══════════════════════════════════════════════════ */
+
+.tempo-carousel {
+  position: relative;
+}
+
+/* ── Desktop: improve grid breakpoints over inner-page defaults ── */
+
+@media (max-width: 900px) {
+  .tempo-carousel .page-inner__card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Mobile: convert to horizontal scroll carousel ── */
+
+@media (max-width: 600px) {
+  .tempo-carousel .page-inner__card-grid {
+    display: flex !important;
+    grid-template-columns: unset;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: var(--space-4);
+    /* Bleed to full width — align with page gutter */
+    padding-inline: var(--gutter);
+    scroll-padding-inline-start: var(--gutter);
+    /* Negative margin to break out of container while keeping gutter */
+    margin-inline: calc(-1 * var(--gutter));
+  }
+
+  .tempo-carousel .page-inner__card-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tempo-carousel .page-inner__card-grid > * {
+    flex: 0 0 82%;
+    max-width: 340px;
+    scroll-snap-align: start;
+  }
+}
+
+/* ── Navigation ─────────────────────────────────── */
+
+.tempo-carousel__nav {
+  display: none;
+  align-items: center;
+  gap: var(--space-5);
+  margin-top: var(--space-8);
+}
+
+@media (max-width: 600px) {
+  .tempo-carousel__nav {
+    display: flex;
+  }
+}
+
+/* ── Dots ───────────────────────────────────────── */
+
+.tempo-carousel__dots {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1;
+  justify-content: center;
+}
+
+.tempo-carousel__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-border-strong);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition:
+    background var(--duration-base) ease,
+    transform var(--duration-base) ease,
+    width var(--duration-base) ease;
+  flex-shrink: 0;
+}
+
+.tempo-carousel__dot--active {
+  background: var(--color-accent);
+  width: 18px;
+  border-radius: 3px;
+}
+
+/* ── Prev / Next buttons ────────────────────────── */
+
+.tempo-carousel__btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) ease,
+    color var(--duration-fast) ease;
+}
+
+.tempo-carousel__btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.tempo-carousel__btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+
+.tempo-carousel__btn svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}

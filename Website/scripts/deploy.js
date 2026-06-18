@@ -6,17 +6,24 @@
  * Supports both FTP and SFTP (SSH) modes.
  *
  * Usage:
- *   npm run deploy          — full build + deploy
+ *   npm run deploy          — full build + deploy (coming-soon, main domain)
+ *   npm run deploy:dev      — preview build + deploy (full site, dev subdomain)
  *   npm run deploy:dry      — dry run, prints what would be uploaded
  *
  * Required env vars (add to .env.local):
- *   See .env.example for the full list.
+ *   DEPLOY_MODE=ftp|sftp
+ *   FTP_HOST / SSH_HOST, FTP_USER / SSH_USER, FTP_PASSWORD / SSH_KEY_PATH
+ *   REMOTE_PATH          — server path for main domain  (e.g. /public_html)
+ *   REMOTE_PATH_DEV      — server path for dev subdomain (e.g. /public_html/dev)
  */
 
 require("dotenv").config({ path: ".env.local" });
 
 const fs = require("fs");
 const path = require("path");
+
+// DEPLOY_ENV=dev targets the dev subdomain remote path
+const DEPLOY_ENV = process.env.DEPLOY_ENV ?? "production";
 
 const {
   DEPLOY_MODE = "ftp",   // "ftp" | "sftp"
@@ -29,9 +36,12 @@ const {
   SSH_USER,
   SSH_KEY_PATH,
   SSH_PASSWORD,
-  REMOTE_PATH = "/public_html",
+  REMOTE_PATH      = "/public_html",
+  REMOTE_PATH_DEV  = "/public_html/dev",
   DRY_RUN,
 } = process.env;
+
+const EFFECTIVE_REMOTE = DEPLOY_ENV === "dev" ? REMOTE_PATH_DEV : REMOTE_PATH;
 
 const OUT_DIR = path.resolve(__dirname, "../out");
 const isDryRun = DRY_RUN === "true";
@@ -59,10 +69,10 @@ async function deployFTP() {
   const Ftp = require("node-ftp");
   const files = walkDir(OUT_DIR);
 
-  console.log(`📦  FTP deploy → ${FTP_USER}@${FTP_HOST}:${REMOTE_PATH}`);
+  console.log(`📦  FTP deploy → ${FTP_USER}@${FTP_HOST}:${EFFECTIVE_REMOTE}`);
   if (isDryRun) {
     console.log(`🧪  DRY RUN — ${files.length} files would be uploaded`);
-    files.forEach((f) => console.log(`   ${REMOTE_PATH}/${f.remote}`));
+    files.forEach((f) => console.log(`   ${EFFECTIVE_REMOTE}/${f.remote}`));
     return;
   }
 
@@ -71,7 +81,7 @@ async function deployFTP() {
     client.on("ready", async () => {
       try {
         for (const { local, remote } of files) {
-          const remotePath = `${REMOTE_PATH}/${remote}`;
+          const remotePath = `${EFFECTIVE_REMOTE}/${remote}`;
           const remoteDir = remotePath.substring(0, remotePath.lastIndexOf("/"));
           await new Promise((res, rej) =>
             client.mkdir(remoteDir, true, (e) => (e ? rej(e) : res()))
@@ -108,10 +118,10 @@ async function deploySFTP() {
   const { Client } = require("ssh2");
   const files = walkDir(OUT_DIR);
 
-  console.log(`📦  SFTP deploy → ${SSH_USER}@${SSH_HOST}:${REMOTE_PATH}`);
+  console.log(`📦  SFTP deploy → ${SSH_USER}@${SSH_HOST}:${EFFECTIVE_REMOTE}`);
   if (isDryRun) {
     console.log(`🧪  DRY RUN — ${files.length} files would be uploaded`);
-    files.forEach((f) => console.log(`   ${REMOTE_PATH}/${f.remote}`));
+    files.forEach((f) => console.log(`   ${EFFECTIVE_REMOTE}/${f.remote}`));
     return;
   }
 
@@ -121,19 +131,36 @@ async function deploySFTP() {
       conn.sftp(async (err, sftp) => {
         if (err) { conn.end(); return reject(err); }
 
-        // ssh2 sftp.mkdir doesn't support recursive — build each segment manually
+        // Resolve home dir so absolute paths like /public_html resolve correctly
+        // even when the SFTP session is not chrooted to /.
+        const homeDir = await new Promise((res, rej) =>
+          sftp.realpath(".", (e, p) => (e ? rej(e) : res(p)))
+        );
+        const resolvePath = (p) =>
+          p.startsWith("/") ? `${homeDir}${p}` : `${homeDir}/${p}`;
+        const resolvedRemote = resolvePath(EFFECTIVE_REMOTE);
+        console.log(`  ℹ  home=${homeDir}  remote=${resolvedRemote}`);
+
+        // stat-then-mkdir per path segment; skip segments that already exist.
         const mkdirp = async (dir) => {
           const segments = dir.replace(/^\//, "").split("/");
           let current = "";
           for (const seg of segments) {
             current += "/" + seg;
-            await new Promise((res) => sftp.mkdir(current, (e) => res()));
+            const exists = await new Promise((res) =>
+              sftp.stat(current, (e) => res(!e))
+            );
+            if (!exists) {
+              await new Promise((res, rej) =>
+                sftp.mkdir(current, (e) => (e ? rej(e) : res()))
+              );
+            }
           }
         };
 
         try {
           for (const { local, remote } of files) {
-            const remotePath = `${REMOTE_PATH}/${remote}`;
+            const remotePath = `${resolvedRemote}/${remote}`;
             const remoteDir = remotePath.substring(0, remotePath.lastIndexOf("/"));
             await mkdirp(remoteDir);
             await new Promise((res, rej) =>

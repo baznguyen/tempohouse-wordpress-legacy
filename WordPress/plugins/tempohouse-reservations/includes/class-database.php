@@ -270,6 +270,17 @@ class THR_Database {
             ) " . $wpdb->get_charset_collate() );
         }
 
+        // v1.5 migration — booking additional fields
+        foreach ( [
+            'private_room'   => "TINYINT(1) NOT NULL DEFAULT 0",
+            'dietary_notes'  => "TEXT DEFAULT NULL",
+            'referral_source'=> "VARCHAR(100) DEFAULT NULL",
+        ] as $col => $def ) {
+            if ( ! $wpdb->get_var( "SHOW COLUMNS FROM {$p}thr_reservations LIKE '$col'" ) ) {
+                $wpdb->query( "ALTER TABLE {$p}thr_reservations ADD COLUMN $col $def" );
+            }
+        }
+
         // Seed system tags
         self::seed_tags();
 

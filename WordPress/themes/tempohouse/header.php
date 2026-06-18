@@ -39,10 +39,62 @@
       >
     </a>
 
-    <!-- RIGHT: Reserve pill -->
-    <a class="site-nav__reserve" href="<?php echo esc_url( home_url( '/reservations' ) ); ?>">
-      &middot; RESERVE &middot;
-    </a>
+    <!-- RIGHT: theme switcher + reserve -->
+    <div class="site-nav__actions">
+
+      <!-- Theme switcher icon -->
+      <div class="site-nav__theme-wrap">
+        <button class="site-nav__theme-btn" id="theme-switch-btn" type="button"
+                aria-haspopup="true" aria-expanded="false" aria-label="Change time theme">
+          <!-- Day icon — sun -->
+          <svg class="theme-icon theme-icon--day" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="9" cy="9" r="3" stroke-width="1.5"/>
+            <path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.4 3.4l1.4 1.4M13.2 13.2l1.4 1.4M14.6 3.4l-1.4 1.4M4.8 13.2l-1.4 1.4" stroke-width="1.4"/>
+          </svg>
+          <!-- Afternoon icon — sun on horizon -->
+          <svg class="theme-icon theme-icon--afternoon" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4.2 11.5a4.8 4.8 0 0 1 9.6 0" stroke-width="1.5" fill="none"/>
+            <line x1="1.5" y1="11.5" x2="16.5" y2="11.5" stroke-width="1.5"/>
+            <path d="M9 2.5v1.8M5.4 4.9l1.2 1.2M12.6 4.9l-1.2 1.2M2.8 8.8h1.8M13.4 8.8h1.8" stroke-width="1.4"/>
+          </svg>
+          <!-- Night icon — crescent moon -->
+          <svg class="theme-icon theme-icon--night" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12.5 3A6.5 6.5 0 1 0 12.5 15A5 5 0 0 1 12.5 3z" stroke-width="1.5"/>
+          </svg>
+        </button>
+
+        <!-- Theme popup -->
+        <div class="site-nav__theme-popup" id="theme-switch-popup" hidden role="menu" aria-label="Time of day theme">
+          <button class="theme-popup__opt" data-period="day" type="button" role="menuitem">
+            <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true">
+              <circle cx="9" cy="9" r="3" stroke-width="1.5"/>
+              <path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.4 3.4l1.4 1.4M13.2 13.2l1.4 1.4M14.6 3.4l-1.4 1.4M4.8 13.2l-1.4 1.4" stroke-width="1.4"/>
+            </svg>
+            Day
+          </button>
+          <button class="theme-popup__opt" data-period="afternoon" type="button" role="menuitem">
+            <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true">
+              <path d="M4.2 11.5a4.8 4.8 0 0 1 9.6 0" stroke-width="1.5" fill="none"/>
+              <line x1="1.5" y1="11.5" x2="16.5" y2="11.5" stroke-width="1.5"/>
+              <path d="M9 2.5v1.8M5.4 4.9l1.2 1.2M12.6 4.9l-1.2 1.2M2.8 8.8h1.8M13.4 8.8h1.8" stroke-width="1.4"/>
+            </svg>
+            Afternoon
+          </button>
+          <button class="theme-popup__opt" data-period="night" type="button" role="menuitem">
+            <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12.5 3A6.5 6.5 0 1 0 12.5 15A5 5 0 0 1 12.5 3z" stroke-width="1.5"/>
+            </svg>
+            Night
+          </button>
+        </div>
+      </div>
+
+      <!-- Reserve pill -->
+      <a class="site-nav__reserve" href="<?php echo esc_url( home_url( '/reservations' ) ); ?>">
+        &middot; RESERVE &middot;
+      </a>
+
+    </div>
 
   </div>
 </header>

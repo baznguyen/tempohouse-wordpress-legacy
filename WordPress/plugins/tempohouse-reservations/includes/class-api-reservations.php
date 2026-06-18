@@ -47,6 +47,23 @@ class THR_API_Reservations {
                 'permission_callback' => '__return_true',
             ],
         ] );
+
+        // Guest reservation lookup by email
+        register_rest_route( $ns, '/public/reservation-lookup', [
+            'methods'             => 'GET',
+            'callback'            => [ $this, 'public_lookup' ],
+            'permission_callback' => '__return_true',
+            'args'                => [
+                'email' => [ 'required' => true, 'sanitize_callback' => 'sanitize_email' ],
+            ],
+        ] );
+
+        // Guest self-modify (date/time/notes only)
+        register_rest_route( $ns, '/public/booking/(?P<ref>[A-Z0-9\-]+)', [
+            'methods'             => 'PATCH',
+            'callback'            => [ $this, 'public_modify' ],
+            'permission_callback' => '__return_true',
+        ] );
     }
 
     // ── GET /reservations ─────────────────────────────────────────────────────
@@ -142,7 +159,8 @@ class THR_API_Reservations {
         $body    = $req->get_json_params() ?? [];
         $allowed = [ 'diner_name', 'diner_email', 'diner_phone', 'diner_zalo', 'party_size', 'reservation_dt',
                      'duration_min', 'occasion', 'notes_diner', 'notes_internal', 'is_vip',
-                     'area_label', 'furniture_ids', 'floor_plan_id', 'diner_lang' ];
+                     'area_label', 'furniture_ids', 'floor_plan_id', 'diner_lang',
+                     'dietary_notes', 'referral_source', 'private_room' ];
         $update  = array_intersect_key( $body, array_flip( $allowed ) );
 
         if ( isset( $update['furniture_ids'] ) && is_array( $update['furniture_ids'] ) ) {
@@ -484,5 +502,86 @@ class THR_API_Reservations {
             $email
         ) );
         return $count >= 3;
+    }
+
+    // ── GET /public/reservation-lookup?email= ─────────────────────────────────
+    public function public_lookup( WP_REST_Request $req ): WP_REST_Response|WP_Error {
+        global $wpdb;
+        $email = sanitize_email( $req->get_param( 'email' ) ?? '' );
+        if ( ! is_email( $email ) ) {
+            return THR_API::error( 'thr_invalid_email', 'A valid email is required.', 422 );
+        }
+
+        $now_utc = THR_API::now_utc();
+        $rows = $wpdb->get_results( $wpdb->prepare(
+            "SELECT reference_code, status, reservation_dt, party_size, area_label, private_room
+             FROM {$this->table}
+             WHERE diner_email = %s
+               AND status IN ('pending','confirmed')
+               AND reservation_dt > %s
+             ORDER BY reservation_dt ASC
+             LIMIT 3",
+            $email, $now_utc
+        ) );
+
+        $results = [];
+        foreach ( $rows as $row ) {
+            $ts = strtotime( $row->reservation_dt ) + 7 * 3600; // local time
+            $results[] = [
+                'reference_code' => $row->reference_code,
+                'status'         => $row->status,
+                'date'           => date( 'Y-m-d', $ts ),
+                'time'           => date( 'H:i', $ts ),
+                'party_size'     => (int) $row->party_size,
+                'area_label'     => $row->area_label ?: null,
+                'private_room'   => (bool) $row->private_room,
+            ];
+        }
+
+        return new WP_REST_Response( [ 'reservations' => $results ] );
+    }
+
+    // ── PATCH /public/booking/{ref} ───────────────────────────────────────────
+    public function public_modify( WP_REST_Request $req ): WP_REST_Response|WP_Error {
+        global $wpdb;
+        $ref  = strtoupper( sanitize_text_field( $req->get_param( 'ref' ) ?? '' ) );
+        $body = $req->get_json_params() ?? [];
+
+        $row = $wpdb->get_row( $wpdb->prepare(
+            "SELECT * FROM {$this->table} WHERE reference_code = %s", $ref
+        ) );
+
+        if ( ! $row ) return THR_API::error( 'thr_not_found', 'Reservation not found.', 404 );
+        if ( ! in_array( $row->status, [ 'pending', 'confirmed' ], true ) ) {
+            return THR_API::error( 'thr_invalid_state', 'This reservation cannot be modified.', 409 );
+        }
+
+        // Guests may only modify: date/time, party_size, notes_diner, dietary_notes, occasion, area_label
+        $update = [];
+        if ( isset( $body['reservation_dt'] ) ) {
+            // Re-validate datetime
+            $dt_raw = sanitize_text_field( $body['reservation_dt'] );
+            $ts = strtotime( $dt_raw );
+            if ( ! $ts ) return THR_API::error( 'thr_invalid_date', 'Invalid reservation_dt.', 422 );
+            $advance_min = (int) THR_Settings::get( 'booking_advance_min', 60 );
+            $now_unix    = time() + 7 * 3600;
+            if ( $ts < $now_unix + $advance_min * 60 ) {
+                return THR_API::error( 'thr_advance_window', 'Modification must be made at least ' . $advance_min . ' minutes in advance.', 422 );
+            }
+            $update['reservation_dt'] = gmdate( 'Y-m-d H:i:s', $ts - 7 * 3600 );
+        }
+        foreach ( [ 'party_size', 'notes_diner', 'dietary_notes', 'occasion', 'area_label' ] as $field ) {
+            if ( isset( $body[ $field ] ) ) {
+                $update[ $field ] = sanitize_text_field( $body[ $field ] );
+            }
+        }
+        if ( empty( $update ) ) {
+            return THR_API::error( 'thr_no_changes', 'No modifiable fields provided.', 422 );
+        }
+
+        $update['updated_at'] = THR_API::now_utc();
+        $wpdb->update( $this->table, $update, [ 'reference_code' => $ref ] );
+
+        return new WP_REST_Response( [ 'reference_code' => $ref, 'updated' => array_keys( $update ) ] );
     }
 }

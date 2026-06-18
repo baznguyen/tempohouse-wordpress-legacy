@@ -15,7 +15,7 @@ get_header();
     <p class="page-inner__lead">218c Pasteur, District 3. Hire the gallery level, the ground floor, or the full building. Up to 150 guests standing across two floors. Product launches, corporate events, intimate weddings, brand activations.</p>
     <div class="page-inner__cta-row">
       <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-primary">Enquire About Your Event</a>
-      <a href="#venue-event-types" class="page-inner__cta-secondary">See event types &darr;</a>
+      <a href="<?php echo esc_url( home_url( '/events' ) ); ?>" class="page-inner__cta-secondary">Explore events &rarr;</a>
     </div>
   </header>
 
@@ -81,153 +81,38 @@ get_header();
     </div>
   </section>
 
-  <!-- ── 4. Event Types ─────────────────────────────────── -->
-  <section class="page-inner__section" id="venue-event-types" aria-labelledby="types-heading">
+  <!-- ── 4. Private Events ─────────────────────────────── -->
+  <section class="page-inner__section" id="venue-event-types" aria-labelledby="venue-events-heading">
     <div class="page-inner__container">
+      <div class="page-inner__split">
 
-      <div class="page-venue__types-head">
-        <p class="page-inner__section-head">What Works Here</p>
-        <h2 class="page-inner__section-title" id="types-heading">Every kind of event<br>that means something.</h2>
-      </div>
-
-      <div class="tempo-carousel" data-carousel>
-        <div class="page-inner__card-grid tempo-carousel__track">
-
-          <article class="page-inner__card">
-            <span class="page-inner__card-num">01</span>
-            <h3 class="page-inner__card-title">Product Launch</h3>
-            <p class="page-inner__card-body">Column-free gallery floor. Track lighting. 80&ndash;150 guests. The room earns its brief.</p>
-            <a href="<?php echo esc_url( home_url( '/events/product-launch' ) ); ?>" class="page-inner__card-cta">Explore &rarr;</a>
-          </article>
-
-          <article class="page-inner__card">
-            <span class="page-inner__card-num">02</span>
-            <h3 class="page-inner__card-title">Corporate Events</h3>
-            <p class="page-inner__card-body">A District 3 address your team will actually want to come to. Dinners, offsites, client evenings.</p>
-            <a href="<?php echo esc_url( home_url( '/events/corporate-events' ) ); ?>" class="page-inner__card-cta">Explore &rarr;</a>
-          </article>
-
-          <article class="page-inner__card">
-            <span class="page-inner__card-num">03</span>
-            <h3 class="page-inner__card-title">Intimate Weddings</h3>
-            <p class="page-inner__card-body">Atmosphere over scale. Gallery level, cocktail bar, outdoor terrace. 40&ndash;80 guests.</p>
-            <a href="<?php echo esc_url( home_url( '/events/intimate-weddings' ) ); ?>" class="page-inner__card-cta">Explore &rarr;</a>
-          </article>
-
-          <article class="page-inner__card">
-            <span class="page-inner__card-num">04</span>
-            <h3 class="page-inner__card-title">Brand Activation</h3>
-            <p class="page-inner__card-body">A cultural address for activations and pop-ups. Built-in café and bar audience, full AV.</p>
-            <a href="<?php echo esc_url( home_url( '/events/brand-activation' ) ); ?>" class="page-inner__card-cta">Explore &rarr;</a>
-          </article>
-
-          <article class="page-inner__card">
-            <span class="page-inner__card-num">05</span>
-            <h3 class="page-inner__card-title">Birthday &amp; Celebrations</h3>
-            <p class="page-inner__card-body">Private hire at a gallery-grade venue. Craft cocktails, colonial terrace, a room that earns its photographs.</p>
-            <a href="<?php echo esc_url( home_url( '/events/birthday-celebration' ) ); ?>" class="page-inner__card-cta">Explore &rarr;</a>
-          </article>
-
-          <article class="page-inner__card">
-            <span class="page-inner__card-num">06</span>
-            <h3 class="page-inner__card-title">Art Exhibitions</h3>
-            <p class="page-inner__card-body">Column-free Level 1. Neutral walls, adjustable track lighting, flexible hanging system. Open to submissions.</p>
-            <a href="<?php echo esc_url( home_url( '/events/art-exhibitions' ) ); ?>" class="page-inner__card-cta">Explore &rarr;</a>
-          </article>
-
-        </div><!-- /.tempo-carousel__track -->
-
-        <nav class="tempo-carousel__nav" aria-label="Event types navigation">
-          <button class="tempo-carousel__btn tempo-carousel__prev" aria-label="Previous event type">
-            <svg viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M9 11L5 7l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div class="tempo-carousel__dots"></div>
-          <button class="tempo-carousel__btn tempo-carousel__next" aria-label="Next event type">
-            <svg viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M5 11l4-4-4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </nav>
-      </div><!-- /.tempo-carousel -->
-
-    </div>
-  </section>
-
-  <!-- ── 5. The Floors ──────────────────────────────────── -->
-  <section class="page-inner__section page-inner__section--alt" aria-labelledby="floors-heading">
-    <div class="page-inner__container">
-
-      <div class="page-venue__floors-head">
-        <p class="page-inner__section-head">The Floors</p>
-        <h2 class="page-inner__section-title" id="floors-heading">One building.<br>Three distinct spaces.</h2>
-      </div>
-
-      <div class="page-venue__floors-grid">
-
-        <div class="page-venue__floor">
-          <a href="<?php echo esc_url( home_url( '/art-gallery' ) ); ?>" class="tempo-frame tempo-frame--placeholder page-venue__floor-img" aria-label="The Gallery — column-free event space at TEMPO House, District 3">
-            <div class="tempo-frame__mat">
-              <div class="tempo-frame__artwork">
-                <span class="tempo-frame__label">The Gallery</span>
-                <span class="tempo-frame__caption">Level 1 &middot; The Gallery</span>
-              </div>
-            </div>
-          </a>
-          <p class="page-venue__floor-label">The Gallery</p>
-          <h3 class="page-venue__floor-title">Column-free.<br>Track-lit.</h3>
-          <p class="page-venue__floor-body">No columns. No fixed furniture. The full building footprint in one open floor. Adjustable track lighting, neutral walls, terrace connection. 80 standing, 50 seated.</p>
-        </div>
-
-        <div class="page-venue__floor">
-          <div class="tempo-frame tempo-frame--placeholder page-venue__floor-img" data-interactive aria-label="Ground floor café and bar at TEMPO House, District 3 Saigon">
-            <div class="tempo-frame__mat">
-              <div class="tempo-frame__artwork">
-                <span class="tempo-frame__label">Ground Floor</span>
-                <span class="tempo-frame__caption">Ground Floor &middot; Café &amp; Bar</span>
-              </div>
-            </div>
+        <div>
+          <p class="page-inner__section-head">Private Events</p>
+          <h2 class="page-inner__section-title" id="venue-events-heading">The building is<br>the brief.</h2>
+          <div class="page-inner__section-body">
+            <p>TEMPO House takes on private events across both floors, the bar, and the outdoor terrace. No packages &mdash; each hire is shaped around what the event needs. Product launches and brand activations in the gallery. Dinners, cocktail receptions, and celebrations on the ground floor and Pasteur Street terrace.</p>
+            <p>The space works because it isn&rsquo;t designed to be neutral. It&rsquo;s a restored colonial shophouse with real architecture &mdash; one that gives events a sense of place a hotel function room can&rsquo;t replicate.</p>
           </div>
-          <p class="page-venue__floor-label">Ground Floor &mdash; Caf&eacute; &amp; Bar</p>
-          <h3 class="page-venue__floor-title">Counter service,<br>day and night.</h3>
-          <p class="page-venue__floor-body">Café counter and cocktail bar in one open room. Natural light from both ends, flexible seating, direct outdoor access. Bar and catering run from here for full-venue hire. 60 seated.</p>
+          <div class="page-inner__cta-row">
+            <a href="<?php echo esc_url( home_url( '/events' ) ); ?>" class="page-inner__cta-primary">See Events We Host</a>
+            <a href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" class="page-inner__cta-secondary">Start an enquiry &rarr;</a>
+          </div>
         </div>
 
-        <div class="page-venue__floor">
-          <a href="<?php echo esc_url( home_url( '/creators' ) ); ?>" class="tempo-frame tempo-frame--placeholder page-venue__floor-img" aria-label="Level 2 Creators space at TEMPO House, District 3 Ho Chi Minh City">
-            <div class="tempo-frame__mat">
-              <div class="tempo-frame__artwork">
-                <span class="tempo-frame__label">Level 2 &mdash; Creators</span>
-                <span class="tempo-frame__caption">Level 2 &middot; Creators</span>
-              </div>
-            </div>
-          </a>
-          <p class="page-venue__floor-label">Level 2 &mdash; Creators</p>
-          <h3 class="page-venue__floor-title">Made for makers.</h3>
-          <p class="page-venue__floor-body">A dedicated space for creators, studios, and collaborative work. Flexible layout, natural light, and direct access to the gallery below. Available for hire and membership.</p>
+        <div class="page-venue__event-types">
+          <p class="page-inner__info-label">What works here</p>
+          <ul class="page-inner__feature-list">
+            <li class="page-inner__feature-item">Product launches &amp; brand activations</li>
+            <li class="page-inner__feature-item">Corporate dinners &amp; presentations</li>
+            <li class="page-inner__feature-item">Art exhibitions &amp; creative openings</li>
+            <li class="page-inner__feature-item">Cocktail receptions &amp; standing events</li>
+            <li class="page-inner__feature-item">Intimate weddings &amp; celebrations</li>
+            <li class="page-inner__feature-item">Birthday &amp; milestone parties</li>
+          </ul>
+          <a href="<?php echo esc_url( home_url( '/events' ) ); ?>" class="page-venue__events-explore">Explore all event types &rarr;</a>
         </div>
 
-      </div><!-- /.page-venue__floors-grid -->
-
-      <!-- Mobile carousel pagination dots (wired by venue-floorplan.js) -->
-      <div class="page-venue__floors-dots" aria-hidden="true"></div>
-
-      <div class="page-inner__info-grid page-venue__venue-specs">
-        <div>
-          <p class="page-inner__info-label">AV &amp; Sound</p>
-          <p class="page-inner__info-value">In-house track lighting and audio system. External AV coordination available on request.</p>
-        </div>
-        <div>
-          <p class="page-inner__info-label">Catering</p>
-          <p class="page-inner__info-value">In-house bar and coffee counter included in all hire packages. Catering partnerships on request.</p>
-        </div>
-        <div>
-          <p class="page-inner__info-label">Setup &amp; Access</p>
-          <p class="page-inner__info-value">Full venue access from 08:00 on event day. Bump-in included in hire. Bump-out by 02:00.</p>
-        </div>
       </div>
-
     </div>
   </section>
 
@@ -244,7 +129,8 @@ get_header();
       <div class="venue-floorplan__tab-list">
         <button class="venue-floorplan__tab is-active" data-floor="level1" role="tab" aria-selected="true">The Gallery</button>
         <button class="venue-floorplan__tab" data-floor="ground" role="tab" aria-selected="false">Ground Floor</button>
-        <button class="venue-floorplan__tab" data-floor="level2" role="tab" aria-selected="false">Level 2 — Creators</button>
+        <button class="venue-floorplan__tab" data-floor="terrace" role="tab" aria-selected="false">Outdoor Area</button>
+        <button class="venue-floorplan__tab" data-floor="level2" role="tab" aria-selected="false">Level 2 &mdash; Creators</button>
       </div>
     </div>
 
@@ -257,7 +143,7 @@ get_header();
       <div class="venue-floorplan__building" role="region" aria-label="Building cross-section — hover or click a floor to explore">
 
         <div class="venue-floorplan__svg-wrap">
-          <svg class="venue-floorplan__svg" viewBox="0 0 468 465" fill="none" xmlns="http://www.w3.org/2000/svg"
+          <svg class="venue-floorplan__svg" viewBox="0 0 590 465" fill="none" xmlns="http://www.w3.org/2000/svg"
                role="img" aria-label="TEMPO House building elevation — 218c Pasteur, District 3">
 
             <defs>
@@ -578,6 +464,37 @@ get_header();
             <text class="fp-level-label" x="32" y="204" text-anchor="start">127&#x2013;275</text>
             <text class="fp-level-label" x="32" y="350" text-anchor="start">275&#x2013;420</text>
 
+            <!-- Ground line extension to outdoor area -->
+            <line class="fp-foundation" x1="318" y1="424" x2="578" y2="424"/>
+
+            <!-- OUTDOOR AREA — garden zone to the right of the building -->
+            <g class="fp-floor fp-outdoor" data-floor="terrace" data-url="<?php echo esc_attr( home_url( '/cafe' ) ); ?>"
+               tabindex="0" role="button" aria-label="Outdoor Area — tap to explore">
+              <rect class="fp-zone-hatch"  x="450" y="290" width="128" height="130" opacity="0.25"/>
+              <line class="fp-detail-dash" x1="450" y1="290" x2="578" y2="290"/>
+              <line class="fp-detail-dash" x1="450" y1="290" x2="450" y2="420"/>
+              <line class="fp-detail-dash" x1="578" y1="290" x2="578" y2="420"/>
+              <rect class="fp-outdoor-element" x="508" y="374" width="6" height="46" fill="rgba(0,0,0,0.72)"/>
+              <ellipse class="fp-outdoor-element" cx="504" cy="352" rx="15" ry="21" fill="rgba(0,0,0,0.06)"/>
+              <ellipse class="fp-outdoor-element" cx="516" cy="347" rx="11" ry="16" fill="rgba(0,0,0,0.06)"/>
+              <ellipse class="fp-outdoor-element" cx="510" cy="338" rx="19" ry="13" fill="rgba(0,0,0,0.08)"/>
+              <rect class="fp-outdoor-element" x="461" y="404" width="20" height="6"/>
+              <rect class="fp-outdoor-element" x="461" y="396" width="4" height="9"/>
+              <line class="fp-outdoor-element" x1="462" y1="410" x2="462" y2="417"/>
+              <line class="fp-outdoor-element" x1="479" y1="410" x2="479" y2="417"/>
+              <rect class="fp-outdoor-element" x="486" y="406" width="13" height="4" fill="rgba(0,0,0,0.35)"/>
+              <line class="fp-outdoor-element" x1="490" y1="410" x2="490" y2="417"/>
+              <line class="fp-outdoor-element" x1="496" y1="410" x2="496" y2="417"/>
+              <rect class="fp-outdoor-element" x="538" y="404" width="20" height="6"/>
+              <rect class="fp-outdoor-element" x="554" y="396" width="4" height="9"/>
+              <line class="fp-outdoor-element" x1="540" y1="410" x2="540" y2="417"/>
+              <line class="fp-outdoor-element" x1="557" y1="410" x2="557" y2="417"/>
+              <rect class="fp-zone-hit"    x="450" y="290" width="128" height="130"/>
+              <rect class="fp-zone-border" x="450" y="290" width="128" height="130"/>
+              <text class="fp-level-label" text-anchor="middle" x="514" y="281">Outdoor Area</text>
+              <line class="fp-dim-line" x1="514" y1="284" x2="514" y2="290" opacity="0.35"/>
+            </g>
+
           </svg>
           <!-- Desktop hover popup — positioned relative to svg-wrap so it sits beside the drawing -->
           <div class="venue-floorplan__popup" role="tooltip" aria-hidden="true">
@@ -605,7 +522,7 @@ get_header();
         <div class="venue-floorplan__detail-header">
           <p class="venue-floorplan__detail-label">Level 1 &mdash; The Gallery</p>
           <h3 class="venue-floorplan__detail-title">Column-free gallery floor.</h3>
-          <p class="venue-floorplan__detail-desc">No columns, neutral walls, adjustable track lighting. Full-width terrace connection. Purpose-built to hold exhibitions without competing with them &mdash; works equally for events that need real architecture.</p>
+          <p class="venue-floorplan__detail-desc">No columns, neutral walls, adjustable track lighting. Full-width terrace connection. Purpose-built to hold exhibitions without competing with them &mdash; works equally for events that need real architecture. Holds 60+ standing or 30 seated.</p>
         </div>
 
         <!-- SWAP POINT: when real floor plan drawings are provided,

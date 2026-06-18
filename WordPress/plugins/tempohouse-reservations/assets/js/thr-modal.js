@@ -23,6 +23,7 @@
         '<div class="thr-modal-body" id="thr-modal-body"></div>' +
         '<div class="thr-modal-foot">' +
           '<button class="thr-modal-btn thr-modal-btn-ghost" id="thr-modal-cancel" type="button">Cancel</button>' +
+          '<button class="thr-modal-btn thr-modal-btn-ghost" id="thr-modal-extra" type="button" hidden>Extra</button>' +
           '<button class="thr-modal-btn thr-modal-btn-primary" id="thr-modal-ok" type="button">OK</button>' +
         '</div>' +
       '</div>';
@@ -32,6 +33,9 @@
     document.getElementById('thr-modal-ok').addEventListener('click', function () {
       var inp = _container.querySelector('#thr-modal-body .thr-modal-input');
       _close(inp ? (inp.value.trim() || null) : true);
+    });
+    document.getElementById('thr-modal-extra').addEventListener('click', function () {
+      _close('extra');
     });
     document.getElementById('thr-modal-cancel').addEventListener('click', function () {
       _close(null);
@@ -61,13 +65,17 @@
       document.getElementById('thr-modal-title').textContent = opts.title || '';
       document.getElementById('thr-modal-body').innerHTML    = opts.body  || '';
 
-      var ok     = document.getElementById('thr-modal-ok');
+      var ok    = document.getElementById('thr-modal-ok');
+      var extra = document.getElementById('thr-modal-extra');
       var cancel = document.getElementById('thr-modal-cancel');
 
       ok.textContent     = opts.ok     || 'OK';
       cancel.textContent = opts.cancel || 'Cancel';
       cancel.hidden      = (opts.type === 'alert');
       ok.className       = 'thr-modal-btn ' + (opts.danger ? 'thr-modal-btn-danger' : 'thr-modal-btn-primary');
+      extra.textContent  = opts.extra  || '';
+      extra.hidden       = !opts.extra;
+      extra.className    = 'thr-modal-btn ' + (opts.extraDanger ? 'thr-modal-btn-danger' : 'thr-modal-btn-ghost');
 
       _container.hidden = false;
 

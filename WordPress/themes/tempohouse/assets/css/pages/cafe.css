@@ -174,7 +174,8 @@
 
 .page-cafe__coffee {
   position: relative;
-  overflow: hidden;
+  overflow: clip;
+  overflow-clip-margin: 110px;
 }
 
 .page-cafe__coffee::before {
@@ -289,7 +290,7 @@
 /* ── 2b. Matcha section — gallery grid of six ───── */
 
 .page-cafe__matcha-head {
-  margin-bottom: var(--space-14);
+  margin-bottom: var(--space-20);
 }
 
 .page-cafe__matcha-intro {
@@ -378,13 +379,50 @@
   padding-top: var(--space-6);
 }
 
-/* Pagination dots — built by JS, hidden on desktop */
-.page-cafe__matcha-dots {
+/* Nav wrapper — hidden on desktop, JS shows on mobile */
+.page-cafe__matcha-nav {
   display: none;
+  align-items: center;
   justify-content: center;
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+}
+
+.page-cafe__matcha-nav-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-border-strong);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  transition: border-color var(--duration-fast) ease, color var(--duration-fast) ease;
+}
+
+.page-cafe__matcha-nav-btn:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.page-cafe__matcha-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.page-cafe__matcha-nav-btn svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+/* Dots — flex row inside nav wrapper */
+.page-cafe__matcha-dots {
+  display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-top: var(--space-6);
 }
 
 .page-cafe__matcha-dot {

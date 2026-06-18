@@ -33,3 +33,26 @@ function tempohouse_event_flush_rewrite() {
     flush_rewrite_rules();
 }
 add_action( 'after_switch_theme', 'tempohouse_event_flush_rewrite' );
+
+// Route standard Posts tagged 'event' to the custom event detail template.
+// Route the CPT 'event' archive (/whats-on/) to the What's On page template.
+// Both use template_include because WordPress doesn't natively support tag-based
+// single templates or CPT archive overrides without this filter.
+add_filter( 'template_include', function ( $template ) {
+    // Single Post tagged 'event' → custom single template.
+    if ( is_singular( 'post' ) && has_tag( 'event' ) ) {
+        $custom = get_template_directory() . '/single-event-post.php';
+        if ( file_exists( $custom ) ) {
+            return $custom;
+        }
+    }
+    // CPT event archive /whats-on/ → What's On gallery template.
+    // The CPT archive steals this URL from any WordPress Page with the same slug.
+    if ( is_post_type_archive( 'event' ) || is_page( 'whats-on' ) ) {
+        $custom = get_template_directory() . '/page-templates/page-whats-on.php';
+        if ( file_exists( $custom ) ) {
+            return $custom;
+        }
+    }
+    return $template;
+} );

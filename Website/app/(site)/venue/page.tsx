@@ -161,10 +161,10 @@ export default function VenuePage() {
             <div className={styles.planWrapper}>
               <img
                 src="/floor-plans/ground-floor.svg"
-                alt="TEMPO House ground floor plan — indoor café, bar and gallery space, 20 m east outdoor garden, south terrace, and entry alley from Pasteur Street. Scale 1:100."
+                alt="TEMPO House ground floor plan — bar, bathroom, back of house, storage and stairwell, east garden and south terrace to Pasteur Street. Scale 1:100."
                 className={styles.planImage}
                 width={1040}
-                height={808}
+                height={931}
               />
               <p className={styles.planCaption}>
                 Ground floor · 1:100 · 218c Pasteur Street · Indicative, not to survey accuracy

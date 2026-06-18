@@ -1,0 +1,463 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   Tempo Frame — gallery picture-frame system
+   Single source of truth for the dark-room / gallery downlight effect.
+
+   Three-layer anatomy: frame border → cream mat → artwork interior.
+
+   Two states:
+   - With real image:   dark room (ink bg, amber downlight, hover flood glow)
+   - Placeholder state: light mount (bg-alt, dashed inner border, muted label)
+
+   HTML structure:
+     <a class="tempo-frame" href="…">
+       <div class="tempo-frame__mat">
+         <div class="tempo-frame__artwork">
+           <img class="tempo-frame__img" src="…" alt="…">
+           <span class="tempo-frame__caption">…</span>
+         </div>
+       </div>
+     </a>
+
+   Placeholder (no image yet):
+     <div class="tempo-frame tempo-frame--placeholder">
+       <div class="tempo-frame__mat">
+         <div class="tempo-frame__artwork">
+           <span class="tempo-frame__label">Coming Soon</span>
+         </div>
+       </div>
+     </div>
+
+   ── DOWNLIGHT CUSTOM PROPERTIES ────────────────────────────────────────────
+   All downlight values are CSS custom properties so any context can tune them.
+   Use the size modifier classes for common scales, or override individually.
+
+     Property              Default   Description
+     ──────────────────    ──────    ────────────────────────────────────────
+     --dl-lamp-top         -72px     Distance the lamp hangs above the frame.
+     --dl-cone-top         -115px    Top of the background flood cone element.
+     --dl-cone-cy          43px      Gradient centre within the cone element.
+                                     Rule: cone-cy = abs(lamp-top) - abs(cone-top)
+                                           43px    = 72px          - 115px  (reversed)
+                                     Keeps the cone's bright spot aligned with the lamp.
+
+   Lamp width/height use clamp() and scale automatically with frame width
+   (12% of frame width, clamped 28 px–64 px).  No per-preset override needed.
+
+   ── CONTAINER REQUIREMENTS ─────────────────────────────────────────────────
+   The parent wrapping the frame MUST allow the lamp (above the frame) to paint.
+   Minimum setup:
+
+     .parent {
+       overflow-y: clip;            /* NOT hidden/auto — preserves x-axis scroll */
+       overflow-clip-margin: 110px; /* lets the lamp + cone breathe above the frame */
+       padding-top: 120px;          /* must be ≥ abs(--dl-cone-top) + safety margin */
+     }
+
+   Avoid overflow: hidden or overflow: auto on any ancestor — these clip the lamp.
+
+   ── SIZE MODIFIER CLASSES ──────────────────────────────────────────────────
+   .tempo-frame--sm    Gallery thumbnails, 100–250 px wide
+   .tempo-frame--md    Default — homepage carousel, event cards (~332 px)
+   .tempo-frame--lg    Editorial / grid cards, 400–750 px wide
+   .tempo-frame--xl    Hero / full-bleed, 750 px+
+
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Downlight design tokens (defaults = medium / 332 px card) ────────────── */
+:root {
+  --dl-lamp-top:  -72px;
+  --dl-cone-top:  -115px;
+  --dl-cone-cy:    43px;  /* cone-cy = abs(lamp-top) - abs(cone-top) */
+}
+
+/* ── Frame outer border ───────────────────────────────────────────────────── */
+
+.tempo-frame {
+  display: block;
+  border: 14px solid var(--tempo-frame-border, var(--tempo-sand));
+  box-shadow:
+    0 4px 16px rgba(26, 24, 22, 0.08),
+    0 1px 4px rgba(26, 24, 22, 0.05);
+  text-decoration: none;
+  position: relative;
+  transition:
+    box-shadow 0.45s var(--ease-out-expo, ease),
+    transform  0.45s var(--ease-out-expo, ease),
+    opacity    0.35s ease;
+}
+
+/* ── Mat — cream mount between border and artwork ─────────────────────────── */
+
+.tempo-frame__mat {
+  background: var(--tempo-cream);
+  padding: 18px;
+}
+
+/* ── Artwork — interior ───────────────────────────────────────────────────── */
+
+.tempo-frame__artwork {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  isolation: isolate;
+}
+
+/* ── WITH IMAGE: dark room effect ─────────────────────────────────────────── */
+
+.tempo-frame:not(.tempo-frame--placeholder) .tempo-frame__artwork {
+  background: var(--color-section-dark);
+}
+
+/* ── PLACEHOLDER: ivory gallery mount ────────────────────────────────────── */
+
+.tempo-frame--placeholder .tempo-frame__artwork {
+  background: var(--tempo-frame-canvas, var(--tempo-cream));
+}
+
+/* ── Artwork inner cone wash (downward from lamp, on the painting surface) ── */
+
+.tempo-frame__artwork::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 80% 90% at 50% -12%,
+    rgba(255, 238, 160, 0.48) 0%,
+    rgba(255, 228, 130, 0.18) 38%,
+    transparent 68%
+  );
+  opacity: 0;
+  transition: opacity 0.45s var(--ease-out-expo, ease);
+}
+
+a.tempo-frame:not(.tempo-frame--placeholder):hover .tempo-frame__artwork::before,
+.tempo-frame[data-interactive]:not(.tempo-frame--placeholder):hover .tempo-frame__artwork::before {
+  opacity: 1;
+}
+
+/* ── Artwork warm centre flood ────────────────────────────────────────────── */
+
+.tempo-frame:not(.tempo-frame--placeholder) .tempo-frame__artwork::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 70% at 50% 50%,
+    rgba(255, 235, 155, 0.32) 0%,
+    rgba(255, 222, 110, 0.12) 46%,
+    transparent 72%
+  );
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out-expo, ease);
+}
+
+a.tempo-frame:not(.tempo-frame--placeholder):hover .tempo-frame__artwork::after,
+.tempo-frame[data-interactive]:not(.tempo-frame--placeholder):hover .tempo-frame__artwork::after {
+  opacity: 1;
+}
+
+/* ── Ceiling fixture: cylindrical lamp above the frame ────────────────────── */
+/*
+   Width/height use clamp() so they scale proportionally with frame width:
+     12% of frame width, clamped 28 px – 64 px
+     9%  of frame width, clamped 22 px – 48 px
+   These cover all common frame sizes without per-preset overrides.
+
+   Top position is controlled by --dl-lamp-top (per size preset).
+*/
+
+a.tempo-frame::before,
+.tempo-frame[data-interactive]::before {
+  content: '';
+  position: absolute;
+  top: var(--dl-lamp-top, -72px);
+  left: 50%;
+  transform: translateX(-50%);
+  width:  clamp(28px, 12%, 64px);
+  height: clamp(22px,  9%, 48px);
+  background: linear-gradient(172deg, #3d3838 0%, #221e1e 42%, #111010 100%);
+  border-radius: 5px 5px 14px 14px;
+  box-shadow:
+    0 0 0 1.5px rgba(90, 78, 75, 0.50),
+    inset 0 -8px 12px rgba(255, 205, 50, 0.55),
+    0  6px 20px  5px rgba(255, 215, 85, 0.72),
+    0 14px 52px 18px rgba(255, 200, 55, 0.38),
+    0  0   14px  4px rgba(255, 228, 110, 0.28);
+  opacity: 0;
+  transition: opacity 0.42s var(--ease-out-expo, ease);
+  pointer-events: none;
+  z-index: 20;
+}
+
+a.tempo-frame:hover::before,
+.tempo-frame[data-interactive]:hover::before {
+  opacity: 1;
+}
+
+/* ── Wall flood cone: ambient light behind and above the frame ─────────────── */
+/*
+   The cone element starts at --dl-cone-top (above frame) and spans the full
+   wall behind the painting.  The gradient's focal point is at --dl-cone-cy
+   from the element's top — which aligns it with the lamp:
+     cone-cy = abs(lamp-top) - abs(cone-top)
+             = 72px          - 115px  = … wait, that gives a negative.
+   Corrected:
+     cone-cy = abs(cone-top) - abs(lamp-top)
+             = 115px         - 72px          = 43px  ✓
+
+   For each size preset, recalculate: cone-cy = abs(cone-top) - abs(lamp-top).
+*/
+
+a.tempo-frame::after,
+.tempo-frame[data-interactive]::after {
+  content: '';
+  position: absolute;
+  top: var(--dl-cone-top, -115px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 210%;
+  height: 125%;
+  background: radial-gradient(
+    ellipse 26% 13% at 50% var(--dl-cone-cy, 43px),
+    rgba(255, 232, 130, 0.40) 0%,
+    rgba(255, 218, 88,  0.28) 50%,
+    rgba(255, 205, 58,  0.07) 80%,
+    transparent 95%
+  );
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 30px);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 30px);
+  opacity: 0;
+  transition: opacity 0.65s var(--ease-out-expo, ease);
+  pointer-events: none;
+  z-index: -1;
+}
+
+a.tempo-frame:hover::after,
+.tempo-frame[data-interactive]:hover::after {
+  opacity: 1;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SIZE PRESETS
+   Override --dl-lamp-top, --dl-cone-top, and --dl-cone-cy.
+   Lamp width/height are percentage-based and need no override.
+
+   Derivation rule for each preset:
+     cone-cy = abs(cone-top) - abs(lamp-top)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* sm: gallery thumbnails, 100–250 px wide */
+.tempo-frame--sm {
+  --dl-lamp-top: -48px;
+  --dl-cone-top: -80px;
+  --dl-cone-cy:   32px;  /* 80 - 48 = 32 */
+}
+
+/* md: default — matches homepage event carousel cards (~332 px wide) */
+/* (no overrides needed — :root tokens are calibrated for this size) */
+
+/* lg: editorial / grid cards, 400–750 px wide */
+.tempo-frame--lg {
+  --dl-lamp-top:  -96px;
+  --dl-cone-top: -160px;
+  --dl-cone-cy:   64px;  /* 160 - 96 = 64 */
+}
+
+/* xl: hero or full-bleed frames, 750 px+ */
+.tempo-frame--xl {
+  --dl-lamp-top: -128px;
+  --dl-cone-top: -215px;
+  --dl-cone-cy:   87px;  /* 215 - 128 = 87 */
+}
+
+/* ── Image inside artwork ─────────────────────────────────────────────────── */
+
+.tempo-frame__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.85;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  transition:
+    opacity   var(--duration-slow, 0.5s) ease,
+    transform calc(var(--duration-slow, 0.5s) * 1.2) var(--ease-out-expo, ease);
+}
+
+a.tempo-frame:hover .tempo-frame__img,
+.tempo-frame[data-interactive]:hover .tempo-frame__img {
+  opacity: 1;
+  transform: scale(1.025);
+}
+
+/* ── Caption bar ──────────────────────────────────────────────────────────── */
+
+.tempo-frame__caption {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  right: 14px;
+  z-index: 4;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(247, 243, 238, 0.52);
+  padding-top: var(--space-3, 0.75rem);
+  border-top: 1px solid rgba(247, 243, 238, 0.12);
+  transition: color var(--duration-base, 0.25s) ease;
+}
+
+a.tempo-frame:hover .tempo-frame__caption,
+.tempo-frame[data-interactive]:hover .tempo-frame__caption {
+  color: rgba(247, 243, 238, 0.85);
+}
+
+.tempo-frame--placeholder .tempo-frame__caption {
+  color: rgba(26, 24, 22, 0.40);
+  border-top-color: transparent;
+}
+
+a.tempo-frame--placeholder:hover .tempo-frame__caption,
+.tempo-frame--placeholder[data-interactive]:hover .tempo-frame__caption {
+  color: rgba(26, 24, 22, 0.68);
+}
+
+/* ── Label ────────────────────────────────────────────────────────────────── */
+
+.tempo-frame__label {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.tempo-frame:not(.tempo-frame--placeholder) .tempo-frame__label {
+  color: rgba(247, 243, 238, 0.55);
+}
+
+/* ── Aspect ratio modifiers ───────────────────────────────────────────────── */
+
+.tempo-frame--portrait  .tempo-frame__artwork { aspect-ratio: 2 / 3; }
+.tempo-frame--square    .tempo-frame__artwork { aspect-ratio: 1 / 1; }
+.tempo-frame--wide      .tempo-frame__artwork { aspect-ratio: 16 / 9; }
+.tempo-frame--cinematic .tempo-frame__artwork { aspect-ratio: 21 / 9; }
+
+/* ── Interactive states ───────────────────────────────────────────────────── */
+
+a.tempo-frame,
+.tempo-frame[data-interactive] { cursor: pointer; isolation: isolate; }
+
+a.tempo-frame[data-lightbox],
+.tempo-frame[data-lightbox] { cursor: zoom-in; }
+
+a.tempo-frame:hover,
+.tempo-frame[data-interactive]:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    0 0 0 2px rgba(90, 78, 75, 0.35),
+    0 -10px 24px  2px rgba(255, 218, 100, 0.18),
+    0  20px 64px      rgba(0, 0, 0, 0.26);
+}
+
+/* ── Lightbox overlay ─────────────────────────────────────────────────────── */
+
+.tempo-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: rgba(10, 8, 6, 0.93);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  opacity: 0;
+  transition: opacity var(--duration-base) ease;
+  pointer-events: none;
+}
+
+.tempo-lightbox.is-open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.tempo-lightbox__inner {
+  position: relative;
+  max-width: min(90vw, 1200px);
+  max-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(12px);
+  transition: transform var(--duration-slow) var(--ease-out-expo);
+}
+
+.tempo-lightbox.is-open .tempo-lightbox__inner {
+  transform: translateY(0);
+}
+
+.tempo-lightbox__img {
+  display: block;
+  max-width: 100%;
+  max-height: 85vh;
+  object-fit: contain;
+  box-shadow:
+    0 0 0 1px rgba(247, 243, 238, 0.06),
+    0 24px 80px rgba(0, 0, 0, 0.6);
+}
+
+.tempo-lightbox__close {
+  position: fixed;
+  top: var(--space-6);
+  right: var(--space-6);
+  z-index: 901;
+  background: none;
+  border: 1px solid rgba(247, 243, 238, 0.20);
+  color: rgba(247, 243, 238, 0.70);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: 1;
+  transition:
+    border-color var(--duration-fast) ease,
+    color        var(--duration-fast) ease;
+}
+
+.tempo-lightbox__close:hover {
+  border-color: rgba(247, 243, 238, 0.55);
+  color: rgba(247, 243, 238, 1);
+}
+
+.tempo-lightbox__caption {
+  position: absolute;
+  bottom: -2rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(247, 243, 238, 0.35);
+}

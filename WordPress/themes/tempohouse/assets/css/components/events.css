@@ -11,7 +11,9 @@
   background: var(--color-bg-alt);
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
-  overflow: hidden;
+  /* overflow: visible — the marquee is clipped by events__viewport's overflow-x: hidden.
+     Removing section overflow lets the -115px wall flood paint above cards without clipping. */
+  overflow: visible;
 }
 
 /* ── Header ─────────────────────────────────────── */
@@ -115,22 +117,29 @@
   transform: translateY(-5px);
 }
 
-/* ── Gallery downlight: wall flood cone on the background wall */
+/* ── Gallery downlight: wall flood cone on the background wall ──────────────
+   Values driven by --dl-* CSS custom properties (defined in :root via
+   tempo-frame.css — the canonical art-frame downlight system).
+   Override --dl-lamp-top / --dl-cone-top / --dl-cone-cy on .event-card to
+   scale the effect for larger or smaller cards.  See tempo-frame.css for the
+   full size-preset API (--sm / --lg / --xl). */
 .event-card::before {
   content: '';
   position: absolute;
-  top: -88px;
+  top: var(--dl-cone-top, -115px);
   left: 50%;
   transform: translateX(-50%);
   width: 210%;
   height: 125%;
   background: radial-gradient(
-    ellipse 180px 90px at 50% 10%,
+    ellipse 26% 13% at 50% var(--dl-cone-cy, 43px),
     rgba(255, 232, 130, 0.40) 0%,
-    rgba(255, 218, 88, 0.28) 50%,
-    rgba(255, 205, 58, 0.07) 80%,
+    rgba(255, 218, 88,  0.28) 50%,
+    rgba(255, 205, 58,  0.07) 80%,
     transparent 95%
   );
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 30px);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 30px);
   opacity: 0;
   transition: opacity 0.65s var(--ease-out-expo);
   pointer-events: none;
@@ -141,28 +150,28 @@
   opacity: 1;
 }
 
-/* ── Gallery downlight: black cylindrical wall-mount fixture */
+/* ── Gallery downlight: black cylindrical wall-mount fixture ──────────────── */
 .event-card::after {
   content: '';
   position: absolute;
-  top: -74px;
+  top: var(--dl-lamp-top, -72px);
   left: 50%;
   transform: translateX(-50%);
-  width: 44px;
-  height: 36px;
+  width:  clamp(28px, 12%, 64px);
+  height: clamp(22px,  9%, 48px);
   background: linear-gradient(
     172deg,
     #3d3838 0%,
     #221e1e 42%,
     #111010 100%
   );
-  border-radius: 6px 6px 14px 14px;
+  border-radius: 5px 5px 14px 14px;
   box-shadow:
-    0 0 0 1.5px rgba(90, 78, 75, 0.5),
-    inset 0 -9px 14px rgba(255, 205, 50, 0.62),
-    0 6px 18px 5px rgba(255, 215, 85, 0.78),
-    0 12px 52px 18px rgba(255, 200, 55, 0.42),
-    0 0 12px 4px rgba(255, 228, 110, 0.26);
+    0 0 0 1.5px rgba(90, 78, 75, 0.50),
+    inset 0 -8px 12px rgba(255, 205, 50, 0.55),
+    0  6px 20px  5px rgba(255, 215, 85, 0.72),
+    0 14px 52px 18px rgba(255, 200, 55, 0.38),
+    0  0   14px  4px rgba(255, 228, 110, 0.28);
   opacity: 0;
   transition: opacity 0.42s var(--ease-out-expo);
   pointer-events: none;

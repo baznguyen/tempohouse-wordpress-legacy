@@ -48,14 +48,16 @@
 
 /* ==========================================================================
    DESKTOP MASONRY (>=1000px)
-   CSS column-count masonry — 3 columns, cards sit at their artwork's natural
-   aspect ratio. Portrait and landscape coexist. No forced row height.
+   4-column CSS Grid. Portrait cards span 1 col, landscape cards span 2 cols.
+   At ~1280px this produces portrait ~300px × ~400px and landscape ~620px × ~387px
+   — nearly matched heights that create a cohesive gallery-wall row.
    ========================================================================== */
 
 .events__viewport--grid .events__track {
-    display: block;
-    column-count: 3;
-    column-gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    align-items: start;
     padding: var(--space-section) var(--gutter);
     width: auto;
     animation: none;
@@ -63,14 +65,24 @@
 }
 
 .events__viewport--grid .event-card {
-    break-inside: avoid;
+    grid-column: span 1;
     width: 100%;
     flex-shrink: unset;
     scroll-snap-align: unset;
-    grid-column: unset;
-    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
+}
+
+/* Landscape artwork drives a wider frame — spans 2 of 4 columns */
+.events__viewport--grid .event-card[data-orientation="landscape"] {
+    grid-column: span 2;
+}
+
+/* Wider lamp/cone to match the broader landscape frame */
+.events__viewport--grid .event-card[data-orientation="landscape"] {
+    --dl-lamp-top:  -96px;
+    --dl-cone-top: -155px;
+    --dl-cone-cy:    58px;
 }
 
 .events__viewport--grid .event-card__frame-art {
@@ -83,12 +95,17 @@
     flex: unset;
 }
 
-/* Let the uploaded artwork drive card height naturally */
+/* Artwork height driven entirely by image — no forced min */
 .events__viewport--grid .event-card__artwork {
     height: auto;
     aspect-ratio: auto;
-    min-height: 240px;
     flex: unset;
+}
+
+/* Ghost-text placeholder cards (no image) need a fallback height */
+.events__viewport--grid .event-card__artwork:not(:has(.event-card__media-layer)) {
+    min-height: 280px;
+    aspect-ratio: 3 / 4;
 }
 
 .events__viewport--grid .event-card__media-layer {
@@ -177,6 +194,19 @@
         height: 0;
         min-height: 260px;
         aspect-ratio: unset;
+    }
+
+    /* Restore fill-frame behaviour — desktop overrides set these to relative/auto */
+    .events__viewport--grid .event-card__media-layer {
+        position: absolute;
+        inset: 0;
+    }
+
+    .events__viewport--grid .event-card__media {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 1;
     }
 
     .events__viewport--grid .event-card__date-reveal {
