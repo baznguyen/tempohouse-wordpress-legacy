@@ -6,7 +6,7 @@ require_once get_template_directory() . '/inc/seo.php';
 require_once get_template_directory() . '/inc/enquiry.php';
 
 function tempohouse_enqueue_assets() {
-    $ver = '3.49.0';
+    $ver = '3.63.1';
     $uri = get_template_directory_uri();
 
     wp_enqueue_style( 'tempohouse-tokens',     $uri . '/assets/css/tokens.css',                [],                        $ver );
@@ -47,14 +47,16 @@ function tempohouse_enqueue_assets() {
 
     // Gallery page — load only on that template
     if ( is_page_template( 'page-templates/page-gallery.php' ) ) {
-        wp_enqueue_style( 'tempohouse-inner-page', $uri . '/assets/css/pages/inner-page.css',    [ 'tempohouse-base' ],       $ver );
-        wp_enqueue_style( 'tempohouse-gallery',    $uri . '/assets/css/pages/gallery.css',        [ 'tempohouse-inner-page' ], $ver );
+        wp_enqueue_style( 'tempohouse-inner-page',  $uri . '/assets/css/pages/inner-page.css',    [ 'tempohouse-base' ],       $ver );
+        wp_enqueue_style( 'tempohouse-gallery',     $uri . '/assets/css/pages/gallery.css',        [ 'tempohouse-inner-page' ], $ver );
+        wp_enqueue_script( 'tempohouse-gallery-js', $uri . '/assets/js/page-gallery.js',           [],                          $ver, true );
     }
 
-    // What's On page — load only on that template
-    if ( is_page_template( 'page-templates/page-whats-on.php' ) ) {
+    // What's On page — also served as the CPT event archive, so is_page_template() returns false there.
+    if ( is_page_template( 'page-templates/page-whats-on.php' ) || is_post_type_archive( 'event' ) || is_page( 'whats-on' ) ) {
         wp_enqueue_style( 'tempohouse-inner-page', $uri . '/assets/css/pages/inner-page.css', [ 'tempohouse-base' ],       $ver );
         wp_enqueue_style( 'tempohouse-whats-on',   $uri . '/assets/css/pages/whats-on.css',   [ 'tempohouse-inner-page' ], $ver );
+        wp_enqueue_script( 'tempohouse-whats-on-js', $uri . '/assets/js/whats-on.js',         [ 'tempohouse-drag' ],       $ver, true );
     }
 
     // Reservations page — load only on that template
@@ -65,8 +67,19 @@ function tempohouse_enqueue_assets() {
 
     // Events overview page — load only on that template
     if ( is_page_template( 'page-templates/page-events.php' ) ) {
-        wp_enqueue_style( 'tempohouse-inner-page',    $uri . '/assets/css/pages/inner-page.css',    [ 'tempohouse-base' ],          $ver );
-        wp_enqueue_style( 'tempohouse-events-pages',  $uri . '/assets/css/pages/events-pages.css',  [ 'tempohouse-inner-page' ],    $ver );
+        wp_enqueue_style( 'tempohouse-inner-page',    $uri . '/assets/css/pages/inner-page.css',              [ 'tempohouse-base' ],          $ver );
+        wp_enqueue_style( 'tempohouse-venue-fp',      $uri . '/assets/css/components/venue-floorplan.css',    [ 'tempohouse-tempo-frame' ],   $ver );
+        wp_enqueue_style( 'tempohouse-events-pages',  $uri . '/assets/css/pages/events-pages.css',            [ 'tempohouse-inner-page' ],    $ver );
+        wp_enqueue_style( 'tempohouse-events-faq',    $uri . '/assets/css/pages/events-faq.css',              [ 'tempohouse-inner-page' ],    $ver );
+        wp_enqueue_script( 'tempohouse-events-spaces', $uri . '/assets/js/events-spaces.js',                  [],                             $ver, true );
+        wp_enqueue_script( 'tempohouse-events-faq-js', $uri . '/assets/js/events-faq.js',                     [],                             $ver, true );
+    }
+
+    // FAQ page — load only on that template
+    if ( is_page_template( 'page-templates/page-faq.php' ) ) {
+        wp_enqueue_style( 'tempohouse-inner-page',    $uri . '/assets/css/pages/inner-page.css',  [ 'tempohouse-base' ],        $ver );
+        wp_enqueue_style( 'tempohouse-events-faq',    $uri . '/assets/css/pages/events-faq.css',  [ 'tempohouse-inner-page' ],  $ver );
+        wp_enqueue_script( 'tempohouse-events-faq-js', $uri . '/assets/js/events-faq.js',          [],                           $ver, true );
     }
 
     // Event type sub-pages — load only on that template
@@ -88,6 +101,12 @@ function tempohouse_enqueue_assets() {
         wp_enqueue_style( 'tempohouse-contact',    $uri . '/assets/css/pages/contact.css',    [ 'tempohouse-inner-page' ], $ver );
     }
 
+    // Event detail page — load on single Posts tagged 'event'.
+    if ( is_singular( 'post' ) && has_tag( 'event' ) ) {
+        wp_enqueue_style( 'tempohouse-inner-page',  $uri . '/assets/css/pages/inner-page.css',    [ 'tempohouse-base' ],          $ver );
+        wp_enqueue_style( 'tempohouse-event-single', $uri . '/assets/css/pages/event-single.css', [ 'tempohouse-inner-page' ],    $ver );
+    }
+
     wp_enqueue_script( 'tempohouse-drag',         $uri . '/assets/js/drag-scroll.js',   [],                    $ver, true );
     wp_enqueue_script( 'tempohouse-hero-js',      $uri . '/assets/js/hero.js',          [],                    $ver, true );
     wp_enqueue_script( 'tempohouse-moods-js',     $uri . '/assets/js/moods.js',         [ 'tempohouse-drag' ], $ver, true );
@@ -105,6 +124,13 @@ function tempohouse_enqueue_assets() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'tempohouse_enqueue_assets' );
+
+// Register image sizes used by event cards and the event detail page hero.
+add_action( 'after_setup_theme', function () {
+    add_image_size( 'event-card',   600,  800, true );  // Portrait card artwork
+    add_image_size( 'event-poster', 1920, 1080, true ); // Wide hero poster
+    add_image_size( 'event-og',     1200, 630, true );  // Open Graph social share
+} );
 
 // Inline <head> snippet — sets html[data-tempo-time] before first paint to prevent FOUC
 add_action( 'wp_head', function () {
