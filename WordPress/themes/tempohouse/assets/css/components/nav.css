@@ -72,6 +72,107 @@
 html[data-tempo-time="night"] .site-nav__logo-img--day   { display: none; }
 html[data-tempo-time="night"] .site-nav__logo-img--night { display: block; }
 
+/* RIGHT — actions: theme switcher + reserve */
+
+.site-nav__actions {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Theme switcher — icon button */
+
+.site-nav__theme-wrap {
+  position: relative;
+}
+
+.site-nav__theme-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  border: 1px solid var(--color-border-strong);
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  transition:
+    border-color var(--duration-fast) var(--ease-out-expo),
+    color var(--duration-fast) var(--ease-out-expo);
+}
+
+.site-nav__theme-btn:hover,
+.site-nav__theme-btn[aria-expanded="true"] {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* Show only the icon matching the current theme */
+.theme-icon               { display: none; }
+html[data-tempo-time="day"]         .theme-icon--day         { display: block; }
+html[data-tempo-time="afternoon"]   .theme-icon--afternoon   { display: block; }
+html[data-tempo-time="night"]       .theme-icon--night       { display: block; }
+
+/* Theme popup */
+
+.site-nav__theme-popup {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 150px;
+  background: var(--color-bg, #F7F3EE);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px  rgba(0, 0, 0, 0.06);
+  z-index: 201;
+  transition:
+    background var(--duration-slow) var(--ease-in-out),
+    border-color var(--duration-slow) var(--ease-in-out);
+}
+
+.site-nav__theme-popup[hidden] { display: none; }
+
+.theme-popup__opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  line-height: 1;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease;
+}
+
+.theme-popup__opt + .theme-popup__opt {
+  border-top: 1px solid var(--color-border);
+}
+
+.theme-popup__opt:hover {
+  background: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.theme-popup__opt.is-active {
+  color: var(--color-accent);
+}
+
 /* RIGHT — Reserve pill */
 
 .site-nav__reserve {
@@ -264,8 +365,12 @@ html[data-tempo-time="night"] .site-nav__logo-img--night { display: block; }
   .site-nav__logo-img { height: 44px; }
 
   .site-nav__reserve {
-    opacity: 0;
-    pointer-events: none;
+    display: none;
+  }
+
+  .site-nav__theme-btn {
+    width: 30px;
+    height: 30px;
   }
 
   .site-nav__menu-trigger {

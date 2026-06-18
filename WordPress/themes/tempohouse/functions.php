@@ -6,7 +6,7 @@ require_once get_template_directory() . '/inc/seo.php';
 require_once get_template_directory() . '/inc/enquiry.php';
 
 function tempohouse_enqueue_assets() {
-    $ver = '3.63.3';
+    $ver = '3.73.0';
     $uri = get_template_directory_uri();
 
     wp_enqueue_style( 'tempohouse-tokens',     $uri . '/assets/css/tokens.css',                [],                        $ver );
@@ -91,6 +91,7 @@ function tempohouse_enqueue_assets() {
     // Venue page — load only on that template
     if ( is_page_template( 'page-templates/page-venue.php' ) ) {
         wp_enqueue_style( 'tempohouse-inner-page',    $uri . '/assets/css/pages/inner-page.css',             [ 'tempohouse-base' ],             $ver );
+        wp_enqueue_style( 'tempohouse-events-pages',  $uri . '/assets/css/pages/events-pages.css',           [ 'tempohouse-inner-page' ],       $ver );
         wp_enqueue_style( 'tempohouse-venue',         $uri . '/assets/css/pages/venue.css',                  [ 'tempohouse-inner-page' ],       $ver );
         wp_enqueue_style( 'tempohouse-venue-fp',      $uri . '/assets/css/components/venue-floorplan.css',   [ 'tempohouse-tempo-frame' ],      $ver );
     }
@@ -134,5 +135,5 @@ add_action( 'after_setup_theme', function () {
 
 // Inline <head> snippet — sets html[data-tempo-time] before first paint to prevent FOUC
 add_action( 'wp_head', function () {
-    echo '<script>(function(){try{var t=localStorage.getItem("tempo-time"),h=new Date().getHours(),a=h>=5&&h<13?"day":h>=13&&h<18?"afternoon":"night";document.documentElement.setAttribute("data-tempo-time",t||a);}catch(e){}})()</script>' . "\n";
+    echo '<script>(function(){try{var t=localStorage.getItem("tempo-time");document.documentElement.setAttribute("data-tempo-time",t||"day");}catch(e){}})()</script>' . "\n";
 }, 1 );

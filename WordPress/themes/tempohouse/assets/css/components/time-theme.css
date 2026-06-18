@@ -13,7 +13,8 @@ body,
 .reserve,
 .newsletter,
 .site-footer,
-.page-inner__section--dark {
+.page-inner__section--dark,
+.page-whats-on__gallery {
   transition: background-color 600ms ease, border-color 600ms ease;
 }
 
@@ -180,10 +181,100 @@ html[data-tempo-time="night"] .tempo-frame--placeholder .tempo-frame__caption {
   border-top-color: rgba(240, 235, 227, 0.10);
 }
 
+/* ── Night — inner-page shared elements ────────────────────────
+   Several elements in inner-page.css use hardcoded rgba(26,24,22)
+   ink that goes invisible on dark backgrounds. Override here. */
+
+/* section--alt has a hardcoded cream bg that looks murky in night mode */
+html[data-tempo-time="night"] .page-inner__section--alt {
+  background: rgba(240, 235, 227, 0.03);
+}
+
+/* Decorative rule lines — hardcoded dark rgba, invisible in night */
+html[data-tempo-time="night"] .page-inner__section-head::before,
+html[data-tempo-time="night"] .page-inner__eyebrow::before {
+  background: rgba(240, 235, 227, 0.18);
+}
+
+/* Image placeholder frame border */
+html[data-tempo-time="night"] .page-inner__img-placeholder {
+  border-color: rgba(240, 235, 227, 0.08);
+}
+html[data-tempo-time="night"] .page-inner__img-placeholder::before {
+  border-color: rgba(240, 235, 227, 0.06);
+}
+
+/* ── Night — café matcha frames ────────────────────────────────
+   Default canvas (#2D2924) sits too close to the near-black
+   section--dark background (#161210). Lift canvas to a lighter
+   espresso so each frame reads as a distinct object. */
+html[data-tempo-time="night"] .page-cafe__matcha-frame {
+  --tempo-frame-canvas: #3A3028;
+}
+
+/* ── Night — bar signature alternating frames ──────────────────
+   nth-child(2/4/6) use rgba(20,15,10,0.90) which is almost
+   invisible on the night section--alt background. Lift to a
+   readable dark espresso. */
+html[data-tempo-time="night"] .page-bar__sig-item:nth-child(2) .page-bar__sig-frame,
+html[data-tempo-time="night"] .page-bar__sig-item:nth-child(4) .page-bar__sig-frame,
+html[data-tempo-time="night"] .page-bar__sig-item:nth-child(6) .page-bar__sig-frame {
+  --tempo-frame-canvas: #362D28;
+}
+
+/* ── Night — bar signature carousel dots ───────────────────────
+   Dots use hardcoded rgba(26,24,22,0.18) — invisible on dark bg. */
+html[data-tempo-time="night"] .page-bar__signatures-dot {
+  background: rgba(240, 235, 227, 0.16);
+}
+html[data-tempo-time="night"] .page-bar__signatures-dot.is-active {
+  background: var(--color-accent);
+}
+
 
 /* ── Night — venue floor plan ──────────────────────────────────
    All fp-* SVG classes use rgba(26,24,22) ink which is invisible
    on a dark background. Flip to cream-on-dark here. */
+
+/* Mobile tab bar + mini-detail strip use var(--tempo-cream) hardcoded */
+html[data-tempo-time="night"] .venue-floorplan__tabs {
+  background: #1C1814;
+  border-top-color:    rgba(240, 235, 227, 0.07);
+  border-bottom-color: rgba(240, 235, 227, 0.05);
+}
+
+html[data-tempo-time="night"] .venue-floorplan__tab {
+  color: rgba(240, 235, 227, 0.38);
+  border-bottom-color: transparent;
+}
+
+html[data-tempo-time="night"] .venue-floorplan__tab.is-active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+html[data-tempo-time="night"] .venue-floorplan__mini-detail {
+  background: #1C1814;
+  border-top-color: rgba(240, 235, 227, 0.07);
+}
+
+/* Desktop hover popup */
+html[data-tempo-time="night"] .venue-floorplan__popup {
+  background: #1C1814;
+  border-color: rgba(240, 235, 227, 0.12);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.30),
+    0 1px 6px  rgba(0, 0, 0, 0.18);
+}
+
+/* Right-side floor labels — hardcoded fill:#000000 invisible on dark board */
+html[data-tempo-time="night"] .fp-floor .fp-floor-label--right {
+  fill: rgba(240, 235, 227, 0.45);
+}
+html[data-tempo-time="night"] .fp-floor:hover .fp-floor-label--right,
+html[data-tempo-time="night"] .fp-floor.is-active .fp-floor-label--right {
+  fill: rgba(196, 154, 58, 0.82);
+}
 
 html[data-tempo-time="night"] .venue-floorplan {
   background: var(--color-bg);
@@ -248,6 +339,13 @@ html[data-tempo-time="night"] .fp-counter {
 html[data-tempo-time="night"] .fp-seat   { stroke: rgba(240, 235, 227, 0.14); }
 html[data-tempo-time="night"] .fp-stair  { stroke: rgba(240, 235, 227, 0.16); }
 html[data-tempo-time="night"] .fp-dim-line { stroke: rgba(240, 235, 227, 0.14); }
+
+/* Outdoor terrace elements (trees, furniture, paving lines):
+   hardcoded dark fills invisible in night mode — flip to cream-on-dark */
+html[data-tempo-time="night"] .fp-outdoor-element {
+  fill: rgba(240, 235, 227, 0.05);
+  stroke: rgba(240, 235, 227, 0.22);
+}
 
 html[data-tempo-time="night"] .fp-level-label { fill: rgba(240, 235, 227, 0.32); }
 html[data-tempo-time="night"] .fp-floor-label { fill: rgba(240, 235, 227, 0.28); }
@@ -325,55 +423,3 @@ html[data-tempo-time="night"] .hero__scroll-hint span {
   background: rgba(240, 235, 227, 0.16);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   Time Switcher Widget
-   ═══════════════════════════════════════════════════════════════ */
-
-.tempo-time-switcher {
-  position: fixed;
-  bottom: 28px;
-  right: 28px;
-  z-index: 9999;
-  display: flex;
-  align-items: stretch;
-  background: var(--color-bg, #F7F3EE);
-  border: 1px solid var(--color-border-strong, rgba(26, 24, 22, 0.18));
-  border-radius: 100px;
-  overflow: hidden;
-  box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.14),
-    0 1px 4px rgba(0, 0, 0, 0.06);
-  transition:
-    background 500ms ease,
-    border-color 500ms ease;
-}
-
-.tempo-time-switcher__btn {
-  padding: 9px 15px;
-  font-family: var(--font-display, 'Bricolage Grotesque', sans-serif);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  color: var(--color-text-muted, rgba(26, 24, 22, 0.40));
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  white-space: nowrap;
-  line-height: 1;
-  transition: color 300ms ease, background-color 300ms ease;
-}
-
-.tempo-time-switcher__btn + .tempo-time-switcher__btn {
-  border-left: 1px solid var(--color-border, rgba(26, 24, 22, 0.08));
-}
-
-/* Active state — accent background, page-bg-coloured text (adapts across all themes) */
-.tempo-time-switcher__btn.is-active {
-  background-color: var(--color-accent, #7C3B3B);
-  color: var(--color-bg, #F7F3EE);
-}
-
-.tempo-time-switcher__btn:hover:not(.is-active) {
-  color: var(--color-text-primary, #1A1816);
-}
