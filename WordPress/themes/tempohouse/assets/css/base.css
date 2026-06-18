@@ -17,7 +17,7 @@ body {
   line-height: var(--leading-loose);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden; /* belt-and-suspenders: iOS Safari ignores overflow-x:clip on html */
+  overflow-x: clip; /* clip on both html+body covers all browsers without creating a scroll container (which hidden does, breaking position:sticky) */
 }
 
 img,
