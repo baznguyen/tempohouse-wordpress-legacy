@@ -132,36 +132,53 @@ $total       = count( $event_items );
 
   <?php else : ?>
 
-  <!-- No live events — static blank frames + coming-soon message -->
-  <div class="events__empty-stage">
-    <article class="event-card event-card--placeholder" data-interior="dark" aria-hidden="true">
-      <div class="event-card__frame-art">
-        <div class="event-card__mat">
-          <div class="event-card__artwork"></div>
-        </div>
-      </div>
-    </article>
-    <article class="event-card event-card--placeholder" data-interior="sand" aria-hidden="true">
-      <div class="event-card__frame-art">
-        <div class="event-card__mat">
-          <div class="event-card__artwork"></div>
-        </div>
-      </div>
-    </article>
-    <article class="event-card event-card--placeholder" data-interior="dark" aria-hidden="true">
-      <div class="event-card__frame-art">
-        <div class="event-card__mat">
-          <div class="event-card__artwork"></div>
-        </div>
-      </div>
-    </article>
+  <?php
+  // Placeholder carousel — same DOM shape as live events so CSS + JS handle it identically.
+  // 3 unique frames × 2 (duplicate set for seamless desktop marquee).
+  $ph_texts     = [ 'Coming Soon', 'In the Works', 'Watch This Space' ];
+  $ph_interiors = [ 'dark', 'sand', 'dark' ];
+  ?>
+  <div class="events__viewport">
+    <div class="events__track">
+      <?php for ( $repeat = 0; $repeat < 2; $repeat++ ) : ?>
+        <?php for ( $p = 0; $p < 3; $p++ ) : ?>
+        <article class="event-card event-card--placeholder"
+                 data-interior="<?php echo esc_attr( $ph_interiors[ $p ] ); ?>"
+                 aria-hidden="true">
+          <div class="event-card__frame-art">
+            <div class="event-card__mat">
+              <div class="event-card__artwork">
+                <span class="event-card__category-ghost"><?php echo esc_html( $ph_texts[ $p ] ); ?></span>
+              </div>
+            </div>
+          </div>
+        </article>
+        <?php endfor; ?>
+      <?php endfor; ?>
+    </div>
   </div>
 
-  <div class="container">
-    <div class="events__coming-soon">
-      <p class="events__coming-soon-note">We&rsquo;re designing something worth showing up for.<br>First notice goes to the list.</p>
-      <a href="<?php echo esc_url( home_url( '/#newsletter' ) ); ?>" class="events__footer-cta">Get first notice &rarr;</a>
+  <nav class="events__carousel-nav" aria-label="Events navigation">
+    <button class="events__nav-btn events__nav-prev" aria-label="Previous event" disabled>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="events__dots">
+      <?php for ( $d = 0; $d < 3; $d++ ) : ?>
+      <button class="events__dot<?php echo $d === 0 ? ' events__dot--active' : ''; ?>"
+              aria-label="Event <?php echo $d + 1; ?>"></button>
+      <?php endfor; ?>
     </div>
+    <button class="events__nav-btn events__nav-next" aria-label="Next event">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </nav>
+
+  <div class="container">
+    <p class="events__coming-soon-note">We&rsquo;re designing something worth showing up for.<br>First notice goes to the list.</p>
   </div>
 
   <?php endif; ?>
