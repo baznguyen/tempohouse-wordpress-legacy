@@ -6,7 +6,7 @@ require_once get_template_directory() . '/inc/seo.php';
 require_once get_template_directory() . '/inc/enquiry.php';
 
 function tempohouse_enqueue_assets() {
-    $ver = '3.63.2';
+    $ver = '3.63.3';
     $uri = get_template_directory_uri();
 
     wp_enqueue_style( 'tempohouse-tokens',     $uri . '/assets/css/tokens.css',                [],                        $ver );
@@ -127,7 +127,7 @@ add_action( 'wp_enqueue_scripts', 'tempohouse_enqueue_assets' );
 
 // Register image sizes used by event cards and the event detail page hero.
 add_action( 'after_setup_theme', function () {
-    add_image_size( 'event-card',   600,  800, true );  // Portrait card artwork
+    add_image_size( 'event-card',   800,  800, false ); // Card artwork — soft crop, preserves natural aspect ratio
     add_image_size( 'event-poster', 1920, 1080, true ); // Wide hero poster
     add_image_size( 'event-og',     1200, 630, true );  // Open Graph social share
 } );

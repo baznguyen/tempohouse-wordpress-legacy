@@ -47,27 +47,28 @@
 }
 
 /* ==========================================================================
-   DESKTOP GRID (>=1000px)
-   3-column portrait grid — cards size to their artwork aspect ratio (3:4),
-   no forced row height. All cards equal width, proportions preserved.
+   DESKTOP MASONRY (>=1000px)
+   CSS column-count masonry — 3 columns, cards sit at their artwork's natural
+   aspect ratio. Portrait and landscape coexist. No forced row height.
    ========================================================================== */
 
 .events__viewport--grid .events__track {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    display: block;
+    column-count: 3;
+    column-gap: 20px;
     padding: var(--space-section) var(--gutter);
     width: auto;
     animation: none;
     overflow: visible;
-    align-items: start;
 }
 
 .events__viewport--grid .event-card {
-    width: auto;
+    break-inside: avoid;
+    width: 100%;
     flex-shrink: unset;
     scroll-snap-align: unset;
     grid-column: unset;
+    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
 }
@@ -82,11 +83,29 @@
     flex: unset;
 }
 
+/* Let the uploaded artwork drive card height naturally */
 .events__viewport--grid .event-card__artwork {
-    aspect-ratio: 3 / 4;
     height: auto;
-    min-height: unset;
+    aspect-ratio: auto;
+    min-height: 240px;
     flex: unset;
+}
+
+.events__viewport--grid .event-card__media-layer {
+    position: relative;
+    inset: auto;
+}
+
+.events__viewport--grid .event-card__media {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: unset;
+    opacity: 1;
+}
+
+.events__viewport--grid .event-card:hover .event-card__media {
+    opacity: 1;
 }
 
 /* Hide carousel nav on desktop */
