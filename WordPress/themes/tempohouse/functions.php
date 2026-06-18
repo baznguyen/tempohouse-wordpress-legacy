@@ -18,7 +18,7 @@ function tempohouse_editor_styles() {
 add_action( 'after_setup_theme', 'tempohouse_editor_styles' );
 
 function tempohouse_enqueue_assets() {
-    $ver = '3.73.0';
+    $ver = '3.74.0';
     $uri = get_template_directory_uri();
 
     wp_enqueue_style( 'tempohouse-tokens',     $uri . '/assets/css/tokens.css',                [],                        $ver );

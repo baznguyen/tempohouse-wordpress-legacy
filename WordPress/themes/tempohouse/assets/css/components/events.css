@@ -535,6 +535,63 @@
   }
 }
 
+/* ── Empty / coming-soon placeholder state ──────── */
+
+.events__empty-stage {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 32px;
+  padding-block: 60px 48px;
+  padding-inline: var(--gutter);
+  overflow: hidden;
+}
+
+.event-card--placeholder {
+  cursor: default;
+  pointer-events: none;
+}
+
+.event-card--placeholder .event-card__frame-art {
+  transition: none;
+}
+
+.events__coming-soon {
+  padding-block: var(--space-6) var(--space-section);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  text-align: center;
+}
+
+.events__coming-soon-note {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-size: var(--text-lg);
+  font-weight: 300;
+  color: var(--color-text-muted);
+  max-width: 42ch;
+  line-height: var(--leading-loose);
+}
+
+@media (max-width: 900px) {
+  .events__empty-stage {
+    justify-content: flex-start;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-block: 48px 32px;
+    scrollbar-width: none;
+    gap: 16px;
+  }
+
+  .events__empty-stage::-webkit-scrollbar { display: none; }
+
+  .events__empty-stage .event-card--placeholder {
+    scroll-snap-align: start;
+  }
+}
+
 /* ── Reduced motion ─────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {

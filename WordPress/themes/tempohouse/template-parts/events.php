@@ -132,10 +132,36 @@ $total       = count( $event_items );
 
   <?php else : ?>
 
-  <!-- No live events — clean coming-soon state, no fake placeholder cards -->
-  <div class="events__empty">
-    <p class="events__empty-body">The programme is taking shape. Subscribe and you&rsquo;ll hear first.</p>
-    <a href="<?php echo esc_url( home_url( '/#newsletter' ) ); ?>" class="events__empty-cta">Stay in the loop</a>
+  <!-- No live events — static blank frames + coming-soon message -->
+  <div class="events__empty-stage">
+    <article class="event-card event-card--placeholder" data-interior="dark" aria-hidden="true">
+      <div class="event-card__frame-art">
+        <div class="event-card__mat">
+          <div class="event-card__artwork"></div>
+        </div>
+      </div>
+    </article>
+    <article class="event-card event-card--placeholder" data-interior="sand" aria-hidden="true">
+      <div class="event-card__frame-art">
+        <div class="event-card__mat">
+          <div class="event-card__artwork"></div>
+        </div>
+      </div>
+    </article>
+    <article class="event-card event-card--placeholder" data-interior="dark" aria-hidden="true">
+      <div class="event-card__frame-art">
+        <div class="event-card__mat">
+          <div class="event-card__artwork"></div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div class="container">
+    <div class="events__coming-soon">
+      <p class="events__coming-soon-note">We&rsquo;re designing something worth showing up for.<br>First notice goes to the list.</p>
+      <a href="<?php echo esc_url( home_url( '/#newsletter' ) ); ?>" class="events__footer-cta">Get first notice &rarr;</a>
+    </div>
   </div>
 
   <?php endif; ?>
