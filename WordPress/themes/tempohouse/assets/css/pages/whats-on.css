@@ -1,72 +1,284 @@
+/* ==========================================================================
+   What's On page
+   Desktop (>=1000px): masonry grid, consistent row height via grid-auto-rows
+   Mobile  (<1000px):  single-row scroll-snap carousel + auto-scroll
+   ========================================================================== */
+
 .page-whats-on__gallery {
-    background: #F0EBE3;
+    background: var(--color-bg-alt);
     border-top: 1px solid var(--color-border);
 }
+
+/* -- Section labels -------------------------------------------------------- */
+
+.page-whats-on__section-label {
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    padding: var(--space-10) var(--gutter) 0;
+    max-width: var(--content-width);
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+}
+
+.page-whats-on__section-label::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: rgba(26, 24, 22, 0.25);
+    flex-shrink: 0;
+}
+
+.page-whats-on__section--ruled {
+    border-top: 1px solid var(--color-border);
+}
+
+/* -- Grid viewport: reset carousel defaults from events.css ---------------- */
 
 .events__viewport--grid {
     overflow: visible;
     padding-block: 0;
 }
 
+/* ==========================================================================
+   DESKTOP GRID (>=1000px)
+   3-column portrait grid — cards size to their artwork aspect ratio (3:4),
+   no forced row height. All cards equal width, proportions preserved.
+   ========================================================================== */
+
 .events__viewport--grid .events__track {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: var(--space-6);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
     padding: var(--space-section) var(--gutter);
     width: auto;
     animation: none;
     overflow: visible;
+    align-items: start;
 }
 
 .events__viewport--grid .event-card {
     width: auto;
     flex-shrink: unset;
     scroll-snap-align: unset;
-    grid-column: span 2;
+    grid-column: unset;
+    display: flex;
+    flex-direction: column;
 }
 
-.events__viewport--grid .event-card:nth-child(6n+1) {
-    grid-column: span 4;
+.events__viewport--grid .event-card__frame-art {
+    display: block;
+    flex: unset;
 }
 
-.events__viewport--grid .event-card:nth-child(6n+2) {
-    grid-column: span 2;
-}
-
-.events__viewport--grid .event-card:nth-child(6n+3) {
-    grid-column: span 2;
-}
-
-.events__viewport--grid .event-card:nth-child(6n+4) {
-    grid-column: span 4;
-}
-
-.events__viewport--grid .event-card:nth-child(6n+5) {
-    grid-column: span 3;
-}
-
-.events__viewport--grid .event-card:nth-child(6n+6) {
-    grid-column: span 3;
+.events__viewport--grid .event-card__mat {
+    display: block;
+    flex: unset;
 }
 
 .events__viewport--grid .event-card__artwork {
-    aspect-ratio: unset;
+    aspect-ratio: 3 / 4;
+    height: auto;
+    min-height: unset;
+    flex: unset;
 }
 
-.events__viewport--grid .event-card:nth-child(6n+1) .event-card__artwork,
-.events__viewport--grid .event-card:nth-child(6n+4) .event-card__artwork {
-    height: 380px;
+/* Hide carousel nav on desktop */
+.page-whats-on__carousel-nav { display: none; }
+
+/* ==========================================================================
+   MOBILE CAROUSEL (<1000px)
+   Switches from CSS grid to horizontal scroll-snap carousel.
+   One card visible at a time; auto-scroll managed by whats-on.js.
+
+   KEY: overflow-y: clip (not visible) lets overflow-x: auto coexist without
+   the browser promoting overflow-y to auto -- which would clip the downlight
+   fixture sitting -72px above the card. clip does NOT create a scroll
+   container on Y, so the fixture paints freely above the element boundary.
+   overflow-clip-margin: 110px is inherited from events.css .events__viewport.
+   padding-top: 120px ensures the lamp at -72px is 48px inside the clip zone.
+   ========================================================================== */
+
+@media (max-width: 999px) {
+
+    .events__viewport--grid {
+        overflow-x: auto;
+        overflow-y: clip;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        scroll-padding-inline-start: var(--gutter);
+        padding: 120px 0 0;
+        cursor: grab;
+    }
+
+    .events__viewport--grid:active { cursor: grabbing; }
+    .events__viewport--grid::-webkit-scrollbar { display: none; }
+
+    .events__viewport--grid .events__track {
+        display: flex;
+        grid-template-columns: unset;
+        grid-auto-rows: unset;
+        align-items: stretch;
+        gap: 16px;
+        padding: 0 var(--gutter);
+        width: max-content;
+    }
+
+    .events__viewport--grid .event-card {
+        width: 82vw;
+        max-width: 400px;
+        flex-shrink: 0;
+        scroll-snap-align: start;
+        grid-column: unset;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .events__viewport--grid .event-card__frame-art {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .events__viewport--grid .event-card__mat {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .events__viewport--grid .event-card__artwork {
+        flex: 1;
+        height: 0;
+        min-height: 260px;
+        aspect-ratio: unset;
+    }
+
+    .events__viewport--grid .event-card__date-reveal {
+        opacity: 1;
+        transform: translateY(0);
+        transition: none;
+    }
+
+    .page-whats-on__carousel-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-5);
+        padding: var(--space-5) var(--gutter) var(--space-10);
+    }
+
+    /* All carousel cards: default medium downlight scale */
+    .events__viewport--grid .event-card:nth-child(n) {
+        --dl-lamp-top:  -72px;
+        --dl-cone-top: -115px;
+        --dl-cone-cy:   43px;
+    }
 }
 
-.events__viewport--grid .event-card:nth-child(6n+2) .event-card__artwork,
-.events__viewport--grid .event-card:nth-child(6n+3) .event-card__artwork {
-    height: 480px;
+/* -- Empty / coming-soon state --------------------------------------------- */
+
+.page-whats-on__coming-soon-label {
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    padding: var(--space-10) var(--gutter) 0;
+    max-width: var(--content-width);
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
 }
 
-.events__viewport--grid .event-card:nth-child(6n+5) .event-card__artwork,
-.events__viewport--grid .event-card:nth-child(6n+6) .event-card__artwork {
-    height: 420px;
+.page-whats-on__coming-soon-label::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: rgba(26, 24, 22, 0.25);
+    flex-shrink: 0;
 }
+
+.event-card--placeholder {
+    pointer-events: none;
+    cursor: default;
+}
+
+.event-card--placeholder .event-card__frame-art {
+    opacity: 0.55;
+}
+
+.event-card--placeholder .event-card__category-ghost--muted {
+    opacity: 0.08;
+}
+
+.page-whats-on__coming-soon {
+    text-align: center;
+    padding: 0 var(--gutter) var(--space-section);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+.page-whats-on__coming-soon-body {
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-weight: 300;
+    line-height: var(--leading-loose);
+    color: var(--color-text-secondary);
+    max-width: 52ch;
+}
+
+/* -- Homepage empty state --------------------------------------------------- */
+
+.events__empty {
+    padding: var(--space-16) var(--gutter);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+.events__empty-body {
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: var(--color-text-secondary);
+    max-width: 44ch;
+}
+
+.events__empty-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.75rem;
+    background: var(--color-terracotta);
+    color: var(--color-cream);
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 9999px;
+    transition: background 0.2s ease;
+}
+
+.events__empty-cta:hover { background: #b35c3b; }
+
+/* -- Subscribe strip ------------------------------------------------------- */
 
 .page-whats-on__subscribe-strip {
     text-align: center;
@@ -88,51 +300,10 @@
     max-width: 52ch;
 }
 
-@media (max-width: 900px) {
+/* -- Reduced motion -------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
     .events__viewport--grid {
-        overflow-x: visible;
-        overflow-y: visible;
-        scroll-snap-type: unset;
-        cursor: default;
-    }
-
-    .events__viewport--grid:active {
-        cursor: default;
-    }
-
-    .events__viewport--grid .events__track {
-        grid-template-columns: repeat(2, 1fr);
-        width: auto;
-        padding-inline: var(--gutter);
-        animation: none;
-    }
-
-    .events__viewport--grid .event-card:nth-child(n) {
-        grid-column: span 1;
-        width: auto;
-        max-width: unset;
-        scroll-snap-align: unset;
-    }
-
-    .events__viewport--grid .event-card__artwork {
-        height: auto;
-        aspect-ratio: 3 / 4;
-    }
-
-    .events__viewport--grid .event-card__date-reveal {
-        opacity: 1;
-        transform: translateY(0);
-        transition: none;
-    }
-
-    .events__viewport--grid .events__track:not(.is-infinite) .event-card:nth-child(n + 4) {
-        display: block;
-    }
-}
-
-@media (max-width: 480px) {
-    .events__viewport--grid .events__track {
-        grid-template-columns: 1fr;
-        gap: var(--space-8);
+        scroll-behavior: auto;
     }
 }
