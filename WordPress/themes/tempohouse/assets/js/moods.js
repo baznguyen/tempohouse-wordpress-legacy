@@ -22,8 +22,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ── Mobile infinite carousel ──────────────────────
   if (!wrap) return;
-  if (!window.matchMedia('(max-width: 1100px)').matches) return;
 
+  var mq = window.matchMedia('(max-width: 1100px)');
+  if (!mq.matches) {
+    var onMobile = function (e) {
+      if (e.matches) { mq.removeEventListener('change', onMobile); initMobile(); }
+    };
+    mq.addEventListener('change', onMobile);
+    return;
+  }
+  initMobile();
+
+  function initMobile() {
   if (typeof window.tempoDragScroll === 'function') {
     window.tempoDragScroll(wrap);
   }
@@ -31,8 +41,9 @@ document.addEventListener('DOMContentLoaded', function () {
   var realItems = Array.from(wrap.children);
   var REAL = realItems.length;
 
-  // Prepend + append clone sets for infinite wrap
-  realItems.forEach(function (el) {
+  // Prepend in reverse order so last item's clone sits immediately left of
+  // the first real item — seamless backward infinite wrap.
+  realItems.slice().reverse().forEach(function (el) {
     var c = el.cloneNode(true);
     c.setAttribute('aria-hidden', 'true');
     c.classList.add('is-clone');
@@ -147,4 +158,5 @@ document.addEventListener('DOMContentLoaded', function () {
   dots.forEach(function (d, i) {
     d.addEventListener('click', function () { scrollToIdx(REAL + i, true); });
   });
+  } // end initMobile
 });

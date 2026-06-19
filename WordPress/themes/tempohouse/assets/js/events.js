@@ -19,8 +19,17 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!viewport) return;
 
   // ── Mobile infinite carousel ──────────────────────
-  if (!window.matchMedia('(max-width: 900px)').matches) return;
+  var mq = window.matchMedia('(max-width: 900px)');
+  if (!mq.matches) {
+    var onMobile = function (e) {
+      if (e.matches) { mq.removeEventListener('change', onMobile); initMobile(); }
+    };
+    mq.addEventListener('change', onMobile);
+    return;
+  }
+  initMobile();
 
+  function initMobile() {
   if (typeof window.tempoDragScroll === 'function') {
     window.tempoDragScroll(viewport);
   }
@@ -35,8 +44,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // Mark track as infinite so the CSS nth-child hide is lifted
   track.classList.add('is-infinite');
 
-  // Prepend head clones: [hA hB hC | A B C | A' B' C']
-  allCards.slice(0, REAL).forEach(function (el) {
+  // Prepend head clones in reverse order so last item's clone sits immediately
+  // left of the first real item — seamless backward infinite wrap.
+  allCards.slice(0, REAL).reverse().forEach(function (el) {
     var c = el.cloneNode(true);
     c.setAttribute('aria-hidden', 'true');
     c.classList.add('is-clone');
@@ -145,4 +155,5 @@ document.addEventListener('DOMContentLoaded', function () {
   dots.forEach(function (d, i) {
     d.addEventListener('click', function () { scrollToIdx(REAL + i, true); });
   });
+  } // end initMobile
 });

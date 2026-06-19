@@ -12,8 +12,20 @@
   function initWalkCarousel(viewport) {
     var track = viewport.querySelector('.page-gallery__walk-track');
     if (!track) return;
-    if (!window.matchMedia('(max-width: 1000px)').matches) return;
 
+    // If loaded at desktop width, wait for the mobile breakpoint before init.
+    // This ensures click handlers are always in place when the nav becomes visible.
+    var mq = window.matchMedia('(max-width: 1000px)');
+    if (!mq.matches) {
+      var onMobile = function (e) {
+        if (e.matches) { mq.removeEventListener('change', onMobile); doInit(); }
+      };
+      mq.addEventListener('change', onMobile);
+      return;
+    }
+    doInit();
+
+    function doInit() {
     if (typeof window.tempoDragScroll === 'function') {
       window.tempoDragScroll(viewport);
     }
@@ -21,7 +33,9 @@
     var realItems = Array.from(track.children);
     var REAL = realItems.length;
 
-    realItems.forEach(function (el) {
+    // Prepend in reverse order so the last item's clone sits immediately to
+    // the left of the first real item — seamless backward infinite wrap.
+    realItems.slice().reverse().forEach(function (el) {
       var c = el.cloneNode(true);
       c.setAttribute('aria-hidden', 'true');
       c.classList.add('is-clone');
@@ -163,6 +177,7 @@
     });
 
     startAuto();
+    } // end doInit
   }
 
   // ── Init ─────────────────────────────────────────────
