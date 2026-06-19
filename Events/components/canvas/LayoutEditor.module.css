@@ -1,0 +1,23 @@
+/* Full-height editor shell — matches #fp-app layout */
+.editor {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--canvas-bg);
+}
+
+/* Toolbar + canvas stacked vertically */
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Canvas area — fills remaining height, provides position context for floating panels */
+.canvasArea {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}

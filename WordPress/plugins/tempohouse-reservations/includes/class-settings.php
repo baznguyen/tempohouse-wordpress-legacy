@@ -10,6 +10,10 @@ class THR_Settings {
         'venue_phone'         => '',
         'venue_email'         => '',
         'venue_timezone'      => 'Asia/Ho_Chi_Minh',
+        // Booking widget hero images (attachment URLs set via admin settings)
+        'hero_landing_url'    => '',
+        'hero_lunch_url'      => '',
+        'hero_dinner_url'     => '',
         // Email notifications
         'email_from_name'     => 'TEMPO House',
         'email_from_address'  => '',
@@ -19,6 +23,8 @@ class THR_Settings {
         // Feedback
         'feedback_form_url'   => '',   // Google Forms URL with ?usp=pp_url&entry.XXXXX={ref}
         'google_review_url'   => '',
+        // Contact channels (used in email footers)
+        'venue_whatsapp'      => '',   // international number without +, e.g. 84909123456
         // Booking rules
         'booking_advance_min' => 60,   // minutes — minimum advance notice
         'booking_advance_max' => 60,   // days — how far ahead guests can book
@@ -33,8 +39,11 @@ class THR_Settings {
         // Floor status thresholds (minutes seated before colour change)
         'status_orange_min'   => 45,
         'status_red_min'      => 90,
-        // Occasion types (pipe-separated label:slug pairs)
-        'occasion_types'      => 'Dinner:dinner|Bar:bar|Birthday:birthday|Anniversary:anniversary|Corporate:corporate|Event:event|Custom:custom',
+        // Occasion types — format: "Label:slug" (shown in preferences step + admin filters)
+        // Remove session-type occasions (Dinner/Bar) — those are handled by the sessions system
+        'occasion_types'      => 'Birthday:birthday|Anniversary:anniversary|Corporate:corporate|Date Night:date-night|Celebration:celebration|Farewell:farewell|Proposal:proposal|Baby Shower:baby-shower|Custom:custom',
+        // Seating sections — venue areas guests can request (pipe-separated label:slug)
+        'seating_sections'    => 'Any:any|Indoor:indoor|Outdoor Terrace:outdoor|Bar Seating:bar|Lounge:lounge|Private Dining:private',
         // Reminder email timing
         'reminder_24h'        => true,  // send 24h before
         'reminder_2h'         => true,  // send 2h before
@@ -57,8 +66,8 @@ class THR_Settings {
         // Large party / private room
         'private_room_min_party'  => 12,    // party size >= this triggers private-room option
         'private_room_max_party'  => 15,    // private room capacity ceiling
-        // Service periods (pipe-separated name:start:end in HH:MM)
-        'periods'                 => 'Lunch:11:30:14:30|Dinner:17:30:22:30',
+        // Service sessions — format: "Label:HH:MM,HH:MM" (comma separates start/end)
+        'periods'                 => 'Breakfast:08:00,11:00|Lunch:11:00,15:00|Happy Hour:16:00,20:00|Dinner:17:00,23:30',
         // Calendar availability
         'slot_interval_min'       => 30,    // minutes between selectable time slots
         'closed_days'             => '',    // comma-separated day numbers to always close: 0=Sun … 6=Sat, empty = open all
@@ -71,8 +80,13 @@ class THR_Settings {
         if ( empty( $existing ) ) {
             update_option( 'thr_settings', self::$defaults, false );
         } else {
-            // Merge in any new defaults added by plugin updates
             $merged = array_merge( self::$defaults, $existing );
+            // Migration: if periods is in the old broken format (no comma = Label:HH:MM:HH:MM),
+            // replace with the new comma-separated default.
+            $stored_periods = $merged['periods'] ?? '';
+            if ( ! empty( $stored_periods ) && strpos( $stored_periods, ',' ) === false ) {
+                $merged['periods'] = self::$defaults['periods'];
+            }
             update_option( 'thr_settings', $merged, false );
         }
     }
@@ -108,8 +122,18 @@ class THR_Settings {
     }
 
     public static function occasion_types(): array {
-        $raw  = self::get( 'occasion_types' );
-        $out  = [];
+        $raw = self::get( 'occasion_types' );
+        $out = [];
+        foreach ( explode( '|', $raw ) as $pair ) {
+            [ $label, $slug ] = array_pad( explode( ':', $pair, 2 ), 2, '' );
+            if ( $slug ) $out[ trim( $slug ) ] = trim( $label );
+        }
+        return $out;
+    }
+
+    public static function seating_sections(): array {
+        $raw = self::get( 'seating_sections' );
+        $out = [];
         foreach ( explode( '|', $raw ) as $pair ) {
             [ $label, $slug ] = array_pad( explode( ':', $pair, 2 ), 2, '' );
             if ( $slug ) $out[ trim( $slug ) ] = trim( $label );
@@ -121,15 +145,22 @@ class THR_Settings {
         $raw = self::get( 'periods', '' );
         $out = [];
         foreach ( explode( '|', $raw ) as $chunk ) {
-            $parts = explode( ':', $chunk, 3 );
-            if ( count( $parts ) === 3 ) {
-                $slug        = strtolower( trim( $parts[0] ) );
-                $out[ $slug ] = [
-                    'label' => trim( $parts[0] ),
-                    'start' => trim( $parts[1] ),
-                    'end'   => trim( $parts[2] ),
-                ];
-            }
+            $chunk = trim( $chunk );
+            if ( empty( $chunk ) ) continue;
+            // Format: "Session Label:HH:MM,HH:MM"
+            $colon = strpos( $chunk, ':' );
+            if ( $colon === false ) continue;
+            $label = trim( substr( $chunk, 0, $colon ) );
+            $range = trim( substr( $chunk, $colon + 1 ) );
+            $times = explode( ',', $range, 2 );
+            if ( count( $times ) !== 2 ) continue;
+            // Slug: lowercase first, then replace non-alphanumeric runs with hyphen
+            $slug = trim( preg_replace( '/[^a-z0-9]+/', '-', strtolower( $label ) ), '-' );
+            $out[ $slug ] = [
+                'label' => $label,
+                'start' => trim( $times[0] ),
+                'end'   => trim( $times[1] ),
+            ];
         }
         return $out;
     }
@@ -148,8 +179,11 @@ class THR_Settings {
         $periods = self::periods();
         if ( ! isset( $periods[ $period ] ) ) return self::time_slots();
 
-        $start    = strtotime( $periods[ $period ]['start'] );
-        $end      = strtotime( $periods[ $period ]['end'] );
+        // Anchor to 'today' so strtotime returns a real Unix timestamp for the time
+        $start    = strtotime( 'today ' . $periods[ $period ]['start'] );
+        $end      = strtotime( 'today ' . $periods[ $period ]['end'] );
+        if ( ! $start || ! $end || $end <= $start ) return self::time_slots();
+
         $interval = (int) self::get( 'slot_interval_min', 30 ) * 60;
         $slots    = [];
 

@@ -357,10 +357,22 @@
   /* ══════════════════════════════════════════════════════════════════
      OVERLAP DETECTION
   ══════════════════════════════════════════════════════════════════ */
+  // Returns the VISUAL bounding dimensions for an item, accounting for chair overhang on
+  // round tables.  Use this for all overlap/placement checks so chairs never visually clip.
+  function tableVisualSize(item) {
+    var w = toNum(item.width, 80), h = toNum(item.height, 80);
+    if (isRound(item)) {
+      var r  = Math.max(24, Math.min(52, w / 2));
+      var cH = Math.max(13, r * 0.48);
+      var vr = Math.ceil(r + 4 + cH / 2); // visual radius = table r + gap + half-chair height
+      return { w: vr * 2, h: vr * 2 };
+    }
+    return { w: w, h: h };
+  }
+
   function tableAABB(item) {
-    var w = toNum(item.width, 80);
-    var h = toNum(item.height, 80);
-    return { x: toNum(item.pos_x, 0) - w / 2, y: toNum(item.pos_y, 0) - h / 2, w: w, h: h };
+    var vs = tableVisualSize(item);
+    return { x: toNum(item.pos_x, 0) - vs.w / 2, y: toNum(item.pos_y, 0) - vs.h / 2, w: vs.w, h: vs.h };
   }
 
   function aabbOverlap(a, b, pad) {
@@ -380,6 +392,21 @@
       if (other.type === 'text_label' || other.type === 'zone') return false;
       return aabbOverlap(test, tableAABB(other), 16);
     });
+  }
+
+  // Scan S.tables for overlapping furniture and nudge each offending item to the
+  // nearest free grid position.  Returns the number of items that were moved.
+  function fixOverlappingTables() {
+    var fixed = 0;
+    Object.values(S.tables).forEach(function (item) {
+      if (item.type === 'zone' || item.type === 'text_label') return;
+      var vs = tableVisualSize(item); // use visual size so round-table chairs are included
+      if (isOverlappingAny(item.pos_x, item.pos_y, vs.w, vs.h, item.id)) {
+        var pos = findFreePositionNear(item.pos_x, item.pos_y, vs.w, vs.h, item.id);
+        if (pos) { item.pos_x = pos.x; item.pos_y = pos.y; fixed++; }
+      }
+    });
+    return fixed;
   }
 
   // Returns the nearest non-overlapping position to (cx, cy) for an item of size w×h.
@@ -1353,7 +1380,8 @@
       // final nudged position, so dropping into a packed zone still joins it.
       var _intentX = nx, _intentY = ny;
 
-      if (d.type !== 'text_label' && d.type !== 'zone' && isOverlappingAny(nx, ny, toNum(d.width, 80), toNum(d.height, 80), item.id)) {
+      var _dvs = tableVisualSize(d);
+      if (d.type !== 'text_label' && d.type !== 'zone' && isOverlappingAny(nx, ny, _dvs.w, _dvs.h, item.id)) {
         // Prefer nudging within the target zone so the table visually stays inside.
         var _dropZoneBBox = null;
         Object.values(S.tables).forEach(function (z) {
@@ -1395,6 +1423,7 @@
         var finalY    = d.pos_y;
         var didAdd    = false;
         var hasPendingConfirm = false;
+        var addedToZones = [];
 
         Object.values(S.tables).forEach(function (z) {
           if (z.type !== 'zone') return;
@@ -1409,6 +1438,7 @@
 
           if (!wasIn && isInNow) {
             z.meta.members = members.concat([sid]);
+            addedToZones.push(z);
             showToast('Added to "' + (z.label || 'Zone') + '"', 'ok');
             didAdd = true;
             if (S.pendingZoneId === String(z.id) && S.pendingZoneMembers) {
@@ -1431,6 +1461,7 @@
                     S.pendingZoneMembers.delete(sid);
                     showZoneFloatProps(String(zRef.id), zRef);
                   }
+                  updateZoneMemberVisuals();
                 } else {
                   // Revert position back inside the zone
                   if (preDragX !== undefined) {
@@ -1440,6 +1471,14 @@
                     if (tNode) tNode.position({ x: d.pos_x, y: d.pos_y });
                     tableLayer.batchDraw();
                   }
+                  // Revert any zone additions that happened during this same drag
+                  addedToZones.forEach(function (z) {
+                    z.meta.members = (z.meta.members || []).filter(function (m) { return m !== sid; });
+                    if (S.pendingZoneId === String(z.id) && S.pendingZoneMembers) {
+                      S.pendingZoneMembers.delete(sid);
+                      showZoneFloatProps(String(z.id), z);
+                    }
+                  });
                 }
                 renderZoneLayer();
               });
@@ -1447,9 +1486,9 @@
           }
         });
 
-        // Render immediately if an add happened or no confirm is pending;
-        // the modal handler also calls renderZoneLayer after confirm resolves.
-        if (!hasPendingConfirm || didAdd) renderZoneLayer();
+        // Only render immediately when no confirm modal is pending;
+        // the modal handler calls renderZoneLayer after the user responds.
+        if (!hasPendingConfirm) renderZoneLayer();
       } else {
         renderZoneLayer();
       }
@@ -1790,7 +1829,7 @@
       var zw = bbox.x2 - bbox.x1;
       var zh = bbox.y2 - bbox.y1;
 
-      var rot = typeof (meta.rotation) === 'number' ? meta.rotation : (parseFloat(meta.rotation) || 0);
+      var rot = 0; // zone rect is always axis-aligned; member positions carry any applied rotation
       var cx  = zx + zw / 2;
       var cy  = zy + zh / 2;
 
@@ -1882,26 +1921,247 @@
         var dx = this.x();
         var dy = this.y();
         this.position({ x: 0, y: 0 }); // zone has no stored pos; reset after dragging
+
+        // Compute proposed snapped positions for all zone members
+        var proposed = {};
+        var memberSet = new Set(members.map(String));
         members.forEach(function (mid) {
           var t = S.tables[mid];
-          var tNode = stage.findOne('#tbl-' + mid);
-          if (!t || !tNode || t._zdx === undefined) return;
-          t.pos_x = snapToGrid(t._zdx + dx);
-          t.pos_y = snapToGrid(t._zdy + dy);
-          tNode.position({ x: t.pos_x, y: t.pos_y });
-          delete t._zdx;
-          delete t._zdy;
-          // position held in S.tables until publish
+          if (!t || t._zdx === undefined) return;
+          proposed[mid] = { x: snapToGrid(t._zdx + dx), y: snapToGrid(t._zdy + dy) };
         });
-        tableLayer.batchDraw();
-        renderZoneLayer();
-        markDirty();
+
+        // Reject the entire move if any member would overlap a non-member table
+        var wouldOverlap = Object.keys(proposed).some(function (mid) {
+          var pos = proposed[mid];
+          var t = S.tables[mid];
+          var _tvs = tableVisualSize(t);
+          var test = { x: pos.x - _tvs.w / 2, y: pos.y - _tvs.h / 2, w: _tvs.w, h: _tvs.h };
+          return Object.values(S.tables).some(function (other) {
+            if (other.type === 'zone' || other.type === 'text_label') return false;
+            if (memberSet.has(String(other.id))) return false;
+            return aabbOverlap(test, tableAABB(other), 16);
+          });
+        });
+
+        if (wouldOverlap) {
+          // Revert canvas positions to the stored originals
+          members.forEach(function (mid) {
+            var t = S.tables[mid];
+            var tNode = stage.findOne('#tbl-' + mid);
+            if (t && tNode && t._zdx !== undefined) tNode.position({ x: t._zdx, y: t._zdy });
+            if (t) { delete t._zdx; delete t._zdy; }
+          });
+          tableLayer.batchDraw();
+          showToast('Cannot place zone here — tables would overlap', 'warn');
+        } else {
+          members.forEach(function (mid) {
+            var pos = proposed[mid];
+            if (!pos) return;
+            var t = S.tables[mid];
+            var tNode = stage.findOne('#tbl-' + mid);
+            if (!t || !tNode) return;
+            t.pos_x = pos.x;
+            t.pos_y = pos.y;
+            tNode.position({ x: t.pos_x, y: t.pos_y });
+            delete t._zdx;
+            delete t._zdy;
+          });
+          tableLayer.batchDraw();
+          renderZoneLayer();
+          markDirty();
+        }
       });
 
       zoneLayer.add(zGroup);
     });
 
     zoneLayer.batchDraw();
+    renderZoneRotateHandle();
+  }
+
+  // Live-update the zone bounding rect from current canvas node positions (used during drag-rotate)
+  function updateZoneRectLive(zoneId, members) {
+    var pad = 20;
+    var x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+    members.forEach(function (mid) {
+      var t    = S.tables[mid];
+      var node = stage.findOne('#tbl-' + mid);
+      if (!t || !node) return;
+      var pos = node.position();
+      var hw = toNum(t.width, 80) / 2, hh = toNum(t.height, 80) / 2;
+      x1 = Math.min(x1, pos.x - hw); y1 = Math.min(y1, pos.y - hh);
+      x2 = Math.max(x2, pos.x + hw); y2 = Math.max(y2, pos.y + hh);
+    });
+    if (!isFinite(x1)) return;
+    x1 -= pad; y1 -= pad; x2 += pad; y2 += pad;
+    var zw = x2 - x1, zh = y2 - y1;
+    var ncx = x1 + zw / 2, ncy = y1 + zh / 2;
+    var zGroup = zoneLayer.findOne('#zone-' + zoneId);
+    if (!zGroup) return;
+    var visG = zGroup.getChildren(function (n) { return n.getClassName() === 'Group'; })[0];
+    if (!visG) return;
+    visG.position({ x: ncx, y: ncy });
+    var rect = visG.findOne('Rect');
+    if (rect) { rect.x(-zw / 2); rect.y(-zh / 2); rect.width(zw); rect.height(zh); }
+    var lbl = visG.findOne('Text');
+    if (lbl) { lbl.x(-zw / 2 + 9); lbl.y(-zh / 2 + 6); }
+    zoneLayer.batchDraw();
+  }
+
+  // Snap a rotation delta (radians) to the nearest common angle within an 8° threshold.
+  // Snap points: 0°, 60°, 90°, 120°, 180°, 240°, 270°, 300° (and their 360° equivalents).
+  function snapZoneRotation(deltaRad) {
+    var SNAPS  = [0, 60, 90, 120, 180, 240, 270, 300, 360];
+    var THRESH = 8 * Math.PI / 180;
+    var TWO_PI = 2 * Math.PI;
+    var norm   = ((deltaRad % TWO_PI) + TWO_PI) % TWO_PI; // normalise to [0, 2π)
+    var best = null, bestD = THRESH;
+    SNAPS.forEach(function (deg) {
+      var snapR = deg * Math.PI / 180;
+      var d = Math.abs(norm - snapR);
+      if (d > Math.PI) d = TWO_PI - d; // wrap-around check
+      if (d < bestD) { bestD = d; best = snapR; }
+    });
+    if (best === null) return deltaRad;
+    // Reconstruct full delta (preserving revolution count) by finding nearest
+    // multiple of 2π offset between `best` and the raw deltaRad.
+    var k = Math.round((deltaRad - best) / TWO_PI);
+    return best + k * TWO_PI;
+  }
+
+  // Add/refresh the drag-rotate handle for the currently selected zone.
+  // Called at the end of renderZoneLayer() so it stays in sync with zone state.
+  function renderZoneRotateHandle() {
+    // Clean up stale handle from previous render
+    tableLayer.find('.zone-rot-handle').forEach(function (n) { n.destroy(); });
+    tableLayer.find('.zone-rot-line').forEach(function (n) { n.destroy(); });
+
+    if (S.mode !== 'builder') return;
+    var zoneId = S.selected;
+    if (!zoneId) return;
+    var item = S.tables[zoneId];
+    if (!item || item.type !== 'zone') return;
+
+    var members = (item.meta && item.meta.members) || [];
+    var bbox = getZoneBBoxRaw(item);
+    if (!bbox || !members.length) return;
+
+    var zw   = bbox.x2 - bbox.x1, zh = bbox.y2 - bbox.y1;
+    var cx   = bbox.x1 + zw / 2,  cy = bbox.y1 + zh / 2;
+    var HANDLE_R = Math.max(36, zh / 2 + 32); // orbit radius — always above the zone rect
+
+    var initHx = cx, initHy = cy - HANDLE_R;
+
+    var connLine = new Konva.Line({
+      points: [cx, cy, initHx, initHy],
+      stroke: '#2E7D52', strokeWidth: 1.5, dash: [4, 3],
+      listening: false, name: 'zone-rot-line',
+    });
+
+    var handleGroup = new Konva.Group({
+      x: initHx, y: initHy,
+      draggable: true, name: 'zone-rot-handle',
+    });
+    // Circle must be listening:true (default) — it defines the hit area for the group.
+    // Without a listening child, clicks pass through the group to the canvas background.
+    handleGroup.add(new Konva.Circle({
+      radius: 10, fill: '#ffffff', stroke: '#2E7D52', strokeWidth: 2,
+    }));
+    handleGroup.add(new Konva.Text({
+      text: '↻', fontSize: 13, fontFamily: 'system-ui,-apple-system,sans-serif',
+      fill: '#2E7D52', x: -5, y: -7, listening: false,
+    }));
+
+    var _startAngle = 0;
+    var _startPos   = [];
+
+    handleGroup.on('click tap', function (e) { e.cancelBubble = true; });
+
+    handleGroup.on('mouseenter', function () { stage.container().style.cursor = 'grab'; });
+    handleGroup.on('mouseleave', function () { stage.container().style.cursor = ''; });
+
+    handleGroup.on('dragstart', function (e) {
+      e.cancelBubble = true;
+      // Clear any number-input preview so they don't interfere
+      members.forEach(function (mid) {
+        var t = S.tables[mid]; if (t) { delete t._preRotX; delete t._preRotY; }
+      });
+      var rotInput = document.getElementById('fp-fp-zone-rot');
+      if (rotInput) rotInput.value = 0;
+
+      var dx = this.x() - cx, dy = this.y() - cy;
+      _startAngle = Math.atan2(dy, dx);
+      _startPos   = members.map(function (mid) {
+        var t = S.tables[mid];
+        return t ? { id: mid, x: toNum(t.pos_x, 0), y: toNum(t.pos_y, 0) } : null;
+      }).filter(Boolean);
+      stage.container().style.cursor = 'grabbing';
+    });
+
+    handleGroup.on('dragmove', function (e) {
+      e.cancelBubble = true;
+      // Constrain handle to its orbit circle so it stays a rotation gesture
+      var dx = this.x() - cx, dy = this.y() - cy;
+      var rawAngle  = Math.atan2(dy, dx);
+      var deltaRad  = snapZoneRotation(rawAngle - _startAngle);
+      var snapAngle = _startAngle + deltaRad;
+      // Move handle to the (possibly snapped) orbit position
+      var nx = cx + Math.cos(snapAngle) * HANDLE_R;
+      var ny = cy + Math.sin(snapAngle) * HANDLE_R;
+      this.position({ x: nx, y: ny });
+      connLine.points([cx, cy, nx, ny]);
+
+      // Show live angle in the "Rotate by" input so the user can see their custom angle
+      var rotInput = document.getElementById('fp-fp-zone-rot');
+      if (rotInput) {
+        var dispDeg = Math.round(deltaRad * 180 / Math.PI);
+        if (dispDeg < 0) dispDeg += 360;
+        rotInput.value = dispDeg;
+      }
+
+      var cos = Math.cos(deltaRad), sin = Math.sin(deltaRad);
+      _startPos.forEach(function (p) {
+        var pdx = p.x - cx, pdy = p.y - cy;
+        var node = stage.findOne('#tbl-' + p.id);
+        if (node) node.position({
+          x: Math.round(cx + pdx * cos - pdy * sin),
+          y: Math.round(cy + pdx * sin + pdy * cos),
+        });
+      });
+      updateZoneRectLive(zoneId, members);
+      tableLayer.batchDraw();
+    });
+
+    handleGroup.on('dragend', function (e) {
+      e.cancelBubble = true;
+      stage.container().style.cursor = '';
+
+      var dx = this.x() - cx, dy = this.y() - cy;
+      var deltaRad = snapZoneRotation(Math.atan2(dy, dx) - _startAngle);
+      var cos = Math.cos(deltaRad), sin = Math.sin(deltaRad);
+
+      _startPos.forEach(function (p) {
+        var t = S.tables[p.id];
+        if (!t) return;
+        var pdx = p.x - cx, pdy = p.y - cy;
+        t.pos_x = Math.round(cx + pdx * cos - pdy * sin);
+        t.pos_y = Math.round(cy + pdx * sin + pdy * cos);
+      });
+      _startPos = [];
+
+      var rotInput = document.getElementById('fp-fp-zone-rot');
+      if (rotInput) rotInput.value = 0;
+
+      renderAllTables();
+      renderZoneLayer(); // also re-adds handle at new position
+      tableLayer.batchDraw();
+      markDirty();
+    });
+
+    tableLayer.add(connLine);
+    tableLayer.add(handleGroup);
+    tableLayer.batchDraw();
   }
 
   function resetZoneHighlights() {
@@ -2071,6 +2331,21 @@
 
   function deselect() {
     var wasZone = S.selected && S.tables[S.selected] && S.tables[S.selected].type === 'zone';
+    // Revert any rotation preview that wasn't committed via saveZone
+    if (S.pendingZoneMembers) {
+      var needsDraw = false;
+      S.pendingZoneMembers.forEach(function (mid) {
+        var t = S.tables[mid];
+        if (t && t._preRotX !== undefined) {
+          t.pos_x = t._preRotX; t.pos_y = t._preRotY;
+          var node = stage.findOne('#tbl-' + t.id);
+          if (node) node.position({ x: t.pos_x, y: t.pos_y });
+          delete t._preRotX; delete t._preRotY;
+          needsDraw = true;
+        }
+      });
+      if (needsDraw) tableLayer.batchDraw();
+    }
     S.selected           = null;
     S.selectedIds        = new Set();
     S.pendingZoneId      = null;
@@ -2620,12 +2895,11 @@
         '<input class="fp-prop-input fp-prop-color" id="fp-fp-zone-color" type="color" value="' + escAttr(meta.color || '#EAF5EE') + '">' +
       '</div>' +
       '<div class="fp-prop-row">' +
-        '<label class="fp-prop-label">Rotation</label>' +
+        '<label class="fp-prop-label">Rotate group</label>' +
         '<div class="fp-zone-rot-ctrl">' +
-          '<input type="number" class="fp-prop-input fp-zone-rot-input" id="fp-fp-zone-rot" min="0" max="359" value="' + escAttr(String(meta.rotation || 0)) + '">°' +
+          '<input type="number" class="fp-prop-input fp-zone-rot-input" id="fp-fp-zone-rot" min="-359" max="359" value="0" placeholder="deg">°' +
           '<div class="fp-zone-rot-presets">' +
-            '<button type="button" data-rot="0">0°</button>' +
-            '<button type="button" data-rot="60">60°</button>' +
+            '<button type="button" data-rot="-90">−90°</button>' +
             '<button type="button" data-rot="90">90°</button>' +
             '<button type="button" data-rot="180">180°</button>' +
           '</div>' +
@@ -2651,8 +2925,7 @@
     var rotEl = document.getElementById('fp-fp-zone-rot');
     if (rotEl) {
       rotEl.addEventListener('input', function () {
-        var val = ((parseInt(this.value, 10) || 0) % 360 + 360) % 360;
-        applyZoneRotationPreview(id, val);
+        applyZoneRotationPreview(id, parseInt(this.value, 10) || 0);
       });
     }
     body.querySelectorAll('.fp-zone-rot-presets [data-rot]').forEach(function (btn) {
@@ -2718,20 +2991,105 @@
     if (labelEl) zone.label = labelEl.value.trim() || zone.label;
     if (!zone.meta) zone.meta = {};
     if (colorEl) zone.meta.color = colorEl.value;
-    if (rotEl)  zone.meta.rotation = ((parseInt(rotEl.value, 10) || 0) % 360 + 360) % 360;
-    zone.meta.members = Array.from(S.pendingZoneMembers || []);
+
+    // Physically rotate member table positions by the entered delta.
+    // Uses _preRotX/_preRotY (saved by the preview) so multi-step input changes
+    // all rotate relative to the positions at the moment the zone was opened.
+    var rotateDeg = rotEl ? (parseInt(rotEl.value, 10) || 0) : 0;
+    var memberIds = Array.from(S.pendingZoneMembers || []);
+    if (rotateDeg !== 0) {
+      var pts = memberIds.map(function (mid) { return S.tables[mid]; }).filter(Boolean);
+      if (pts.length > 0) {
+        var cx = pts.reduce(function (s, t) { return s + (t._preRotX !== undefined ? t._preRotX : toNum(t.pos_x, 0)); }, 0) / pts.length;
+        var cy = pts.reduce(function (s, t) { return s + (t._preRotY !== undefined ? t._preRotY : toNum(t.pos_y, 0)); }, 0) / pts.length;
+        var rad = rotateDeg * Math.PI / 180;
+        var cos = Math.cos(rad), sin = Math.sin(rad);
+        pts.forEach(function (t) {
+          var ox = t._preRotX !== undefined ? t._preRotX : toNum(t.pos_x, 0);
+          var oy = t._preRotY !== undefined ? t._preRotY : toNum(t.pos_y, 0);
+          t.pos_x = Math.round(cx + (ox - cx) * cos - (oy - cy) * sin);
+          t.pos_y = Math.round(cy + (ox - cx) * sin + (oy - cy) * cos);
+          var node = stage.findOne('#tbl-' + t.id);
+          if (node) node.position({ x: t.pos_x, y: t.pos_y });
+        });
+      }
+    }
+    // Clean up preview markers on all members regardless of whether rotation was applied
+    memberIds.forEach(function (mid) {
+      var t = S.tables[mid];
+      if (t) { delete t._preRotX; delete t._preRotY; }
+    });
+
+    zone.meta.rotation = 0;
+    zone.meta.members  = memberIds;
+    if (rotEl) rotEl.value = 0;
+    renderAllTables();
     renderZoneLayer();
+    tableLayer.batchDraw();
     var titleEl = document.getElementById('fp-fp-title');
     if (titleEl) titleEl.textContent = zone.label;
     showToast('Zone updated', 'ok');
     markDirty();
   }
 
-  function applyZoneRotationPreview(zoneId, rotation) {
+  function applyZoneRotationPreview(zoneId, rotateDeg) {
+    var zone = S.tables[zoneId];
+    if (!zone) return;
+    var memberIds = (zone.meta && zone.meta.members) || [];
+    var pts = memberIds.map(function (mid) { return S.tables[mid]; }).filter(Boolean);
+    if (!pts.length) return;
+
+    // Snapshot original positions on first preview so repeated input changes
+    // are always relative to where tables were when the zone panel was opened.
+    pts.forEach(function (t) {
+      if (t._preRotX === undefined) { t._preRotX = toNum(t.pos_x, 0); t._preRotY = toNum(t.pos_y, 0); }
+    });
+
+    // Rotate around the centroid of original positions
+    var cx  = pts.reduce(function (s, t) { return s + t._preRotX; }, 0) / pts.length;
+    var cy  = pts.reduce(function (s, t) { return s + t._preRotY; }, 0) / pts.length;
+    var rad = rotateDeg * Math.PI / 180;
+    var cos = Math.cos(rad), sin = Math.sin(rad);
+
+    var newPos = pts.map(function (t) {
+      var dx = t._preRotX - cx, dy = t._preRotY - cy;
+      return { x: Math.round(cx + dx * cos - dy * sin), y: Math.round(cy + dx * sin + dy * cos) };
+    });
+
+    // Move canvas nodes — tables themselves are not rotated, so labels stay upright
+    pts.forEach(function (t, i) {
+      var node = stage.findOne('#tbl-' + t.id);
+      if (node) node.position({ x: newPos[i].x, y: newPos[i].y });
+    });
+    tableLayer.batchDraw();
+
+    // Update the zone bounding rect to reflect the preview positions
+    var pad = 20;
+    var x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+    pts.forEach(function (t, i) {
+      var hw = toNum(t.width, 80) / 2, hh = toNum(t.height, 80) / 2;
+      x1 = Math.min(x1, newPos[i].x - hw);
+      y1 = Math.min(y1, newPos[i].y - hh);
+      x2 = Math.max(x2, newPos[i].x + hw);
+      y2 = Math.max(y2, newPos[i].y + hh);
+    });
+    x1 -= pad; y1 -= pad; x2 += pad; y2 += pad;
+    var zw = x2 - x1, zh = y2 - y1;
+    var ncx = x1 + zw / 2, ncy = y1 + zh / 2;
+
     var zGroup = zoneLayer.findOne('#zone-' + zoneId);
-    if (!zGroup) return;
-    var visG = zGroup.getChildren(function (n) { return n.getClassName() === 'Group'; })[0];
-    if (visG) { visG.rotation(rotation); zoneLayer.batchDraw(); }
+    if (zGroup) {
+      var visG = zGroup.getChildren(function (n) { return n.getClassName() === 'Group'; })[0];
+      if (visG) {
+        visG.rotation(0);
+        visG.position({ x: ncx, y: ncy });
+        var rect = visG.findOne('Rect');
+        if (rect) { rect.x(-zw / 2); rect.y(-zh / 2); rect.width(zw); rect.height(zh); }
+        var lbl = visG.findOne('Text');
+        if (lbl) { lbl.x(-zw / 2 + 9); lbl.y(-zh / 2 + 6); }
+        zoneLayer.batchDraw();
+      }
+    }
   }
 
   /* ── Prop change handlers ────────────────────────────────────────── */
@@ -3093,6 +3451,8 @@
 
     return promise.then(function () {
       S.dirty = false;
+      // Keep snapshot in sync so a subsequent discard reverts to this published state
+      S._preEditSnapshot = JSON.parse(JSON.stringify(S.tables));
       if (btn) {
         btn.textContent = 'Saved ✓';
         btn.disabled = true;
@@ -3142,12 +3502,19 @@
   function enterBuilderMode() {
     S.mode = 'builder';
     document.getElementById('fp-app').dataset.mode = 'builder';
+    // Snapshot current state so we can restore it if the user exits without publishing
+    S._preEditSnapshot = JSON.parse(JSON.stringify(S.tables));
     stopLiveUpdates();
     tableLayer.getChildren(function (n) { return n.name() === 'table-group'; })
       .forEach(function (g) { g.draggable(true); });
+    var fixCount = fixOverlappingTables();
     renderAllTables();
     renderZoneLayer();
     tableLayer.batchDraw();
+    if (fixCount > 0) {
+      markDirty();
+      showToast(fixCount + (fixCount === 1 ? ' table' : ' tables') + ' auto-nudged to fix overlapping positions — publish to save', 'warn');
+    }
     setTimeout(zoomFit, 150);
   }
 
@@ -3170,6 +3537,12 @@
     document.getElementById('fp-app').dataset.mode = 'live';
     deselect();
     cancelPlacing();
+    // Restore pre-edit snapshot if the user is discarding unpublished changes
+    if (S.dirty && S._preEditSnapshot) {
+      S.tables = S._preEditSnapshot;
+      fixOverlappingTables(); // ensure restored state is also clean
+    }
+    S._preEditSnapshot = null;
     S.dirty = false;
     tableLayer.getChildren(function (n) { return n.name() === 'table-group'; })
       .forEach(function (g) { g.draggable(false); });

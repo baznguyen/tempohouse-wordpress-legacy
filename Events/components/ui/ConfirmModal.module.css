@@ -1,0 +1,112 @@
+/* Overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 24, 22, 0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.12s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to   { opacity: 1 }
+}
+
+/* Modal sheet */
+.sheet {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(26,24,22,0.18), 0 4px 16px rgba(26,24,22,0.08);
+  padding: 32px 28px 24px;
+  width: 340px;
+  max-width: calc(100vw - 40px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: slideUp 0.15s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(8px); opacity: 0 }
+  to   { transform: translateY(0);   opacity: 1 }
+}
+
+/* Warning icon */
+.icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(199, 110, 75, 0.1);
+  border: 1.5px solid rgba(199, 110, 75, 0.25);
+  color: var(--terracotta);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 4px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.message {
+  font-size: 13px;
+  color: var(--text-3);
+  line-height: 1.5;
+  text-align: center;
+  max-width: 260px;
+}
+
+/* Button row */
+.actions {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.cancelBtn {
+  flex: 1;
+  height: 38px;
+  border-radius: 9px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.12s, border-color 0.12s;
+}
+.cancelBtn:hover {
+  background: var(--hover);
+  border-color: var(--border-2);
+}
+
+.confirmBtn {
+  flex: 1;
+  height: 38px;
+  border-radius: 9px;
+  background: var(--ink);
+  color: var(--cream);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: background 0.12s;
+}
+.confirmBtn:hover { background: #2D2A28; }
+
+.confirmBtn.danger {
+  background: var(--terracotta);
+}
+.confirmBtn.danger:hover { background: #B5603A; }

@@ -1,7 +1,7 @@
 <?php
 /**
  * Custom full-width page template for the public booking form.
- * Used when WordPress serves the /reservations/ or /book/ page.
+ * Used when WordPress serves the /reserve/ page.
  */
 defined( 'ABSPATH' ) || exit;
 ?><!DOCTYPE html>

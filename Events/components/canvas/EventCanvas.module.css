@@ -1,0 +1,6 @@
+.canvas {
+  flex: 1;
+  background: var(--canvas-bg);
+  overflow: hidden;
+  position: relative;
+}

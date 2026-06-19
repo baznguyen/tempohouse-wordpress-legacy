@@ -18,6 +18,13 @@ $bg_map = [
     'sand'       => 'var(--tempo-sand)',
 ];
 
+$mood_img = [
+    'cafe'    => 'cafe/cafe-space.jpg',
+    'bar'     => 'bar/bar-atmosphere.jpg',
+    'gallery' => 'gallery/gallery-artists.jpg',
+    'events'  => 'events/event-product-launch.jpg',
+];
+
 $fallback = [
     [ 'slug' => 'cafe',    'num' => '01', 'mode' => 'Day',     'time' => '08:00 – 17:00', 'title' => 'Specialty Café',  'cta' => 'Explore the Café',  'bg' => 'var(--tempo-cream-dark)', 'speed' => '-0.07', 'href' => '/cafe' ],
     [ 'slug' => 'bar',     'num' => '02', 'mode' => 'Night',   'time' => '18:00 – 01:00', 'title' => 'Cocktail Bar',    'cta' => 'Explore the Bar',   'bg' => 'var(--tempo-ink)',        'speed' => '0.05',  'href' => '/bar' ],
@@ -51,6 +58,9 @@ $fallback = [
         <div class="moods__frame-art">
           <div class="moods__mat">
             <div class="moods__artwork" style="background: <?php echo esc_attr( $bg_val ); ?>">
+              <?php if ( isset( $mood_img[ $slug ] ) ) : ?>
+              <img class="moods__artwork-img" src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/' . $mood_img[ $slug ] ); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy">
+              <?php endif; ?>
               <span class="moods__num" aria-hidden="true"><?php echo esc_html( $frame_num ); ?></span>
               <div class="moods__title-bar">
                 <p class="moods__label-mode">
@@ -73,6 +83,9 @@ $fallback = [
         <div class="moods__frame-art">
           <div class="moods__mat">
             <div class="moods__artwork" style="background: <?php echo esc_attr( $f['bg'] ); ?>">
+              <?php if ( isset( $mood_img[ $f['slug'] ] ) ) : ?>
+              <img class="moods__artwork-img" src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/' . $mood_img[ $f['slug'] ] ); ?>" alt="<?php echo esc_attr( $f['title'] ); ?>" loading="lazy">
+              <?php endif; ?>
               <span class="moods__num" aria-hidden="true"><?php echo esc_html( $f['num'] ); ?></span>
               <div class="moods__title-bar">
                 <p class="moods__label-mode">

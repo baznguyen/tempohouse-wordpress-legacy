@@ -10,13 +10,32 @@ class THR_Booking_Widget {
         add_action( 'init', [ $this, 'register_page_template' ] );
         add_filter( 'page_template', [ $this, 'load_page_template' ] );
 
-        // Handle guest cancel form (GET /reservations/cancel/)
+        // Handle guest cancel form (GET /reserve/cancel/)
         add_action( 'wp', [ $this, 'handle_cancel_page' ] );
     }
 
     public function enqueue_assets(): void {
         if ( ! $this->is_booking_context() ) return;
 
+        if ( $this->is_widget_page() ) {
+            // Standalone booking widget — assets only, thrBooking is output inline by booking-widget.php
+            wp_enqueue_style(
+                'th-booking-widget',
+                THR_PLUGIN_URL . 'assets/css/booking-widget.css',
+                [],
+                THR_VERSION
+            );
+            wp_enqueue_script(
+                'th-booking-widget',
+                THR_PLUGIN_URL . 'assets/js/booking-widget.js',
+                [],
+                THR_VERSION,
+                true
+            );
+            return;
+        }
+
+        // Legacy shortcode booking form
         wp_enqueue_style(
             'th-booking',
             THR_PLUGIN_URL . 'assets/css/booking.css',
@@ -81,8 +100,8 @@ class THR_Booking_Widget {
     }
 
     public function load_page_template( string $template ): string {
-        if ( is_page( 'reservations' ) || is_page( 'book' ) || is_page( 'dat-ban' ) ) {
-            $custom = THR_PLUGIN_DIR . 'templates/booking-page.php';
+        if ( $this->is_widget_page() ) {
+            $custom = THR_PLUGIN_DIR . 'templates/booking-widget.php';
             if ( file_exists( $custom ) ) return $custom;
         }
         if ( is_page( 'cancel' ) ) {
@@ -97,10 +116,14 @@ class THR_Booking_Widget {
     }
 
     private function is_booking_context(): bool {
-        if ( is_page( 'reservations' ) || is_page( 'book' ) || is_page( 'dat-ban' ) || is_page( 'cancel' ) ) return true;
+        if ( $this->is_widget_page() || is_page( 'cancel' ) ) return true;
         $post = get_post();
         if ( ! $post ) return false;
         return has_shortcode( $post->post_content, 'th_booking_form' )
             || has_shortcode( $post->post_content, 'th_events_enquiry' );
+    }
+
+    private function is_widget_page(): bool {
+        return is_page( 'reserve' );
     }
 }

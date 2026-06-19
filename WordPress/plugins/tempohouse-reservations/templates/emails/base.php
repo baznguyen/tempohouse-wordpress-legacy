@@ -8,6 +8,12 @@ function thr_email_wrap( string $content, string $accent = '#DDAA62', ?string $l
         ? "<img src=\"$logo_url\" alt=\"$venue_name\" width=\"120\" style=\"display:block;margin:0 auto 24px;\">"
         : "<span style=\"font-family:'Georgia',serif;font-size:22px;letter-spacing:0.12em;color:#F7F3EE;text-transform:uppercase;\">$venue_name</span>";
 
+    // Optional WhatsApp link in footer
+    $wa_number  = THR_Settings::get( 'venue_whatsapp', '' );
+    $wa_block   = $wa_number
+        ? "<p style=\"margin-top:6px;\"><a href=\"https://wa.me/{$wa_number}\" style=\"color:rgba(247,243,238,0.35);font-size:11px;\">WhatsApp us</a></p>"
+        : '';
+
     return <<<HTML
 <!DOCTYPE html>
 <html lang="en">
@@ -54,6 +60,7 @@ function thr_email_wrap( string $content, string $accent = '#DDAA62', ?string $l
     <p style="margin-top:8px;">
       <a href="https://tempohouse.com.vn" style="color:rgba(247,243,238,0.35);font-size:11px;letter-spacing:0.06em;">tempohouse.com.vn</a>
     </p>
+    $wa_block
   </div>
 </div>
 </body>

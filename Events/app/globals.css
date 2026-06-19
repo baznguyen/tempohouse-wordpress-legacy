@@ -1,0 +1,66 @@
+/* ── TEMPO Events — Global CSS ───────────────────────────────────────────── */
+
+/* Brand tokens (subset from tempohouse.com.vn) */
+:root {
+  --cream:      #F7F3EE;
+  --terracotta: #C76E4B;
+  --ink:        #1A1816;
+  --amber:      #DDAA62;
+  --sage:       #8A9277;
+  --sand:       #E7D8C9;
+
+  /* Semantic */
+  --bg:         #F0EBE4;
+  --surface:    #FAF8F5;
+  --border:     #DDD5C8;
+  --border-2:   #C8BEB4;
+  --text-1:     #1A1816;
+  --text-2:     #4A4540;
+  --text-3:     #7A7068;
+  --accent:     var(--terracotta);
+  --accent-h:   #B5603A;
+  --hover:      rgba(26,24,22,0.04);
+
+  /* Canvas */
+  --canvas-bg:  #E8E0D8;
+
+  /* Radii */
+  --radius-sm:  4px;
+  --radius:     8px;
+  --radius-lg:  12px;
+
+  /* Layout */
+  --sidebar-w:  280px;
+  --toolbar-h:  52px;
+  --status-h:   32px;
+}
+
+/* Reset */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-1);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; border: none; background: none; font: inherit; }
+input, textarea, select { font: inherit; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+
+/* Utility */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}

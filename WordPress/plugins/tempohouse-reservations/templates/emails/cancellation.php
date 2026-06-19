@@ -3,7 +3,7 @@ require_once THR_PLUGIN_DIR . 'templates/emails/base.php';
 
 $is_vi      = ( $r->diner_lang ?? '' ) === 'vi';
 $first_name = explode( ' ', $r->diner_name )[0];
-$book_url   = home_url( '/reservations/' );
+$book_url   = home_url( '/reserve/' );
 
 $h1          = $is_vi ? 'Đặt bàn đã bị hủy'                                                             : 'Reservation cancelled';
 $intro       = $is_vi

@@ -419,6 +419,7 @@ get_header();
         <!-- Col 1, Row 1: large portrait -->
         <a href="<?php echo esc_url( home_url( '/events/product-launch' ) ); ?>" class="page-events__wall-frame" data-event="product-launch">
           <div class="page-events__wall-art"><div class="page-events__wall-mat"><div class="page-events__wall-artwork">
+            <img class="page-events__wall-img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/events/event-product-launch.jpg" alt="Product launch at TEMPO House" loading="lazy">
             <span class="page-events__wall-num" aria-hidden="true">01</span>
             <div class="page-events__wall-bar">
               <h3 class="page-events__wall-name">Product Launches</h3>
@@ -430,6 +431,7 @@ get_header();
         <!-- Col 2, Row 1: narrow portrait -->
         <a href="<?php echo esc_url( home_url( '/events/brand-activation' ) ); ?>" class="page-events__wall-frame" data-event="brand-activation">
           <div class="page-events__wall-art"><div class="page-events__wall-mat"><div class="page-events__wall-artwork">
+            <img class="page-events__wall-img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/events/event-brand-activation.jpg" alt="Brand activation at TEMPO House" loading="lazy">
             <span class="page-events__wall-num" aria-hidden="true">08</span>
             <div class="page-events__wall-bar">
               <h3 class="page-events__wall-name">Brand Activations</h3>
@@ -441,6 +443,7 @@ get_header();
         <!-- Col 4, Row 1: narrow portrait -->
         <a href="<?php echo esc_url( home_url( '/events/intimate-gatherings' ) ); ?>" class="page-events__wall-frame" data-event="intimate">
           <div class="page-events__wall-art"><div class="page-events__wall-mat"><div class="page-events__wall-artwork">
+            <img class="page-events__wall-img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/events/event-intimate.jpg" alt="Intimate gathering at TEMPO House" loading="lazy">
             <span class="page-events__wall-num" aria-hidden="true">04</span>
             <div class="page-events__wall-bar">
               <h3 class="page-events__wall-name">Intimate Gatherings</h3>
@@ -452,6 +455,7 @@ get_header();
         <!-- Col 5, Row 1: large portrait -->
         <a href="<?php echo esc_url( home_url( '/events/art-exhibitions' ) ); ?>" class="page-events__wall-frame" data-event="art-exhibition">
           <div class="page-events__wall-art"><div class="page-events__wall-mat"><div class="page-events__wall-artwork">
+            <img class="page-events__wall-img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/events/event-art-exhibition.jpg" alt="Art exhibition at TEMPO House" loading="lazy">
             <span class="page-events__wall-num" aria-hidden="true">07</span>
             <div class="page-events__wall-bar">
               <h3 class="page-events__wall-name">Art Exhibitions</h3>
@@ -463,6 +467,7 @@ get_header();
         <!-- Col 1, Row 2: landscape -->
         <a href="<?php echo esc_url( home_url( '/events/corporate-events' ) ); ?>" class="page-events__wall-frame" data-event="corporate">
           <div class="page-events__wall-art"><div class="page-events__wall-mat"><div class="page-events__wall-artwork">
+            <img class="page-events__wall-img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/events/event-corporate.jpg" alt="Corporate event at TEMPO House" loading="lazy">
             <span class="page-events__wall-num" aria-hidden="true">02</span>
             <div class="page-events__wall-bar">
               <h3 class="page-events__wall-name">Corporate Events</h3>
@@ -474,6 +479,7 @@ get_header();
         <!-- Col 2, Row 2: square -->
         <a href="<?php echo esc_url( home_url( '/events/birthday-celebration' ) ); ?>" class="page-events__wall-frame" data-event="birthday">
           <div class="page-events__wall-art"><div class="page-events__wall-mat"><div class="page-events__wall-artwork">
+            <img class="page-events__wall-img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/events/event-birthday.jpg" alt="Birthday celebration at TEMPO House" loading="lazy">
             <span class="page-events__wall-num" aria-hidden="true">03</span>
             <div class="page-events__wall-bar">
               <h3 class="page-events__wall-name">Birthday Celebrations</h3>
@@ -485,6 +491,7 @@ get_header();
         <!-- Col 4, Row 2: landscape -->
         <a href="<?php echo esc_url( home_url( '/events/intimate-weddings' ) ); ?>" class="page-events__wall-frame" data-event="weddings">
           <div class="page-events__wall-art"><div class="page-events__wall-mat"><div class="page-events__wall-artwork">
+            <img class="page-events__wall-img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/events/event-weddings.jpg" alt="Wedding at TEMPO House" loading="lazy">
             <span class="page-events__wall-num" aria-hidden="true">05</span>
             <div class="page-events__wall-bar">
               <h3 class="page-events__wall-name">Weddings</h3>
@@ -496,6 +503,7 @@ get_header();
         <!-- Col 5, Row 2: medium portrait -->
         <a href="<?php echo esc_url( home_url( '/events/engagement-party' ) ); ?>" class="page-events__wall-frame" data-event="engagement">
           <div class="page-events__wall-art"><div class="page-events__wall-mat"><div class="page-events__wall-artwork">
+            <img class="page-events__wall-img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/events/event-engagement.jpg" alt="Engagement party at TEMPO House" loading="lazy">
             <span class="page-events__wall-num" aria-hidden="true">06</span>
             <div class="page-events__wall-bar">
               <h3 class="page-events__wall-name">Engagement Parties</h3>
@@ -544,10 +552,10 @@ get_header();
           </ul>
         </div>
 
-        <a class="tempo-frame tempo-frame--placeholder page-events__catering-img" href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" aria-label="Catering and partners at TEMPO House — click to enquire">
+        <a class="tempo-frame page-events__catering-img" href="<?php echo esc_url( home_url( '/event-enquiry' ) ); ?>" aria-label="Catering and partners at TEMPO House — click to enquire">
           <div class="tempo-frame__mat">
             <div class="tempo-frame__artwork">
-              <span class="tempo-frame__label">Catering &amp; Partners &mdash; Image Coming Soon</span>
+              <img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/events/event-catering.jpg" alt="Catering and partners at TEMPO House" loading="lazy">
             </div>
           </div>
         </a>

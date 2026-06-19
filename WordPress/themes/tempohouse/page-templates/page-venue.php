@@ -68,10 +68,10 @@ get_header();
           </div>
         </div>
 
-        <a href="<?php echo esc_url( home_url( '/gallery' ) ); ?>" class="tempo-frame tempo-frame--placeholder" aria-label="Interior of TEMPO House gallery level, District 3 Saigon">
+        <a href="<?php echo esc_url( home_url( '/gallery' ) ); ?>" class="tempo-frame page-venue__gallery-img" aria-label="Interior of TEMPO House gallery level, District 3 Saigon">
           <div class="tempo-frame__mat">
             <div class="tempo-frame__artwork">
-              <span class="tempo-frame__label">Gallery Level 1 &mdash; Image Coming Soon</span>
+              <img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/venue/venue-gallery.jpg" alt="TEMPO House gallery Level 1 interior District 3" loading="lazy">
               <span class="tempo-frame__caption">Level 1 &middot; The Gallery</span>
             </div>
           </div>
@@ -552,10 +552,10 @@ get_header();
     <div class="page-inner__container">
       <div class="page-inner__split">
 
-        <div class="tempo-frame tempo-frame--placeholder" data-interactive aria-label="Pasteur Street, District 3, Ho Chi Minh City">
+        <div class="tempo-frame page-venue__neighbourhood-img" data-interactive aria-label="Pasteur Street, District 3, Ho Chi Minh City">
           <div class="tempo-frame__mat">
             <div class="tempo-frame__artwork">
-              <span class="tempo-frame__label">Neighbourhood &mdash; Image Coming Soon</span>
+              <img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/venue/venue-neighbourhood.jpg" alt="Pasteur Street District 3 Ho Chi Minh City" loading="lazy">
               <span class="tempo-frame__caption">Pasteur Street &middot; District 3</span>
             </div>
           </div>

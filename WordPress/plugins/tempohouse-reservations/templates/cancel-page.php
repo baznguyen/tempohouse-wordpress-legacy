@@ -1,7 +1,7 @@
 <?php
 /**
  * Guest self-cancel page template.
- * Served when WP serves a page with slug 'cancel' (e.g. /reservations/cancel/).
+ * Served when WP serves a page with slug 'cancel' (e.g. /reserve/cancel/).
  */
 defined( 'ABSPATH' ) || exit;
 ?><!DOCTYPE html>
@@ -43,7 +43,7 @@ defined( 'ABSPATH' ) || exit;
         <div class="thr-confirm-icon" style="background:rgba(192,57,43,0.1);border-color:rgba(192,57,43,0.3);color:#e87066;">✕</div>
         <h2 class="thr-step-title">Reservation cancelled</h2>
         <p class="thr-confirm-msg">Your reservation has been cancelled. We hope to welcome you another time.</p>
-        <a href="<?= home_url( '/reservations/' ) ?>" class="thr-btn thr-btn--outline" style="margin-top:16px;">Book again</a>
+        <a href="<?= home_url( '/reserve/' ) ?>" class="thr-btn thr-btn--outline" style="margin-top:16px;">Book again</a>
       </div>
     </div>
   </main>

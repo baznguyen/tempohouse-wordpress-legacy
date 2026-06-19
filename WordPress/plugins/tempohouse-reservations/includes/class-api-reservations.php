@@ -559,16 +559,16 @@ class THR_API_Reservations {
         // Guests may only modify: date/time, party_size, notes_diner, dietary_notes, occasion, area_label
         $update = [];
         if ( isset( $body['reservation_dt'] ) ) {
-            // Re-validate datetime
+            // Treat incoming datetime as venue-local (Asia/Ho_Chi_Minh), convert to UTC for storage
             $dt_raw = sanitize_text_field( $body['reservation_dt'] );
-            $ts = strtotime( $dt_raw );
-            if ( ! $ts ) return THR_API::error( 'thr_invalid_date', 'Invalid reservation_dt.', 422 );
+            $dt_obj = DateTime::createFromFormat( 'Y-m-d H:i:s', $dt_raw, new DateTimeZone( 'Asia/Ho_Chi_Minh' ) );
+            if ( ! $dt_obj ) return THR_API::error( 'thr_invalid_date', 'Invalid reservation_dt.', 422 );
+            $ts          = $dt_obj->getTimestamp();
             $advance_min = (int) THR_Settings::get( 'booking_advance_min', 60 );
-            $now_unix    = time() + 7 * 3600;
-            if ( $ts < $now_unix + $advance_min * 60 ) {
+            if ( $ts < time() + $advance_min * 60 ) {
                 return THR_API::error( 'thr_advance_window', 'Modification must be made at least ' . $advance_min . ' minutes in advance.', 422 );
             }
-            $update['reservation_dt'] = gmdate( 'Y-m-d H:i:s', $ts - 7 * 3600 );
+            $update['reservation_dt'] = gmdate( 'Y-m-d H:i:s', $ts );
         }
         foreach ( [ 'party_size', 'notes_diner', 'dietary_notes', 'occasion', 'area_label' ] as $field ) {
             if ( isset( $body[ $field ] ) ) {
@@ -581,6 +581,14 @@ class THR_API_Reservations {
 
         $update['updated_at'] = THR_API::now_utc();
         $wpdb->update( $this->table, $update, [ 'reference_code' => $ref ] );
+
+        // Send modification confirmation email
+        $fresh = $wpdb->get_row( $wpdb->prepare(
+            "SELECT * FROM {$this->table} WHERE reference_code = %s", $ref
+        ) );
+        if ( $fresh ) {
+            THR_Email::send_modification( $fresh );
+        }
 
         return new WP_REST_Response( [ 'reference_code' => $ref, 'updated' => array_keys( $update ) ] );
     }

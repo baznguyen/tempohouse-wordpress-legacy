@@ -42,6 +42,7 @@ class THR_API_Settings {
             'default_duration'        => (int) THR_Settings::get( 'default_duration', 120 ),
             'closed_days'             => array_values( array_filter( array_map( 'intval', explode( ',', THR_Settings::get( 'closed_days', '' ) ) ) ) ),
             'occasion_types'          => THR_Settings::occasion_types(),
+            'seating_sections'        => THR_Settings::seating_sections(),
             'periods'                 => THR_Settings::periods(),
             'referral_sources'        => THR_Settings::referral_sources(),
             'cancel_policy_text'      => THR_Settings::get( 'cancel_policy_text' ),

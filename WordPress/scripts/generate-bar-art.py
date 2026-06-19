@@ -60,60 +60,66 @@ IMAGES = [
             "tropical plants and lantern glow, beautiful ambient evening terrace, " + STYLE
         ),
     },
-    # ── Signature cocktails ──────────────────────────────────────────
+    # ── Signature cocktails — cocktail in ambient bar setting ────────
     {
         "name": "bar-espresso-martini",
         "width": 768, "height": 1024,
         "prompt": (
-            "dark espresso martini in coupe glass, frothy coffee crema top, "
-            "Vietnamese coffee beans and phin filter as botanical border, "
-            "deep brown black amber tones, " + STYLE
+            "espresso martini coupe glass on dark bar counter, "
+            "candlelit bar interior glowing bottles background, "
+            "moody evening bar atmosphere, deep brown amber shadows, " + STYLE
         ),
+        "seed": 11,
     },
     {
         "name": "bar-lychee-martini",
         "width": 768, "height": 1024,
         "prompt": (
-            "pale pink lychee martini in coupe glass, lychee fruit garnish, "
-            "lychee fruits and Mekong Delta leaves as botanical border, "
-            "blush pink and dusty amber tones, " + STYLE
+            "pink lychee martini coupe on wooden bar table, "
+            "soft ambient bar lighting warm bokeh background, "
+            "intimate bar setting evening glow, blush amber tones, " + STYLE
         ),
+        "seed": 22,
     },
     {
         "name": "bar-panpan-spritz",
         "width": 768, "height": 1024,
         "prompt": (
-            "green pandan spritz in highball glass with bubbles and lime wheel, "
-            "fresh pandan leaves and coconut as botanical border, "
-            "deep sage green and lime tones, " + STYLE
+            "green pandan spritz highball glass on outdoor terrace table, "
+            "string lights and tropical plants background, "
+            "warm evening terrace bar atmosphere, sage and amber glow, " + STYLE
         ),
+        "seed": 33,
     },
     {
         "name": "bar-negroni",
         "width": 768, "height": 1024,
         "prompt": (
-            "deep amber negroni in rocks glass with large ice cube and orange peel, "
-            "Campari botanicals and citrus peel as border, "
-            "burnt orange crimson deep terracotta tones, " + STYLE
+            "negroni rocks glass on dark marble bar top, "
+            "glowing amber bar shelves and bottles in background, "
+            "candlelit moody cocktail bar scene, burnt orange deep shadows, " + STYLE
         ),
+        "seed": 44,
     },
     {
         "name": "bar-manhattan",
         "width": 768, "height": 1024,
         "prompt": (
-            "rich mahogany Manhattan in coupe glass with cherry garnish, "
-            "rye grain and dark cherry as botanical border, "
-            "deep brown mahogany warm amber tones, " + STYLE
+            "Manhattan coupe glass on polished bar counter at night, "
+            "dark intimate bar interior candlelight background, "
+            "classic bar atmosphere warm mahogany amber tones, " + STYLE
         ),
+        "seed": 55,
     },
     {
         "name": "bar-yuzu-spritz",
         "width": 768, "height": 1024,
         "prompt": (
-            "pale golden yuzu spritz in wine glass with bubbles and rose petal, "
-            "yuzu slices and rose botanicals as border, "
-            "golden yellow soft rose tones, " + STYLE
+            "yuzu spritz wine glass on bar table with golden bokeh, "
+            "warm ambient bar interior evening light background, "
+            "beautiful cocktail bar atmosphere golden soft tones, " + STYLE
         ),
+        "seed": 66,
     },
 ]
 

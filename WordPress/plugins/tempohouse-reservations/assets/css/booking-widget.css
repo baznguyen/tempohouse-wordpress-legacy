@@ -29,7 +29,8 @@
 
 /* ── 1. Widget-scoped custom properties ─────────────────────────────────── */
 
-.thr-widget {
+.thr-widget,
+.thr-booking-root {
   /* Surface colours — intentionally light regardless of site theme
      so the booking form is always high-legibility.               */
   --thr-surface:         #FFFFFF;
@@ -76,7 +77,9 @@
   --thr-widget-max:      480px;
   --thr-section-gap:     32px;
   --thr-field-gap:       20px;
-  --thr-chip-size:       64px;   /* date chip diameter */
+  --thr-chip-w:          52px;   /* date chip width  */
+  --thr-chip-h:          72px;   /* date chip height */
+  --thr-chip-radius:     26px;   /* pill corner      */
 }
 
 
@@ -102,7 +105,8 @@
 }
 
 /* Steps */
-.thr-widget__step          { display: block; }
+.thr-widget__step,
+.thr-widget-step           { display: block; }
 .thr-widget__step--hidden  { display: none !important; }
 
 /* Slide-in transition between steps */
@@ -243,6 +247,7 @@
   margin-bottom: 14px;
 }
 
+/* Default label — small caps metadata style */
 .thr-section-head__label {
   font-family: var(--thr-font-ui);
   font-size: 0.68rem;
@@ -252,6 +257,16 @@
   color: var(--thr-text-muted);
   display: block;
   margin-bottom: 2px;
+}
+
+/* Booking-step variant — large bold title (matches mockup "Select Date" style) */
+.thr-section-head--step .thr-section-head__label {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--thr-text);
+  margin-bottom: 0;
 }
 
 .thr-section-head__title {
@@ -271,19 +286,155 @@
 }
 
 
-/* ── 7. Date rail ───────────────────────────────────────────────────────── */
+/* ── 7. Month selector ──────────────────────────────────────────────────── */
+
+.thr-month-rail {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-top: 4px;
+  margin-top: -4px;
+  padding-bottom: 12px;
+  padding-right: 24px;
+  margin-right: -28px;
+}
+
+.thr-month-rail::-webkit-scrollbar { display: none; }
+
+.thr-month-chip {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 20px;
+  background: var(--thr-surface-sunken);
+  border: none;
+  gap: 2px;
+  cursor: pointer;
+  padding: 0;
+  transition: background var(--thr-dur-fast) var(--thr-ease),
+              color     var(--thr-dur-fast) var(--thr-ease);
+}
+
+.thr-month-chip:hover:not(.thr-month-chip--active) {
+  background: color-mix(in srgb, var(--thr-surface-sunken) 70%, var(--thr-accent) 30%);
+}
+
+.thr-month-chip--active {
+  background: var(--thr-accent);
+  outline: 2px solid var(--thr-accent);
+  outline-offset: 2px;
+}
+
+.thr-month-chip__mon {
+  font-family: var(--thr-font-ui);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--thr-text);
+  line-height: 1.1;
+  display: block;
+}
+
+.thr-month-chip__yr {
+  font-family: var(--thr-font-ui);
+  font-size: 0.6rem;
+  color: var(--thr-text-muted);
+  line-height: 1.1;
+  display: block;
+}
+
+.thr-month-chip--active .thr-month-chip__mon,
+.thr-month-chip--active .thr-month-chip__yr {
+  color: #fff;
+}
+
+
+/* ── 7b. Session selector ───────────────────────────────────────────────── */
+
+.thr-session-rail {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-top: 4px;
+  margin-top: -4px;
+  padding-bottom: 6px;
+  padding-right: 24px;
+  margin-right: -28px;
+}
+
+.thr-session-rail::-webkit-scrollbar { display: none; }
+
+.thr-session-chip {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+  padding: 10px 18px;
+  border-radius: 9999px;
+  background: var(--thr-surface-sunken);
+  border: none;
+  gap: 3px;
+  cursor: pointer;
+  transition: background var(--thr-dur-fast) var(--thr-ease);
+}
+
+.thr-session-chip:hover:not(.thr-session-chip--active) {
+  background: color-mix(in srgb, var(--thr-surface-sunken) 65%, var(--thr-accent) 35%);
+}
+
+.thr-session-chip--active {
+  background: var(--thr-accent);
+  outline: 2px solid var(--thr-accent);
+  outline-offset: 2px;
+}
+
+.thr-session-chip__name {
+  font-family: var(--thr-font-ui);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--thr-text);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.thr-session-chip__time {
+  font-family: var(--thr-font-ui);
+  font-size: 0.63rem;
+  color: var(--thr-text-muted);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.thr-session-chip--active .thr-session-chip__name,
+.thr-session-chip--active .thr-session-chip__time {
+  color: #fff;
+}
+
 
 .thr-date-rail {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding-bottom: 4px;
-  /* Reveal next chip to signal scrollability */
+  padding-bottom: 6px;
+  /* Peek at next chip to signal scrollability */
   padding-right: 24px;
   margin-right: -28px;
+  /* Slight vertical breathing room for the outline on selected chips */
+  padding-top: 4px;
+  margin-top: -4px;
 }
 
 .thr-date-rail::-webkit-scrollbar { display: none; }
@@ -295,67 +446,65 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: var(--thr-chip-size);
-  height: var(--thr-chip-size);
-  border-radius: var(--thr-radius-chip);
-  border: 1.5px solid var(--thr-border-strong);
-  background: transparent;
+  width:  var(--thr-chip-w);
+  height: var(--thr-chip-h);
+  border-radius: var(--thr-chip-radius);
+  border: none;
+  background: var(--thr-surface-sunken);
   cursor: pointer;
   padding: 0;
-  gap: 1px;
+  gap: 2px;
   transition:
-    border-color  var(--thr-dur-fast) var(--thr-ease),
-    background    var(--thr-dur-fast) var(--thr-ease),
-    color         var(--thr-dur-fast) var(--thr-ease),
-    transform     var(--thr-dur-fast) var(--thr-ease);
+    background var(--thr-dur-fast) var(--thr-ease),
+    color      var(--thr-dur-fast) var(--thr-ease),
+    transform  var(--thr-dur-fast) var(--thr-ease);
 }
 
 .thr-date-chip:hover:not(:disabled):not(.thr-date-chip--full) {
-  border-color: var(--thr-accent-border);
-  transform: translateY(-1px);
+  background: var(--thr-accent-subtle);
+  transform: translateY(-2px);
 }
 
 .thr-date-chip__day {
   font-family: var(--thr-font-ui);
-  font-size: 0.6rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--thr-text-muted);
   line-height: 1;
-  transition: color var(--thr-dur-fast) var(--thr-ease);
 }
 
 .thr-date-chip__num {
   font-family: var(--thr-font-ui);
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.3rem;
+  font-weight: 700;
   color: var(--thr-text);
-  line-height: 1;
-  transition: color var(--thr-dur-fast) var(--thr-ease);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
 .thr-date-chip__mon {
   font-family: var(--thr-font-ui);
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   font-weight: 400;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   color: var(--thr-text-muted);
   text-transform: uppercase;
   line-height: 1;
-  transition: color var(--thr-dur-fast) var(--thr-ease);
 }
 
 /* State: selected */
 .thr-date-chip--selected {
-  border-color: var(--thr-accent);
   background: var(--thr-accent);
+  outline: 2px solid var(--thr-accent);
+  outline-offset: 2px;
 }
 
 .thr-date-chip--selected .thr-date-chip__day,
 .thr-date-chip--selected .thr-date-chip__num,
 .thr-date-chip--selected .thr-date-chip__mon {
-  color: #F7F3EE;
+  color: #FFFFFF;
 }
 
 /* State: availability dot under num */
@@ -372,24 +521,18 @@
 .thr-date-chip--available .thr-date-chip__dot  { opacity: 1; }
 .thr-date-chip--selected  .thr-date-chip__dot  { background: rgba(247,243,238,0.55); opacity: 1; }
 
-/* State: full */
+/* State: full — bookable but no slots free */
 .thr-date-chip--full {
-  border-color: var(--thr-border);
+  background: var(--thr-surface-sunken);
   cursor: default;
-}
-
-.thr-date-chip--full .thr-date-chip__day,
-.thr-date-chip--full .thr-date-chip__num,
-.thr-date-chip--full .thr-date-chip__mon {
-  color: var(--thr-text-muted);
-  opacity: 0.45;
+  opacity: 0.55;
 }
 
 /* State: past / closed */
 .thr-date-chip--past,
 .thr-date-chip--closed {
-  border-color: var(--thr-border);
-  opacity: 0.3;
+  background: var(--thr-surface-sunken);
+  opacity: 0.28;
   cursor: not-allowed;
   pointer-events: none;
 }
@@ -400,18 +543,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--thr-chip-size);
-  height: var(--thr-chip-size);
-  border-radius: var(--thr-radius-chip);
+  width:  var(--thr-chip-w);
+  height: var(--thr-chip-h);
+  border-radius: var(--thr-chip-radius);
   border: 1.5px dashed var(--thr-border-strong);
   background: transparent;
   cursor: pointer;
   font-size: 1.1rem;
   color: var(--thr-text-muted);
-  transition: border-color var(--thr-dur-fast), color var(--thr-dur-fast);
+  transition: border-color var(--thr-dur-fast), color var(--thr-dur-fast), background var(--thr-dur-fast);
 }
 
 .thr-date-rail__more:hover {
+  background: var(--thr-accent-subtle);
   border-color: var(--thr-accent-border);
   color: var(--thr-accent);
 }
@@ -541,7 +685,7 @@
   border-radius: var(--thr-radius-pill);
   border: 1.5px solid var(--thr-border-strong);
   padding: 4px;
-  width: fit-content;
+  width: 100%;
 }
 
 .thr-stepper__btn {
@@ -574,13 +718,13 @@
 }
 
 .thr-stepper__val {
-  min-width: 52px;
+  flex: 1;
   text-align: center;
   font-family: var(--thr-font-ui);
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 700;
   color: var(--thr-text);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 
@@ -1303,10 +1447,22 @@
   to   { background-position: -200% 0; }
 }
 
+/* Pulse — draws attention to footer CTA after time selection */
+.thr-btn--pulse {
+  animation: thr-btn-pulse 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+
+@keyframes thr-btn-pulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
 
 /* ── 19. Night theme overrides ──────────────────────────────────────────── */
 
-html[data-tempo-time="night"] .thr-widget {
+html[data-tempo-time="night"] .thr-widget,
+html[data-tempo-time="night"] .thr-booking-root {
   --thr-surface:          #1C1814;
   --thr-surface-alt:      #0E0C0A;
   --thr-surface-sunken:   #161210;
@@ -1351,7 +1507,8 @@ html[data-tempo-time="night"] .thr-field__error { color: #E07060; }
 
 /* ── 20. Afternoon theme overrides ─────────────────────────────────────── */
 
-html[data-tempo-time="afternoon"] .thr-widget {
+html[data-tempo-time="afternoon"] .thr-widget,
+html[data-tempo-time="afternoon"] .thr-booking-root {
   --thr-surface:          #FFFFFF;
   --thr-surface-alt:      #F2E8D5;
   --thr-surface-sunken:   #EAD9BF;
@@ -1363,6 +1520,162 @@ html[data-tempo-time="afternoon"] .thr-widget {
 
   --thr-amber:            #B87830;
   --thr-amber-subtle:     rgba(184,120,48,0.12);
+}
+
+
+/* ── 20. Preferences step ───────────────────────────────────────────────── */
+
+/* Section preference chips — horizontal scrollable row */
+.thr-pref-rail {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 4px 0 8px;
+  padding-right: 24px;
+  margin-right: -28px;
+}
+
+.thr-pref-rail::-webkit-scrollbar { display: none; }
+
+.thr-pref-chip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 9999px;
+  background: var(--thr-surface-sunken);
+  border: 1.5px solid transparent;
+  font-family: var(--thr-font-ui);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--thr-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background  var(--thr-dur-fast) var(--thr-ease),
+    border-color var(--thr-dur-fast) var(--thr-ease),
+    color       var(--thr-dur-fast) var(--thr-ease);
+}
+
+.thr-pref-chip:hover:not(.thr-pref-chip--active) {
+  background: color-mix(in srgb, var(--thr-surface-sunken) 60%, var(--thr-accent) 40%);
+  color: var(--thr-text);
+}
+
+.thr-pref-chip--active {
+  background: var(--thr-accent-subtle);
+  border-color: var(--thr-accent-border);
+  color: var(--thr-accent);
+  font-weight: 600;
+}
+
+.thr-pref-chip__icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+
+/* Occasion chips — 2-col grid with emoji badge */
+.thr-occasion-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.thr-occasion-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--thr-radius-card);
+  background: var(--thr-surface-sunken);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition:
+    background    var(--thr-dur-fast) var(--thr-ease),
+    border-color  var(--thr-dur-fast) var(--thr-ease);
+}
+
+.thr-occasion-chip:hover:not(.thr-occasion-chip--active) {
+  background: color-mix(in srgb, var(--thr-surface-sunken) 60%, var(--thr-accent) 40%);
+}
+
+.thr-occasion-chip--active {
+  background: var(--thr-accent-subtle);
+  border-color: var(--thr-accent-border);
+}
+
+.thr-occasion-chip__emoji {
+  font-size: 1.35rem;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+}
+
+.thr-occasion-chip__label {
+  font-family: var(--thr-font-ui);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--thr-text-secondary);
+  line-height: 1.2;
+}
+
+.thr-occasion-chip--active .thr-occasion-chip__label {
+  color: var(--thr-accent);
+  font-weight: 600;
+}
+
+/* "Other / Custom" occasion — full width + inline text input that expands */
+.thr-occasion-chip--custom {
+  grid-column: 1 / -1;
+}
+
+.thr-occasion-chip--custom .thr-custom-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-family: var(--thr-font-ui);
+  font-size: 0.82rem;
+  color: var(--thr-text);
+  outline: none;
+  min-width: 0;
+  display: none;  /* shown via JS when custom is selected */
+  padding: 0;
+}
+
+.thr-occasion-chip--custom.thr-occasion-chip--active .thr-custom-input {
+  display: block;
+}
+
+.thr-occasion-chip--custom.thr-occasion-chip--active .thr-occasion-chip__label {
+  display: none;
+}
+
+
+/* Preferences step skip link */
+.thr-pref-skip {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-family: var(--thr-font-ui);
+  font-size: 0.78rem;
+  color: var(--thr-text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 0 4px;
+  margin-top: 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.thr-pref-skip:hover {
+  color: var(--thr-text-secondary);
 }
 
 
@@ -1382,8 +1695,10 @@ html[data-tempo-time="afternoon"] .thr-widget {
     margin-right: -20px;
   }
 
-  .thr-chip-size {
-    --thr-chip-size: 56px;
+  .thr-booking-root,
+  .thr-widget {
+    --thr-chip-w: 46px;
+    --thr-chip-h: 64px;
   }
 
   .thr-field-row {
@@ -1406,7 +1721,373 @@ html[data-tempo-time="afternoon"] .thr-widget {
 }
 
 @media (max-width: 360px) {
-  .thr-stepper__val { min-width: 44px; font-size: 1.1rem; }
-  .thr-date-chip   { --thr-chip-size: 50px; }
+  .thr-stepper__val { font-size: 1.1rem; }
+  .thr-booking-root,
+  .thr-widget { --thr-chip-w: 44px; --thr-chip-h: 60px; --thr-chip-radius: 22px; }
   .thr-time-pill   { padding: 9px 13px; font-size: 0.78rem; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PAGE-LEVEL LAYOUT (standalone booking page)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Full-screen shell ──────────────────────────────────────────────────── */
+
+.thr-booking-page {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg, #F7F3EE);
+  min-height: 100dvh;
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+.thr-booking-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  max-width: 480px;
+  margin-inline: auto;
+  position: relative;
+  background: var(--color-bg, #F7F3EE);
+}
+
+/* ── Sticky header ──────────────────────────────────────────────────────── */
+
+.thr-widget-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 56px;
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  padding-inline: 16px;
+  background: var(--thr-surface, #FFFFFF);
+  border-bottom: 1px solid var(--thr-border, rgba(26,24,22,0.10));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.thr-header__back {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background: none;
+  border: none;
+  color: var(--thr-text-secondary, rgba(26,24,22,0.72));
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  transition: color var(--duration-fast, 180ms);
+}
+
+.thr-header__back:hover { color: var(--thr-text); }
+
+.thr-header__title {
+  font-family: var(--font-display, 'Bricolage Grotesque', sans-serif);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--thr-text);
+  text-align: center;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.thr-header__step {
+  font-family: var(--font-display, 'Bricolage Grotesque', sans-serif);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--thr-accent);
+  text-align: right;
+  justify-self: end;
+}
+
+/* ── Scrollable content area ────────────────────────────────────────────── */
+
+.thr-widget-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  /* Reserve space for sticky footer */
+  padding-bottom: 100px;
+}
+
+/* ── Sticky footer CTA ──────────────────────────────────────────────────── */
+
+.thr-widget-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 40;
+  padding: 16px 20px;
+  background: var(--thr-surface, #FFFFFF);
+  border-top: 1px solid var(--thr-border, rgba(26,24,22,0.10));
+  /* iOS safe area */
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+.thr-widget-footer--hidden { display: none !important; }
+
+
+/* ── Landing screen ─────────────────────────────────────────────────────── */
+
+.thr-landing-hero {
+  width: 100%;
+  height: 52vw;
+  max-height: 280px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--thr-surface-sunken, #F0EBE3);
+  position: relative;
+}
+
+.thr-landing-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to bottom, transparent, rgba(247,243,238,0.45));
+}
+
+.thr-landing-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--thr-border, rgba(26,24,22,0.10));
+  border-top: 1px solid var(--thr-border);
+}
+
+.thr-landing-card {
+  background: var(--thr-surface, #FFFFFF);
+  padding: 24px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.thr-landing-card__title {
+  font-family: var(--font-display, 'Bricolage Grotesque', sans-serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--thr-text);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.thr-landing-card__body {
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  font-size: 0.85rem;
+  color: var(--thr-text-secondary);
+  margin: 0 0 8px;
+  line-height: 1.55;
+}
+
+/* Lookup expand animates in below the Modify/Cancel card's button */
+.thr-landing-card .thr-lookup {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    max-height 300ms cubic-bezier(0.16,1,0.3,1),
+    opacity    200ms ease;
+  margin-bottom: 0;
+}
+
+.thr-landing-card .thr-lookup.is-open {
+  max-height: 200px;
+  opacity: 1;
+  margin-bottom: 8px;
+}
+
+
+/* ── Section heading (used inside .thr-widget__inner) ───────────────────── */
+
+.thr-section-head {
+  margin-bottom: 12px;
+}
+
+/* Override for review/confirm screens where the heading is larger + bolder */
+.thr-section-head--title {
+  margin-bottom: 14px;
+}
+
+.thr-section-head--title .thr-section-head__label {
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: -0.01em;
+  color: var(--thr-text);
+}
+
+
+/* ── Time slot legend ───────────────────────────────────────────────────── */
+
+.thr-time-legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.thr-time-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  font-size: 0.72rem;
+  color: var(--thr-text-muted);
+}
+
+.thr-time-legend__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.thr-time-legend__dot--selected   { background: var(--thr-accent); }
+.thr-time-legend__dot--unavailable { background: var(--thr-border-strong); }
+.thr-time-legend__dot--popular    { background: var(--thr-amber); }
+
+
+/* ── Review rows ────────────────────────────────────────────────────────── */
+
+.thr-review-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.thr-review-row {
+  display: flex;
+  align-items: center;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--thr-border);
+  gap: 10px;
+}
+
+.thr-review-row:last-child { border-bottom: none; }
+
+.thr-review-row__icon {
+  flex-shrink: 0;
+  color: var(--thr-text-muted);
+  display: flex;
+  align-items: center;
+  width: 20px;
+}
+
+.thr-review-row__label {
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  font-size: 0.88rem;
+  color: var(--thr-text-muted);
+  flex: 1;
+  min-width: 0;
+}
+
+.thr-review-row__value {
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--thr-text);
+  text-align: right;
+  word-break: break-word;
+}
+
+.thr-review-note {
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  font-size: 0.88rem;
+  color: var(--thr-text-secondary);
+  line-height: 1.65;
+  margin: 0;
+}
+
+
+/* ── Confirmation hero ──────────────────────────────────────────────────── */
+
+.thr-confirm-hero {
+  width: 100%;
+  aspect-ratio: 4/3;
+  max-height: 300px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--thr-surface-sunken);
+}
+
+/* The card body bleeds up over the hero on confirm screen */
+.thr-confirm-body {
+  background: var(--thr-surface, #FFFFFF);
+  border-radius: 20px 20px 0 0;
+  margin-top: -20px;
+  padding: 28px 24px 20px;
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ── Confirmation venue row ─────────────────────────────────────────────── */
+
+.thr-confirm-venue {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0 16px;
+  border-top: 1px solid var(--thr-border);
+  margin-top: 4px;
+}
+
+.thr-confirm-venue__name {
+  font-family: var(--font-display, 'Bricolage Grotesque', sans-serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--thr-accent);
+  letter-spacing: -0.01em;
+}
+
+.thr-confirm-venue__icons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+/* ── Night — page-level overrides ───────────────────────────────────────── */
+
+html[data-tempo-time="night"] .thr-booking-page,
+html[data-tempo-time="night"] .thr-booking-root {
+  background: #0E0C0A;
+}
+
+html[data-tempo-time="night"] .thr-widget-header {
+  background: rgba(28,24,20,0.96);
+  border-bottom-color: rgba(240,235,227,0.07);
+}
+
+html[data-tempo-time="night"] .thr-landing-cards {
+  background: rgba(240,235,227,0.05);
+}
+
+html[data-tempo-time="night"] .thr-landing-card {
+  background: #1C1814;
+}
+
+html[data-tempo-time="night"] .thr-widget-footer {
+  background: rgba(28,24,20,0.96);
+  border-top-color: rgba(240,235,227,0.07);
+}
+
+html[data-tempo-time="night"] .thr-confirm-body {
+  background: #1C1814;
+}
+
+html[data-tempo-time="night"] .thr-landing-hero::after {
+  background: linear-gradient(to bottom, transparent, rgba(14,12,10,0.5));
 }

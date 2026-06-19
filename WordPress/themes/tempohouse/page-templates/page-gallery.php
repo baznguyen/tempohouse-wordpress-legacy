@@ -161,10 +161,10 @@ get_header();
           </div>
         </div>
 
-        <div class="tempo-frame tempo-frame--placeholder page-gallery__artists-frame" data-interactive aria-label="TEMPO House Gallery — Level 1 exhibition space">
+        <div class="tempo-frame page-gallery__artists-frame" data-interactive aria-label="TEMPO House Gallery — Level 1 exhibition space">
           <div class="tempo-frame__mat">
             <div class="tempo-frame__artwork">
-              <span class="tempo-frame__label">Your show here.</span>
+              <img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/gallery/gallery-artists.jpg" alt="TEMPO House Gallery Level 1 exhibition space" loading="lazy">
             </div>
           </div>
         </div>
@@ -179,33 +179,33 @@ get_header();
     <div class="page-gallery__walk-viewport" data-gallery-walk>
       <div class="page-gallery__walk-track">
 
-        <div class="tempo-frame tempo-frame--placeholder page-gallery__walk-frame" data-interactive aria-label="Work I">
+        <div class="tempo-frame page-gallery__walk-frame" data-interactive aria-label="Work I">
           <div class="tempo-frame__mat">
-            <div class="tempo-frame__artwork"><span class="tempo-frame__label">I</span></div>
+            <div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/gallery/gallery-walk-I.jpg" alt="Gallery work I" loading="lazy"></div>
           </div>
         </div>
 
-        <div class="tempo-frame tempo-frame--placeholder page-gallery__walk-frame page-gallery__walk-frame--wide" data-interactive aria-label="Work II">
+        <div class="tempo-frame page-gallery__walk-frame page-gallery__walk-frame--wide" data-interactive aria-label="Work II">
           <div class="tempo-frame__mat">
-            <div class="tempo-frame__artwork"><span class="tempo-frame__label">II</span></div>
+            <div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/gallery/gallery-walk-II.jpg" alt="Gallery work II" loading="lazy"></div>
           </div>
         </div>
 
-        <div class="tempo-frame tempo-frame--placeholder page-gallery__walk-frame page-gallery__walk-frame--tall" data-interactive aria-label="Work III">
+        <div class="tempo-frame page-gallery__walk-frame page-gallery__walk-frame--tall" data-interactive aria-label="Work III">
           <div class="tempo-frame__mat">
-            <div class="tempo-frame__artwork"><span class="tempo-frame__label">III</span></div>
+            <div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/gallery/gallery-walk-III.jpg" alt="Gallery work III" loading="lazy"></div>
           </div>
         </div>
 
-        <div class="tempo-frame tempo-frame--placeholder page-gallery__walk-frame page-gallery__walk-frame--wide" data-interactive aria-label="Work IV">
+        <div class="tempo-frame page-gallery__walk-frame page-gallery__walk-frame--wide" data-interactive aria-label="Work IV">
           <div class="tempo-frame__mat">
-            <div class="tempo-frame__artwork"><span class="tempo-frame__label">IV</span></div>
+            <div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/gallery/gallery-walk-IV.jpg" alt="Gallery work IV" loading="lazy"></div>
           </div>
         </div>
 
-        <div class="tempo-frame tempo-frame--placeholder page-gallery__walk-frame" data-interactive aria-label="Work V">
+        <div class="tempo-frame page-gallery__walk-frame" data-interactive aria-label="Work V">
           <div class="tempo-frame__mat">
-            <div class="tempo-frame__artwork"><span class="tempo-frame__label">V</span></div>
+            <div class="tempo-frame__artwork"><img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/gallery/gallery-walk-V.jpg" alt="Gallery work V" loading="lazy"></div>
           </div>
         </div>
 
@@ -271,10 +271,10 @@ get_header();
           </div>
         </div>
 
-        <div class="tempo-frame tempo-frame--placeholder" data-interactive aria-label="Level 1 gallery floor at TEMPO House, District 3">
+        <div class="tempo-frame page-gallery__level1-img" data-interactive aria-label="Level 1 gallery floor at TEMPO House, District 3">
           <div class="tempo-frame__mat">
             <div class="tempo-frame__artwork">
-              <span class="tempo-frame__label">Level 1</span>
+              <img class="tempo-frame__img" src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/gallery/gallery-level1.jpg" alt="Level 1 gallery floor at TEMPO House District 3" loading="lazy">
             </div>
           </div>
         </div>

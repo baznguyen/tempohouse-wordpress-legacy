@@ -35,6 +35,15 @@ class THR_Email {
         return self::send( $reservation->diner_email, $subject, self::render( 'reminder', $reservation, compact( 'when' ) ) );
     }
 
+    public static function send_modification( object $reservation ): bool {
+        $subject = self::localise(
+            $reservation->diner_lang,
+            'Your TEMPO House reservation has been updated — ' . $reservation->reference_code,
+            'Đặt bàn của bạn tại TEMPO House đã được cập nhật — ' . $reservation->reference_code
+        );
+        return self::send( $reservation->diner_email, $subject, self::render( 'modification', $reservation ) );
+    }
+
     public static function send_cancellation( object $reservation ): bool {
         $subject = self::localise(
             $reservation->diner_lang,
@@ -175,7 +184,7 @@ class THR_Email {
             $time_local = '';
         }
 
-        $cancel_url     = home_url( '/reservations/cancel/?ref=' . urlencode( $r->reference_code ) );
+        $cancel_url     = home_url( '/reserve/cancel/?ref=' . urlencode( $r->reference_code ) );
         $feedback_url   = self::build_feedback_url( $r );
         $google_rev_url = THR_Settings::get( 'google_review_url' );
         $logo_url       = THR_Settings::get( 'email_logo_url' );
@@ -219,7 +228,7 @@ class THR_Email {
         $accent      = THR_Settings::get( 'email_accent_color', '#DDAA62' );
         $venue_name  = THR_Settings::get( 'venue_name', 'TEMPO House' );
         $venue_address = THR_Settings::get( 'venue_address' );
-        $booking_url = home_url( '/reservations/' );
+        $booking_url = home_url( '/reserve/' );
 
         $v = array_merge( compact( 'entry', 'logo_url', 'accent', 'venue_name', 'venue_address', 'booking_url' ), $extra );
 
